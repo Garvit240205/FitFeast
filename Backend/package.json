@@ -1,0 +1,26 @@
+{
+  "name": "cgas_project",
+  "version": "1.0.0",
+  "description": "Develop a fitness-tracking website using the MERN stack, with a focus on computational gastronomy.The project's main concept is to allow users to log their daily meals and provide personalized insights to improve their diet and fitness. We also plan to integrate an image recognition feature, using existing libraries to estimate the calorie content of meals from pictures, making the logging process easier for users. In addition, we want to utilize this logged data for crowdsourcing to improve our model over time. This will allow us to personalize food suggestions based on users' taste preferences while also keeping their health goals in mind.\r ## Create a fitness tracking app\r Initialize a new Node.js project\r Add Express, jsonwebtoken, mongoose to it as a dependency\r Create index.js\r Add route skeleton for user, signin, signup, community\r Add routes for admin login, admin signup, create a course, delete a course, add course content.\r Add middlewares for user auth\r Add a database (mongodb), use dotenv to store the database connection string\r Define the schema for User, Meal, Purchase\r Complete the routes for user login, signup, purchase a course, see course (Extra points – Use express routing to better structure your routes)\r Create the frontend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.3",
+    "bun": "^1.1.30",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0"
+  }
+}
