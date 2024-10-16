@@ -1,0 +1,168 @@
+body {
+  background: radial-gradient(ellipse at center, #f7f9f5 0%, #e2e4d0 100%);
+  background-size: 400% 400%;
+  /* animation: gradientBG 15s ease infinite; */
+  height: 100vh;
+  margin: 0;
+}
+
+/* @keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+} */
+
+.signup_img_container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px; /* Updated height */
+  width: 100%;
+  /* max-width: 1450px; */
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.signup_img {
+  border: none;
+  border-radius: 2%;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  max-width: 100%;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.started-container {
+  font-family: 'Afacad Flux', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.username-container,
+.email-container,
+.password-container,
+.confirm-container {
+  font-family: 'Afacad Flux', sans-serif;
+  font-size: 20px;
+  margin: 0 auto;
+  width: 500px;
+}
+
+.username-box,
+.email-box,
+.password-box,
+.confirm-box {
+  border: solid;
+  border-radius: 10px;
+  border-color: rgb(171, 167, 167);
+  border-width: 2px;
+  background-color: rgb(197, 225, 197);
+}
+
+.signup-email-button,
+.signup-google-button {
+  margin-top: 20px;
+  display: block;
+  font-family: 'Afacad Flux', sans-serif;
+  font-size: 20px;
+  margin: 20px auto 0;
+  width: 500px;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  background-color: #4CAF50; /* Button background color */
+  color: white; /* Button text color */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added transition for box-shadow */
+}
+
+.signup-email-button:hover,
+.signup-google-button:hover {
+  background-color: #45a049; /* Button hover color */
+  transform: scale(1.05); /* Scale on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Shadow effect on hover */
+}
+
+.signup-email-button:active,
+.signup-google-button:active {
+  transform: scale(0.95); /* Scale down on click */
+  box-shadow: none; /* Remove shadow when active */
+}
+
+.google-image-text-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px; /* Container height */
+}
+
+.google-image {
+  display: flex;
+  height: 20px; /* Adjusted height */
+  width: 20px; /* Adjusted width */
+  max-height: 40px; /* Maximum height */
+  max-width: 40px; /* Maximum width */
+  margin-right: 10px;
+  object-fit: contain; /* Ensures proper scaling */
+}
+
+.signup-email-button::after,
+.signup-google-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%; /* Bubble effect size */
+  height: 300%; /* Bubble effect size */
+  background: rgba(227, 239, 219, 0.6); /* Bubble color */
+  border-radius: 50%;
+  transform: translate(100%, 100%) scale(0);
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+.signup-email-button:hover::after,
+.signup-google-button:hover::after {
+  transform: translate(100%, 100%) scale(1); /* Show bubble on hover */
+}
+
+.already-para{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.or,
+.follow-para {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto 0;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.twitter-icon,
+.insta-icon {
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+}
