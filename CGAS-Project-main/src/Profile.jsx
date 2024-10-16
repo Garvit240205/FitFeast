@@ -1,0 +1,373 @@
+import React, { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./Profile.css";
+
+const Profile = () => {
+  const [liked, setLiked] = useState(false); // State to toggle like
+  const [activeTab, setActiveTab] = useState("posts");
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [userDetails, setUserDetails] = useState({
+    username: "",
+    email: "",
+    phone: "",
+  });
+  const [sun, setSun] = useState(false);
+
+  const toggleSun = () => setSun(!sun);
+  const toggleLike = () => setLiked(!liked); // Toggle between liked and unliked states
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
+  };
+  const handleAddPost = () => {
+    alert("Add Post clicked!");
+  };
+  return (
+    <div>
+      {/* Bootstrap Navbar */}
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+          <div className="container-fluid">
+            <a className='navbar-brand' href='/'>Garvit Kochar</a>
+            
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div className="collapse navbar-collapse" id="navbarNav">
+              <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+              
+              <span onClick={toggleSun}>{sun ? (
+                <img src='sun.png'  style={{height:'30px',width:'30px',marginTop:'27px',marginRight:'10px',cursor:'pointer',alignItems:'center',justifyContent:'center'}} ></img>
+              ):(
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-moon-fill" viewBox="0 0 16 16" style={{height:'30px',width:'30px',marginTop:'27px',marginRight:'10px',cursor:'pointer',alignItems:'center',justifyContent:'center'  }}>
+                  <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
+                </svg>
+              )}</span>
+              
+              </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/">
+                    Home
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/Explore">
+                    Explore
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link active" href="/Profile">
+                    Profile
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      
+
+      {/* Main Profile Section */}
+      <div className="profile-section">
+        <div className="header">
+          <img
+            className="cover-image"
+            src="https://via.placeholder.com/1200x300?text=Cover+Image"
+            alt="Cover"
+          />
+        </div>
+
+        <div className="profile-info">
+          <img
+            className="profile-pic"
+            src="https://via.placeholder.com/100"
+            alt="Profile"
+          />
+          <div className="name-edit">
+            <h2>Garvit Kochar</h2>
+            <button
+              className="edit-button"
+              onClick={() => setShowModal(true)} // Show modal on click
+            >
+              Edit Profile
+            </button>
+          </div>
+          
+          <div className="details">
+            <p className="bio">IIITD</p>
+            <div className="calen-join">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-calendar"
+                viewBox="0 0 16 16"
+              >
+                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+              </svg>
+              <p style={{ marginLeft: "10px" }}>Joined December 2017</p>
+            </div>
+          </div>
+
+          {/* Sub-Navbar */}
+          <div className="profile-navbar">
+            <ul className="nav nav-tabs">
+              <li className="nav-item">
+                <button
+                  className={`nav-link ${activeTab === "posts" ? "active" : ""}`}
+                  onClick={() => setActiveTab("posts")}
+                >
+                  Posts
+                </button>
+              </li>
+              <li className="nav-item">
+                <button
+                  className={`nav-link ${activeTab === "likes" ? "active" : ""}`}
+                  onClick={() => setActiveTab("likes")}
+                >
+                  Likes
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {activeTab === "posts" ? (
+          <div className="all-posts">
+          <div className="posts">
+          <div className="post">
+            <div className="profile-date-container">
+              <img
+                className="prof-pic"
+                src="https://via.placeholder.com/100"
+                alt="Profile"
+              />
+              <strong className="profile-name">IIIT Delhi</strong>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-dot"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+              </svg>
+              <p className="date">Jun 8, 2023</p>
+            </div>
+            <p className="post-para">
+              Excited to host <strong>@sama</strong>, CEO of{" "}
+              <strong>@OpenAI</strong> at IIIT-Delhi today!! #OpenAIatIIITDelhi
+              #ChatGPT #AI
+            </p>
+            <img className="post-img" src="Thor.jpg" alt="Post" />
+
+            {/* Like and Share Icons */}
+            <div className="icon-row">
+              <span onClick={toggleLike} style={{ cursor: "pointer" }}>
+                {liked ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-heart-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-heart"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+                  </svg>
+                )}
+                
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-share-fill" viewBox="0 0 16 16">
+                  <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
+                </svg>
+            </div>
+          </div>
+        </div>
+        <div className="posts">
+          <div className="post">
+            <div className="profile-date-container">
+              <img
+                className="prof-pic"
+                src="https://via.placeholder.com/100"
+                alt="Profile"
+              />
+              <strong className="profile-name">IIIT Delhi</strong>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-dot"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+              </svg>
+              <p className="date">Jun 8, 2023</p>
+            </div>
+            <p className="post-para">
+              Excited to host <strong>@sama</strong>, CEO of{" "}
+              <strong>@OpenAI</strong> at IIIT-Delhi today!! #OpenAIatIIITDelhi
+              #ChatGPT #AI
+            </p>
+            <img className="post-img" src="Thor.jpg" alt="Post" />
+
+            {/* Like and Share Icons */}
+            <div className="icon-row">
+              <span onClick={toggleLike} style={{ cursor: "pointer" }}>
+                {liked ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-heart-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-heart"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+                  </svg>
+                )}
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-share-fill" viewBox="0 0 16 16">
+                  <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
+                </svg>
+            </div>
+          </div>
+        </div>
+        </div>
+        
+
+        
+        ) : (
+          <div className="likes">
+            <p>No likes yet.</p>
+          </div>
+        )}
+      </div>
+
+        {/* Floating Action Button */}
+        <button 
+          className="add-post-btn" 
+          onClick={handleAddPost}
+        >
+          +
+        </button>
+      
+      {/* Bootstrap Modal for Editing Profile */}
+      {showModal && (
+        <div className="modal show d-block" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Profile</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="mb-3">
+                    <label htmlFor="username" className="form-label">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="username"
+                      name="username"
+                      value={userDetails.username}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="email" className="form-label">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="email"
+                      name="email"
+                      value={userDetails.email}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="phone" className="form-label">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      className="form-control"
+                      id="phone"
+                      name="phone"
+                      value={userDetails.phone}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowModal(false)}
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => setShowModal(false)}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Profile;
