@@ -1,0 +1,48 @@
+{
+  "name": "cgas_project",
+  "version": "1.0.0",
+  "description": "Develop a fitness-tracking website using the MERN stack, with a focus on computational gastronomy. The project's main concept is to allow users to log their daily meals and provide personalized insights to improve their diet and fitness. We also plan to integrate an image recognition feature, using existing libraries to estimate the calorie content of meals from pictures, making the logging process easier for users. In addition, we want to utilize this logged data for crowdsourcing to improve our model over time. This will allow us to personalize food suggestions based on users' taste preferences while also keeping their health goals in mind.",
+  "private": true,
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.3",
+    "bun": "^1.1.30",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.11.1",
+    "eslint-plugin-react": "^7.37.0",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.12",
+    "globals": "^15.9.0",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "vite": "^5.4.8"
+  }
+}
+
