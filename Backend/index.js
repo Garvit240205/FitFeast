@@ -13,6 +13,14 @@ app.use(express.json());
 // Use CORS to allow requests from your frontend
 app.use(cors({ origin: 'http://localhost:5173' }));
 
+// MongoDB Atlas connection string
+const mongoURI = 'mongodb+srv://mhimeksh:himi2106@cluster0.m4gr0.mongodb.net/FitFeastDB?retryWrites=true&w=majority';
+
+// Connect to MongoDB
+mongoose.connect(mongoURI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
 // Use the user router
 app.use('/api', userRouter);
 
