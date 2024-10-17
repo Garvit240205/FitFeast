@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors({ origin: 'http://localhost:5173' }));
 
 // MongoDB Atlas connection string
-const mongoURI = 'mongodb+srv://mhimeksh:himi2106@cluster0.m4gr0.mongodb.net/<dbname>?retryWrites=true&w=majority';
+const mongoURI = 'mongodb+srv://mhimeksh:himi2106@cluster0.m4gr0.mongodb.net/FitFeastDB?retryWrites=true&w=majority';
 
 // Connect to MongoDB
 mongoose.connect(mongoURI)
