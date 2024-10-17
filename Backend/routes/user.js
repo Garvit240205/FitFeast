@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('../models/user'); // Import the User model
+const authenticateToken = require('../middleware/authMiddleware'); // Import the authentication middleware
 const userRouter = express.Router();
 
 // Replace 'your_jwt_secret' with an environment variable or a secure key
@@ -68,25 +69,6 @@ userRouter.post('/signin', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
-// Middleware to protect routes
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Access token missing' });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: 'Invalid token' });
-    }
-
-    req.user = user;
-    next();
-  });
-};
 
 // Protected route example
 userRouter.get('/protected', authenticateToken, (req, res) => {
