@@ -3,15 +3,17 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Home from './Home';
 import Profile from './Profile';
 import Explore from './explore';
+import { SignInPage } from './SignIn';
+import { SignUpPage } from './SignUp';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        <Route path='Explore' element={<Explore />}/>
-        <Route path='Explore ' element={<Explore />}/>
-        <Route path="/" element={<Home />} />
+        <Route path='/' element={<SignInPage />}/>
+        <Route path='SignUp' element={<SignUpPage />}/>
+        <Route path="Home" element={<Home />} />
         <Route path="Profile" element={<Profile />} />
         <Route path='Explore' element={<Explore />}/>
       </Routes>
