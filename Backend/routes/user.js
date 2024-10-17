@@ -2,21 +2,12 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
 const User = require('../models/user'); // Import the User model
 const authenticateToken = require('../middleware/authMiddleware'); // Import the authentication middleware
 const userRouter = express.Router();
 
 // Replace 'your_jwt_secret' with an environment variable or a secure key
 const JWT_SECRET = '4a751785ea0a685ec4d98f1d25b17730bae31ad1fbf1310cda8069a90bce2b47';
-
-// MongoDB Atlas connection string
-const mongoURI = 'mongodb+srv://mhimeksh:himi2106@cluster0.m4gr0.mongodb.net/<dbname>?retryWrites=true&w=majority';
-
-// Connect to MongoDB
-mongoose.connect(mongoURI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
 
 // Signup endpoint
 userRouter.post('/signup', async (req, res) => {
