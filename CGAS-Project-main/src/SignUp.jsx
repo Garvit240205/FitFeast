@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './SignUp.css';
 
 function Image() {
@@ -16,13 +17,24 @@ export function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    
+    if (!isValidEmail(username)) {
+      setError('Please enter a valid email address!');
+      setSuccess('');
+      return;
+    }
     if (password !== confirmPassword) {
       setError('Passwords do not match!');
-      setSuccess(''); // Clear success message if an error occurs
+      setSuccess('');
       return;
     }
 
@@ -33,12 +45,23 @@ export function SignUpPage() {
       });
       console.log(response.data);
       setSuccess('User registered successfully!');
-      setError(''); // Clear error message if registration is successful
+      setError('');
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } catch (error) {
       console.error('Error during sign-up:', error);
       setError('Failed to sign up. Please try again.');
-      setSuccess(''); // Clear success message if an error occurs
+      setSuccess('');
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prevState) => !prevState);
   };
 
   return (
@@ -62,30 +85,80 @@ export function SignUpPage() {
             />
           </div>
 
-          <div className='password-container' style={{ marginBottom: '10px' }}>
+          <div className='password-container' style={{ marginBottom: '10px', position: 'relative' }}>
             <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Password</label>
             <input
               className='password-box'
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
             />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(25%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {showPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-eye-fill" viewBox="0 0 16 16">
+                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+                  <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z" />
+                  <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z" />
+                </svg>
+              )}
+            </button>
           </div>
 
-          <div className='confirm-container' style={{ marginBottom: '10px' }}>
+          <div className='confirm-container' style={{ marginBottom: '10px', position: 'relative' }}>
             <label htmlFor="confirmPassword" style={{ display: 'block', marginBottom: '5px' }}>Confirm Password</label>
             <input
               className='confirm-box'
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               id="confirmPassword"
               name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
             />
+            <button
+              type="button"
+              onClick={toggleConfirmPasswordVisibility}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(25%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {showConfirmPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-eye-fill" viewBox="0 0 16 16">
+                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+                  <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z" />
+                  <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z" />
+                </svg>
+              )}
+            </button>
           </div>
 
           {/* Error and success messages */}
@@ -106,7 +179,10 @@ export function SignUpPage() {
           </button>
         </form>
 
-        <p className='already-para'>Already have an account?</p>
+        <a href='/'>
+          <p className='already-para'>Already have an account?</p>
+        </a>
+        
         <p className='follow-para'>Follow us on</p>
 
         <div className='icon-container'>

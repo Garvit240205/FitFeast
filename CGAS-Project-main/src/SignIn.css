@@ -73,6 +73,8 @@ body {
   border: none;
   background-color: #4CAF50;
   color: white;
+  outline:'none';
+  text-decoration: none;
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added transition for box-shadow */
 }
 
@@ -80,11 +82,15 @@ body {
   background-color: #45a049;
   transform: scale(1.05);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Shadow effect on hover */
+  outline:'none';
+  text-decoration: none;
 }
 
 .signin-email-button:active, .signin-google-button:active {
   transform: scale(0.95);
   box-shadow: none; /* Remove shadow when active */
+  outline:'none';
+  text-decoration: none;
 }
 
 .signin-email-button::after, .signin-google-button::after {
@@ -99,10 +105,12 @@ body {
   transform: translate(100%, 100%) scale(0);
   transition: transform 0.3s ease;
   pointer-events: none;
+  outline:'none'
 }
 
 .signin-email-button:hover::after, .signin-google-button:hover::after {
   transform: translate(100%, 100%) scale(1);
+  outline:'none'
 }
 
 .or, .dont-para, .forgot-para, .follow-para {
