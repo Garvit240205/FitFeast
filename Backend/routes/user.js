@@ -64,7 +64,7 @@ userRouter.post('/signin', async (req, res) => {
 
 // Route to update user details
 userRouter.put('/update-details', authenticateToken, async (req, res) => {
-  const { firstname, age, weight, height, gender, goal } = req.body;
+  const { firstname, age, weight, height, gender, goal, country, zipcode } = req.body;
 
   try {
     // Log the user ID extracted from the token
@@ -84,6 +84,8 @@ userRouter.put('/update-details', authenticateToken, async (req, res) => {
     user.height = height;
     user.gender = gender;
     user.goal = goal;
+    user.country = country;
+    user.zipcode = zipcode;
 
     // Save the updated user information
     await user.save();
@@ -94,7 +96,6 @@ userRouter.put('/update-details', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 
 // Meal-related routes (protected)
