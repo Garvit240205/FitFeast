@@ -51,8 +51,8 @@ userRouter.post('/signin', async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
+    // Generate a JWT token with the user's _id
+    const token = jwt.sign({ _id: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
 
     res.json({ message: 'Signin successful', token });
   } catch (error) {
@@ -61,10 +61,41 @@ userRouter.post('/signin', async (req, res) => {
   }
 });
 
-// Protected route example
-userRouter.get('/protected', authenticateToken, (req, res) => {
-  res.json({ message: 'This is a protected route', user: req.user });
+
+// Route to update user details
+userRouter.put('/update-details', authenticateToken, async (req, res) => {
+  const { firstname, age, weight, height, gender, goal } = req.body;
+
+  try {
+    // Log the user ID extracted from the token
+    console.log('Authenticated user ID:', req.user._id);
+
+    // Find the user by ID in the database
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      console.log('No user found with ID:', req.user._id); // Log the user ID that failed
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user details
+    user.firstname = firstname;
+    user.age = age;
+    user.weight = weight;
+    user.height = height;
+    user.gender = gender;
+    user.goal = goal;
+
+    // Save the updated user information
+    await user.save();
+
+    res.json({ message: 'User details updated successfully', user });
+  } catch (error) {
+    console.error('Error updating user details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
+
+
 
 // Meal-related routes (protected)
 userRouter.post('/meal', authenticateToken, (req, res) => {
