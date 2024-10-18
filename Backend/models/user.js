@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema({
   height: { type: Number },
   gender: { type: String },
   goal: { type: String },
+  country: { type: String },
+  zipcode: { type: String },
+  activityLevel: {type: String}
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
