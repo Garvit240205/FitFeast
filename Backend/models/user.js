@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
   goal: { type: String },
   country: { type: String },
   zipcode: { type: String },
+  activityLevel: {type: String}
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

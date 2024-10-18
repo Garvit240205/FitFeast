@@ -3,7 +3,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user'); // Import the User model
-const authenticateToken = require('../middleware/authMiddleware'); // Import the authentication middleware
+const authenticateToken = require('../middlewares/authMiddleware'); // Import the authentication middleware
+const calculateCaloriesMiddleware = require('../middlewares/calculateCalories');
 const userRouter = express.Router();
 
 // Replace 'your_jwt_secret' with an environment variable or a secure key
@@ -63,17 +64,16 @@ userRouter.post('/signin', async (req, res) => {
 
 
 // Route to update user details
-userRouter.put('/update-details', authenticateToken, async (req, res) => {
-  const { firstname, age, weight, height, gender, goal, country, zipcode } = req.body;
+userRouter.put('/update-details', authenticateToken, async (req, res, next) => {
+  const { firstname, age, weight, height, gender, goal, country, zipcode, activityLevel } = req.body;
 
   try {
-    // Log the user ID extracted from the token
     console.log('Authenticated user ID:', req.user._id);
 
     // Find the user by ID in the database
     const user = await User.findById(req.user._id);
     if (!user) {
-      console.log('No user found with ID:', req.user._id); // Log the user ID that failed
+      console.log('No user found with ID:', req.user._id);
       return res.status(404).json({ message: 'User not found' });
     }
 
@@ -86,13 +86,27 @@ userRouter.put('/update-details', authenticateToken, async (req, res) => {
     user.goal = goal;
     user.country = country;
     user.zipcode = zipcode;
+    user.activityLevel= activityLevel;
 
-    // Save the updated user information
-    await user.save();
+    req.user = user; // Pass the user object to the middleware
 
-    res.json({ message: 'User details updated successfully', user });
+    // Use the middleware to calculate and update daily calorie requirement
+    next();
   } catch (error) {
     console.error('Error updating user details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}, calculateCaloriesMiddleware, async (req, res) => {
+  try {
+    // Save the updated user information, including the daily calorie requirement
+    await req.user.save();
+    res.json({
+      message: 'User details updated successfully',
+      dailyCalorieRequirement: req.user.dailyCalorieRequirement,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Error saving user details:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
