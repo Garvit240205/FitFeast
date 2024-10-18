@@ -5,6 +5,10 @@ const WelcomePage = () => {
   const [name, setName] = useState('');
   const [step, setStep] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [country, setCountry] = useState('');
+  const [zipCode, setZipCode] = useState('');
 
   const handleContinue = () => {
     if (step < 8) {
@@ -69,10 +73,60 @@ const WelcomePage = () => {
         );
       case 3:
         return (
-          <div>
-            <p style={{ fontWeight: 'bold' }}>Almost there!</p>
-            <p>Just a few more details.</p>
+          <div style={{justifyContent:'center',alignContent:'center'}}>
+            <h1 className="header" style={{ fontSize: '30px', fontFamily: 'Nunito' }}>Tell us a little about yourself</h1>
+            <div className="gender-selection">
+              <button
+                className={`gender-button ${gender === 'male' ? 'selected' : ''} male`}
+                onClick={() => setGender('male')}
+              >
+                Male
+              </button>
+              <button
+                className={`gender-button ${gender === 'female' ? 'selected' : ''} female`}
+                onClick={() => setGender('female')}
+              >
+                Female
+              </button>
+              
+            </div>
+            <h1 className="header" style={{ fontSize: '20px', fontFamily: 'Nunito',marginBottom:'0px' }}>How old are you?</h1>
+            <div style={{display:'flex',justifyContent:'center',alignContent:'center',flexDirection:'column'}}>
+            <input
+              type="number"
+              placeholder="Enter your age"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              className="input"
+              style={{ marginTop: '10px' }}
+            />
+            <h1 className="header" style={{ fontSize: '20px', fontFamily: 'Nunito',marginBottom:'0px' }}>Where do you live?</h1>
+            <select
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="input"
+              style={{ marginTop: '10px' }}
+            >
+              <option value="">Select your country</option>
+              {/* Add your country options here */}
+              <option value="USA">United States</option>
+              <option value="Canada">Canada</option>
+              <option value="UK">United Kingdom</option>
+              <option value="Australia">Australia</option>
+              <option value="India">India</option>
+              {/* Add more countries as needed */}
+            </select>
+            <input
+              type="text"
+              placeholder="Enter your ZIP code"
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
+              className="input"
+              style={{ marginTop: '10px' }}
+            />
           </div>
+            </div>
+            
         );
       case 4:
         return <h2>Thank you, {name}!</h2>;
@@ -84,7 +138,7 @@ const WelcomePage = () => {
   // Effect to update body background style based on step
   useEffect(() => {
     if (step === 2) {
-      document.body.style.background = 'linear-gradient(135deg, #fefae0, #dda15e, #bc6c25)';
+      document.body.style.background = 'linear-gradient(190deg, #ddb4f6, #8dd0fc)';
       document.body.style.backgroundSize = '200% 200%';
     } else {
       document.body.style.backgroundColor = '#fff'; // Default background
@@ -102,7 +156,6 @@ const WelcomePage = () => {
         {Array.from({ length: 8 }).map((_, index) => (
           <div key={index} className={`step-bar ${index <= step ? 'filled' : ''}`} />
         ))}
-        <p className="sample-text">Step {step + 1} of 8</p>
       </div>
       {renderStepContent()}
       {step < 8 && (
