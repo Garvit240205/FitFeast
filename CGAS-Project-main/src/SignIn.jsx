@@ -39,7 +39,7 @@ export function SignInPage() {
       localStorage.setItem('token', response.data.token);
       setSuccess('Welcome!');
       setTimeout(() => {
-        navigate("/Home");
+        navigate("/WelcomePage");
       }, 1000);
     } catch (error) {
       console.error('Error during sign-in:', error);

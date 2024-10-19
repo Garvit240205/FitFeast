@@ -12,6 +12,6 @@ import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <WelcomePage />
+    <App />
   </StrictMode>,
 )
