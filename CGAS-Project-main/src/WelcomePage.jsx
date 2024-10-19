@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './WelcomePage.css';
 
 const WelcomePage = () => {
@@ -11,7 +12,6 @@ const WelcomePage = () => {
   const [zipCode, setZipCode] = useState('');
   const [showFormula, setShowFormula] = useState(false); // New state to toggle the formula
   const calorieCount = 2200; // Example calorie count
-
   const handleContinue = () => {
     if (step < 6) {
       setStep((prevStep) => prevStep + 1);
@@ -250,15 +250,16 @@ const WelcomePage = () => {
         ))}
       </div>
       {renderStepContent()}
-      {step < 6 ? (
+      {step < 5 ? (
         <button onClick={handleContinue} className="button">
           Continue
         </button>
       ) : (
-        <div className="completion-message" style={{ textAlign: 'center' }}>
-          <h1>Thank you for completing all steps, {name}!</h1>
-          <p>Your setup is complete. You can now start using the app.</p>
-        </div>
+        <Link to="/Home">
+    <button className="button">
+      Continue
+    </button>
+  </Link>
       )}
     </div>
   );
