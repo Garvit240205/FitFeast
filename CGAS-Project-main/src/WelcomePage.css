@@ -24,6 +24,7 @@
     font-size: 70px;
     font-weight: 600;
     color: #333;
+    
   }
   
   .bold-text {
@@ -48,6 +49,8 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: border-color 0.3s ease;
     text-align: center;
+    border-color: rgb(171, 167, 167);
+    background-color: rgb(197, 225, 197);
   }
   
   .input:focus {
@@ -80,7 +83,7 @@
     font-size: 20px;
     margin: 10px 0; /* Spacing between buttons */
     transition: border-radius 0.3s ease;
-    width: 800px;
+    width: 350px;
   }
   
   .button:hover,
@@ -112,10 +115,13 @@
   
   .options-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    justify-content: center;
     margin-top: 15px;
     gap: 10px;
+    width: 1000px;
+    
   }
   
   .option-button.selected {
@@ -161,5 +167,54 @@
     background-color: #8dd0fc;
     color: white;
     border-color: #03609e;
+  }
+  
+  .box {
+    background: hsl(0, 0%, 100%);
+    padding: 16px 24px;
+    position: relative;
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.01);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 800px;
+    margin-left: 20px;
+    
+    &::after {
+      position: absolute;
+      content: "";
+      top: 15px;
+      left: 0;
+      right: 0;
+      z-index: -1;
+      height: 100%;
+      width: 100%;
+      transform: scale(0.9) translateZ(0);
+      filter: blur(15px);
+      background: linear-gradient(
+        to left,
+        #ff5770,
+        #e4428d,
+        #c42da8,
+        #9e16c3,
+        #6501de,
+        #9e16c3,
+        #c42da8,
+        #e4428d,
+        #ff5770
+      );
+      background-size: 200% 200%;
+      animation: animateGlow 1.25s linear infinite;
+    }
+  }
+  
+  @keyframes animateGlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
   }
   
