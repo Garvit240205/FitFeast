@@ -12,12 +12,12 @@ body {
   min-height: 100vh;
 }
 
-.header {
+/* .header {
   display: flex;
   justify-content: space-between;
   padding: 1rem;
   border-bottom: 1px solid #283039;
-}
+} */
 
 .header-content {
   display: flex;
