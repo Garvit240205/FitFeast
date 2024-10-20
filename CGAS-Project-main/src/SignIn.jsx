@@ -37,6 +37,7 @@ export function SignInPage() {
       });
 
       localStorage.setItem('token', response.data.token);
+      setError('')
       setSuccess('Welcome!');
       setTimeout(() => {
         navigate("/WelcomePage");

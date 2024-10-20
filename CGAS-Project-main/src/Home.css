@@ -86,15 +86,31 @@ body {
 }
 
 /* Navbar Link Styling */
-.nav-link {
-  font-size: 25px;
-  margin: 15px;
+.navbar-nav .nav-item .nav-link {
+  border: none;
+  border-radius: 25px;
+  padding: 10px 15px;
+  margin-right: 10px;
+  color: black;
+  text-align: center;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.navbar-brand {
-  font-size: 30px;
+.navbar-nav .nav-item .nav-link:hover {
+  background-color: black;
+  color: white;
 }
 
-.nav-tabs {
-  justify-content: left;
+.navbar-nav .nav-item span svg {
+  border: none;
+  border-radius: 25px;
+  padding: 5px;
+  margin-right: 10px;
+  transition: background-color 0.3s, fill 0.3s;
 }
+
+.navbar-nav .nav-item span svg:hover {
+  background-color: black;
+  fill: white;
+}
+
