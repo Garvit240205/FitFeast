@@ -86,7 +86,7 @@ userRouter.put('/update-details', authenticateToken, async (req, res, next) => {
     user.goal = goal;
     user.country = country;
     user.zipcode = zipcode;
-    user.activityLevel= activityLevel;
+    user.activityLevel = activityLevel;
 
     req.user = user; // Pass the user object to the middleware
 
@@ -99,7 +99,9 @@ userRouter.put('/update-details', authenticateToken, async (req, res, next) => {
 }, calculateCaloriesMiddleware, async (req, res) => {
   try {
     // Save the updated user information, including the daily calorie requirement
+    req.user.calorieRequirement = req.user.dailyCalorieRequirement;  // Save calorie requirement
     await req.user.save();
+
     res.json({
       message: 'User details updated successfully',
       dailyCalorieRequirement: req.user.dailyCalorieRequirement,
@@ -110,6 +112,7 @@ userRouter.put('/update-details', authenticateToken, async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 // Meal-related routes (protected)
