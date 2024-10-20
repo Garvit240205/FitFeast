@@ -16,18 +16,25 @@ const WelcomePage = () => {
   const [showFormula, setShowFormula] = useState(false);
   const calorieCount = 2200; // Example calorie count
 
+  const convertHeightToCM = (feet, inches) => {
+    return Math.round(feet * 30.48 + inches * 2.54); // Convert to cm
+  };
   // Object to hold user details
   const userDetails = {
     firstname: name,
     age,
     weight,
-    height: `${heightFeet} ft ${heightInches} in`,
+    height: convertHeightToCM(heightFeet, heightInches), // Convert height to cm
     gender,
     goal: selectedOptions,
     country,
     zipcode: zipCode,
     additionalGoals: [], // Placeholder for additional goals if needed
   };
+
+  
+
+  
 
   const handleContinue = () => {
     if (step < 6) {
@@ -159,7 +166,7 @@ const WelcomePage = () => {
                 type="number"
                 placeholder="Enter your age"
                 value={age}
-                onChange={(e) => setAge(e.target.value)}
+                onChange={(e) => setAge(parseInt(e.target.value, 10) || 0)}
                 className="input"
                 style={{ marginTop: '10px' }}
               />
@@ -219,7 +226,7 @@ const WelcomePage = () => {
                 <input
                   type="number"
                   value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
+                  onChange={(e) => setWeight(parseFloat(e.target.value, 10) || 0)}
                   className="input"
                   style={{ paddingRight: '35px', textAlign: 'center' }}
                 />
