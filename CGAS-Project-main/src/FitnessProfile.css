@@ -87,7 +87,7 @@ body {
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
 }
 
@@ -100,7 +100,29 @@ body {
   justify-content: center;
   margin-top: 10px;
 }
-
+.snap-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.snap-button{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 140px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: black; /* Bootstrap primary color */
+  color: white;
+  border: none;
+  font-size: 24px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  align-items: center;
+  justify-content: center;
+}
 .net-calories-chart {
   margin: 2rem 0;
 }
@@ -241,3 +263,28 @@ body {
   padding: 20px;
 }
 
+.date-picker-container {
+  margin: 20px 0;
+}
+
+.date-picker {
+  margin-left: 10px;
+  padding: 5px;
+  font-size: 1rem;
+}
+
+.meals-list {
+  margin-top: 20px;
+}
+
+.meal-post {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.meal-header {
+  font-size: 1.2rem;
+  font-weight: bold;
+}

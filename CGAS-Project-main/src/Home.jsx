@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+
 import "./Home.css"; // You may want to create a new CSS file for the Home page styles
 
 const Home = () => {

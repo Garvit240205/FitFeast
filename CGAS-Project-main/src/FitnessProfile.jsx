@@ -2,6 +2,8 @@ import React from "react";
 import { useState,useEffect } from "react";
 import "./FitnessProfile.css";
 import { Bar, Line } from "react-chartjs-2";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -20,6 +22,22 @@ const FitnessProfile = () => {
   const progressPercentage = (caloriesConsumed / calorieGoal) * 100;
   const [sun, setSun] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date()); // State for selected date
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    setIsAnimated(true);
+    // Initialize with some posts for the sake of the example
+    setPosts([
+      { id: 1, username: "JohnDoe", meal: "Breakfast", date: "2024-10-20", description: "Omelette, Toast, and Orange Juice" },
+      { id: 2, username: "JaneDoe", meal: "Lunch", date: "2024-10-20", description: "Chicken Salad with Avocado" },
+      { id: 3, username: "JohnDoe", meal: "Dinner", date: "2024-10-19", description: "Grilled Salmon with Veggies" },
+    ]);
+  }, []);
+
+  const filteredPosts = posts.filter((post) => post.date === selectedDate);
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
   useEffect(() => {
     // Start the animation when the component mounts
     setIsAnimated(true);
@@ -31,7 +49,9 @@ const FitnessProfile = () => {
     { label: "Fats", value: 60, goal: 70 },
   ];
   const toggleSun = () => setSun(!sun);
-
+  const handleAddPost = () => {
+    alert("Add Post clicked!");
+  };
   const nutrientData = {
     labels: nutrients.map((n) => n.label),
     datasets: [
@@ -100,63 +120,28 @@ const FitnessProfile = () => {
     }
   ]
 
-  const lineOptions = {
-    responsive: true,
-    plugins: {
-      legend: { display: true },
-      tooltip: { enabled: true },
+  const weightData = [
+    {
+      day:"Mon",
+      weight:67
     },
-    scales: {
-      x: {
-        display: true,
-        title: {
-          display: true,
-          text: "Days of the Week",
-        },
-        ticks: {
-          maxRotation: 45,
-          minRotation: 0,
-        },
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        display: false,
-      },
+    {
+      day:"Tue",
+      weight:69
     },
-    elements: {
-      line: {
-        tension: 0.4,
-      },
+    {
+      day:"Wed",
+      weight:70
     },
-    beforeDatasetsDraw: function (chart) {
-      const ctx = chart.ctx;
-      chart.data.datasets.forEach((dataset, i) => {
-        const meta = chart.getDatasetMeta(i);
-        
-        // Create a gradient
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(54, 162, 235, 1)'); // Start color
-        gradient.addColorStop(1, 'rgba(54, 162, 235, 0)'); // End color
-  
-        ctx.save();
-        ctx.strokeStyle = gradient; // Use the gradient for the line
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        const firstPoint = meta.data[0].getProps(["x", "y"], false);
-        ctx.moveTo(firstPoint.x, firstPoint.y);
-  
-        meta.data.forEach((point) => {
-          const { x, y } = point.getProps(["x", "y"], false);
-          ctx.lineTo(x, y);
-        });
-  
-        ctx.stroke();
-        ctx.restore();
-      });
+    {
+      day:"Thu",
+      weight:68
     },
-  };
+    {
+      day:"Fri",
+      weight:66
+    }
+  ]
 
   return (
     <div className="design-root">
@@ -346,8 +331,44 @@ const FitnessProfile = () => {
             </AreaChart>
             </ResponsiveContainer>
 
+            <ResponsiveContainer width="100%" height={500}>
+            <AreaChart data={weightData}>
+              <defs>
+                <linearGradient id="colorBurned" x1={0} x2={0} y1={0} y2={1}>
+                  <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
+                  <stop offset="75%" stopColor="#2451B7" stopOpacity={0.05} />
+                </linearGradient>
 
-          
+              </defs>
+              
+              <XAxis dataKey="weight" />
+              <YAxis />
+              <Tooltip></Tooltip>
+              <Legend />
+
+              
+              <Area
+                type="monotone"
+                dataKey="weight"
+                stroke="#2451B7"
+                fill="url(#colorBurned)"
+                stackId={1}
+              />
+            </AreaChart>
+            </ResponsiveContainer>
+          {/* Floating Action Button */}
+          <button 
+            className="snap-button" 
+            onClick={handleAddPost}
+          >
+            <div className="snap-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-camera" viewBox="0 0 20 20" style={{marginTop:'5px'}}>
+              <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"/>
+              <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+            </svg>
+            <p>Snap</p>
+            </div>
+          </button>
 
           {/* <div className="quick-actions">
             <button className="log-weight">Log your weight</button>
@@ -369,9 +390,38 @@ const FitnessProfile = () => {
               </div>
             </div>
           </div> */}
+          <div className="meals-section">
+          <h2>Meals Consumed</h2>
+          <div className="date-picker-container">
+            <label htmlFor="date">Select Date:</label>
+            <input
+              type="date"
+              id="date"
+              value={selectedDate}
+              onChange={handleDateChange}
+              className="date-picker"
+            />
+          </div>
+
+          <div className="meals-list">
+            {filteredPosts.length > 0 ? (
+              filteredPosts.map((post) => (
+                <div key={post.id} className="meal-post">
+                  <div className="meal-header">
+                    <strong>{post.username}</strong> - {post.meal}
+                  </div>
+                  <p>{post.description}</p>
+                </div>
+              ))
+            ) : (
+              <p>No data available for the selected date.</p>
+            )}
+      </div>
+    </div>
         </div>
       </div>
     </div>
+    
   );
 };
 
