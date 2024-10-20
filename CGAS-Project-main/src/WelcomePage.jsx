@@ -49,43 +49,67 @@ const WelcomePage = () => {
         );
         case 1:
           const options = ['Lose Weight', 'Maintain Weight', 'Gain Weight', 'Gain Muscle', 'Modify My Diet', 'Manage Stress', 'Increase Step Count', 'Manage Sleep']; 
-          return (
-            <div>
-              <h1 className="header">Goals</h1>
-              <p className="bold-text">Hey {name}. Let's start with your goals!</p>
-              <p className="normal-text" style={{ marginTop: '10px' }}>
-                Select up to three that are most important to you
-              </p>
-              <div className="options-container" style={{ display: 'flex', marginTop: '20px' }}>
-                {/* Left Column */}
-                <div style={{ display: 'flex', flexDirection: 'column', width: '43%',alignItems:'center',justifyContent:'center',marginLeft:'10px' }}>
-                  {options.slice(0, 4).map((option, index) => (
-                    <button
-                      key={option} // Use the option text as key for better readability
-                      onClick={() => handleOptionClick(option)}
-                      className={`option-button ${selectedOptions.includes(option) ? 'selected' : ''}`}
-                      style={{ marginBottom: '10px' }} // Add some margin between buttons
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-                {/* Right Column */}
-                <div style={{ display: 'flex', flexDirection: 'column', width: '45%',alignItems:'center',justifyContent:'center' }}>
-                  {options.slice(4).map((option, index) => (
-                    <button
-                      key={option} // Use the option text as key for better readability
-                      onClick={() => handleOptionClick(option)}
-                      className={`option-button ${selectedOptions.includes(option) ? 'selected' : ''}`}
-                      style={{ marginBottom: '10px' }} // Add some margin between buttons
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
+
+          const handleOptionClick = (option) => {
+            const isFirstThreeOptions = ['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(option);
+          
+            if (isFirstThreeOptions) {
+              if (selectedOptions.includes(option)) {
+                // Deselect the option if it's already selected
+                setSelectedOptions(selectedOptions.filter(opt => opt !== option));
+              } else {
+                // Deselect any other options from the first three and select the new one
+                const filteredSelectedOptions = selectedOptions.filter(opt => !['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(opt));
+                setSelectedOptions(filteredSelectedOptions.concat(option));
+              }
+            } else {
+              // Toggle other options freely
+              if (selectedOptions.includes(option)) {
+                setSelectedOptions(selectedOptions.filter(opt => opt !== option));
+              } else {
+                setSelectedOptions(selectedOptions.concat(option));
+              }
+            }
+          };
+
+        return (
+          <div>
+            <h1 className="header">Goals</h1>
+            <p className="bold-text">Hey {name}. Let's start with your goals!</p>
+            <p className="normal-text" style={{ marginTop: '10px' }}>
+              Select up to three that are most important to you
+            </p>
+            <div className="options-container" style={{ display: 'flex', marginTop: '20px' }}>
+              {/* Left Column */}
+              <div style={{ display: 'flex', flexDirection: 'column', width: '43%', alignItems:'center', justifyContent:'center', marginLeft:'10px' }}>
+                {options.slice(0, 4).map((option) => (
+                  <button
+                    key={option} 
+                    onClick={() => handleOptionClick(option)}
+                    className={`option-button ${selectedOptions.includes(option) ? 'selected' : ''}`}
+                    style={{ marginBottom: '10px' }}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+              {/* Right Column */}
+              <div style={{ display: 'flex', flexDirection: 'column', width: '45%', alignItems:'center', justifyContent:'center' }}>
+                {options.slice(4).map((option) => (
+                  <button
+                    key={option} 
+                    onClick={() => handleOptionClick(option)}
+                    className={`option-button ${selectedOptions.includes(option) ? 'selected' : ''}`}
+                    style={{ marginBottom: '10px' }}
+                  >
+                    {option}
+                  </button>
+                ))}
               </div>
             </div>
-          );
+          </div>
+        );
+
         
       case 2:
         return (

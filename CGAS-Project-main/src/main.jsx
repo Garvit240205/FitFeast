@@ -7,11 +7,13 @@ import Home from './Home.jsx'
 import Explore from './explore.jsx'
 import App from './App.jsx'
 import WelcomePage from './WelcomePage.jsx'
+import FitnessProfile from './FitnessProfile.jsx'
+import Temp from './temp.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <FitnessProfile />
   </StrictMode>,
 )
