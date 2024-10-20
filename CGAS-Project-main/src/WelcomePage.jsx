@@ -10,11 +10,39 @@ const WelcomePage = () => {
   const [gender, setGender] = useState('');
   const [country, setCountry] = useState('');
   const [zipCode, setZipCode] = useState('');
-  const [showFormula, setShowFormula] = useState(false); // New state to toggle the formula
+  const [weight, setWeight] = useState(''); // State for weight
+  const [heightFeet, setHeightFeet] = useState(''); // State for height feet
+  const [heightInches, setHeightInches] = useState(''); // State for height inches
+  const [showFormula, setShowFormula] = useState(false);
   const calorieCount = 2200; // Example calorie count
+
+  const convertHeightToCM = (feet, inches) => {
+    return Math.round(feet * 30.48 + inches * 2.54); // Convert to cm
+  };
+  // Object to hold user details
+  const userDetails = {
+    firstname: name,
+    age,
+    weight,
+    height: convertHeightToCM(heightFeet, heightInches), // Convert height to cm
+    gender,
+    goal: selectedOptions,
+    country,
+    zipcode: zipCode,
+    additionalGoals: [], // Placeholder for additional goals if needed
+  };
+
+  
+
+  
+
   const handleContinue = () => {
     if (step < 6) {
       setStep((prevStep) => prevStep + 1);
+      console.log(userDetails);
+    } else {
+      console.log(userDetails); // Log the user details when submitting
+      // Optionally, you can handle form submission here
     }
   };
 
@@ -47,30 +75,27 @@ const WelcomePage = () => {
             />
           </div>
         );
-        case 1:
-          const options = ['Lose Weight', 'Maintain Weight', 'Gain Weight', 'Gain Muscle', 'Modify My Diet', 'Manage Stress', 'Increase Step Count', 'Manage Sleep']; 
+      case 1:
+        const options = ['Lose Weight', 'Maintain Weight', 'Gain Weight', 'Gain Muscle', 'Modify My Diet', 'Manage Stress', 'Increase Step Count', 'Manage Sleep'];
 
-          const handleOptionClick = (option) => {
-            const isFirstThreeOptions = ['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(option);
-          
-            if (isFirstThreeOptions) {
-              if (selectedOptions.includes(option)) {
-                // Deselect the option if it's already selected
-                setSelectedOptions(selectedOptions.filter(opt => opt !== option));
-              } else {
-                // Deselect any other options from the first three and select the new one
-                const filteredSelectedOptions = selectedOptions.filter(opt => !['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(opt));
-                setSelectedOptions(filteredSelectedOptions.concat(option));
-              }
+        const handleOptionClick = (option) => {
+          const isFirstThreeOptions = ['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(option);
+
+          if (isFirstThreeOptions) {
+            if (selectedOptions.includes(option)) {
+              setSelectedOptions(selectedOptions.filter(opt => opt !== option));
             } else {
-              // Toggle other options freely
-              if (selectedOptions.includes(option)) {
-                setSelectedOptions(selectedOptions.filter(opt => opt !== option));
-              } else {
-                setSelectedOptions(selectedOptions.concat(option));
-              }
+              const filteredSelectedOptions = selectedOptions.filter(opt => !['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(opt));
+              setSelectedOptions(filteredSelectedOptions.concat(option));
             }
-          };
+          } else {
+            if (selectedOptions.includes(option)) {
+              setSelectedOptions(selectedOptions.filter(opt => opt !== option));
+            } else {
+              setSelectedOptions(selectedOptions.concat(option));
+            }
+          }
+        };
 
         return (
           <div>
@@ -81,10 +106,10 @@ const WelcomePage = () => {
             </p>
             <div className="options-container" style={{ display: 'flex', marginTop: '20px' }}>
               {/* Left Column */}
-              <div style={{ display: 'flex', flexDirection: 'column', width: '43%', alignItems:'center', justifyContent:'center', marginLeft:'10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', width: '43%', alignItems: 'center', justifyContent: 'center', marginLeft: '10px' }}>
                 {options.slice(0, 4).map((option) => (
                   <button
-                    key={option} 
+                    key={option}
                     onClick={() => handleOptionClick(option)}
                     className={`option-button ${selectedOptions.includes(option) ? 'selected' : ''}`}
                     style={{ marginBottom: '10px' }}
@@ -94,10 +119,10 @@ const WelcomePage = () => {
                 ))}
               </div>
               {/* Right Column */}
-              <div style={{ display: 'flex', flexDirection: 'column', width: '45%', alignItems:'center', justifyContent:'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', width: '45%', alignItems: 'center', justifyContent: 'center' }}>
                 {options.slice(4).map((option) => (
                   <button
-                    key={option} 
+                    key={option}
                     onClick={() => handleOptionClick(option)}
                     className={`option-button ${selectedOptions.includes(option) ? 'selected' : ''}`}
                     style={{ marginBottom: '10px' }}
@@ -109,8 +134,6 @@ const WelcomePage = () => {
             </div>
           </div>
         );
-
-        
       case 2:
         return (
           <div>
@@ -133,7 +156,7 @@ const WelcomePage = () => {
               <button
                 className={`gender-button ${gender === 'female' ? 'selected' : ''} female`}
                 onClick={() => setGender('female')}
-              >
+              > 
                 Female
               </button>
             </div>
@@ -143,7 +166,7 @@ const WelcomePage = () => {
                 type="number"
                 placeholder="Enter your age"
                 value={age}
-                onChange={(e) => setAge(e.target.value)}
+                onChange={(e) => setAge(parseInt(e.target.value, 10) || 0)}
                 className="input"
                 style={{ marginTop: '10px' }}
               />
@@ -161,7 +184,6 @@ const WelcomePage = () => {
                 <option value="UK">United Kingdom</option>
                 <option value="Australia">Australia</option>
                 <option value="Singapore">Singapore</option>
-                
               </select>
               <input
                 type="text"
@@ -182,14 +204,14 @@ const WelcomePage = () => {
             {/* Height Input */}
             <h1 className="header" style={{ fontSize: '20px', fontFamily: 'Nunito', marginBottom: '0px', textAlign: 'center' }}>How tall are you?</h1>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px', width: '800px' }}>
-              <select className="input" style={{ marginRight: '10px', textAlign: 'center' }}>
+              <select value={heightFeet} onChange={(e) => setHeightFeet(e.target.value)} className="input" style={{ marginRight: '10px', textAlign: 'center' }}>
                 <option value="">Select feet</option>
                 {Array.from({ length: 7 }, (_, i) => i + 1).map((ft) => (
                   <option key={ft} value={ft}>{ft} ft</option>
                 ))}
               </select>
 
-              <select className="input" style={{ textAlign: 'center' }}>
+              <select value={heightInches} onChange={(e) => setHeightInches(e.target.value)} className="input" style={{ textAlign: 'center' }}>
                 <option value="">Select inches</option>
                 {Array.from({ length: 12 }, (_, i) => i).map((inch) => (
                   <option key={inch} value={inch}>{inch} in</option>
@@ -203,6 +225,8 @@ const WelcomePage = () => {
               <div style={{ display: 'flex', position: 'relative', width: '800px', alignItems: 'center', justifyContent: 'center' }}>
                 <input
                   type="number"
+                  value={weight}
+                  onChange={(e) => setWeight(parseFloat(e.target.value, 10) || 0)}
                   className="input"
                   style={{ paddingRight: '35px', textAlign: 'center' }}
                 />
@@ -223,24 +247,23 @@ const WelcomePage = () => {
 
             {/* Calorie Display */}
             <div className="box" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' }}>
-              <p style={{ fontSize:'40px', color:'green' }}>{calorieCount}</p>
-              <p style={{ marginLeft: '10px',fontSize:'40px' }}>calories</p>
+              <p style={{ fontSize: '40px', color: 'green' }}>{calorieCount}</p>
+              <p style={{ marginLeft: '10px', fontSize: '40px' }}>calories</p>
             </div>
 
-
             {/* Toggle Formula */}
-            <p className="toggle-formula" onClick={toggleFormula} style={{ cursor: 'pointer', color: 'green', marginTop: '30px',width:'820px',marginLeft:'20px' }}>
+            <p className="toggle-formula" onClick={toggleFormula} style={{ cursor: 'pointer', color: 'green', marginTop: '30px', width: '820px', marginLeft: '20px' }}>
               {showFormula ? 'Hide formula' : 'How we calculate your calories'}
             </p>
 
             {/* Show Formula if toggled */}
             {showFormula && (
               <div className="formula" style={{ marginTop: '10px' }}>
-                <p className="normal-text" style={{fontSize:'16px'}}>The formula used to calculate your calories is:</p>
-                <p className="normal-text" style={{fontSize:'16px'}}>
+                <p className="normal-text" style={{ fontSize: '16px' }}>The formula used to calculate your calories is:</p>
+                <p className="normal-text" style={{ fontSize: '16px' }}>
                   <strong>BMR (Basal Metabolic Rate) =</strong> 10 * weight (kg) + 6.25 * height (cm) - 5 * age + 5 (for males) or - 161 (for females)
                 </p>
-                <p className="normal-text" style={{fontSize:'16px'}}><strong>Net Calories =</strong> BMR + activity level adjustment</p>
+                <p className="normal-text" style={{ fontSize: '16px' }}><strong>Net Calories =</strong> BMR + activity level adjustment</p>
               </div>
             )}
           </div>
@@ -251,7 +274,6 @@ const WelcomePage = () => {
     }
   };
 
-  // Effect to update body background style based on step
   useEffect(() => {
     if (step === 2) {
       document.body.style.background = 'linear-gradient(190deg, #ddb4f6, #8dd0fc)';
