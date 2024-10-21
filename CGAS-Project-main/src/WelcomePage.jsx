@@ -19,6 +19,22 @@ const WelcomePage = () => {
   const convertHeightToCM = (feet, inches) => {
     return Math.round(feet * 30.48 + inches * 2.54); // Convert to cm
   };
+
+  function filterWeightGoals(goals) {
+    const weightGoals = ["Lose Weight", "Maintain Weight", "Gain Weight"];
+    return goals.filter(goal => !weightGoals.includes(goal));
+  }
+
+  function determineWeightGoal(selectedOptions) {
+    if (selectedOptions.includes("Lose Weight")) {
+      return "lose";
+    } else if (selectedOptions.includes("Maintain Weight")) {
+      return "maintain";
+    } else if (selectedOptions.includes("Gain Weight")) {
+      return "gain";
+    } 
+    return null; // Return null if no relevant goal is found
+  }
   // Object to hold user details
   const userDetails = {
     firstname: name,
@@ -26,10 +42,10 @@ const WelcomePage = () => {
     weight,
     height: convertHeightToCM(heightFeet, heightInches), // Convert height to cm
     gender,
-    goal: selectedOptions,
+    goal: determineWeightGoal(selectedOptions),
     country,
     zipcode: zipCode,
-    additionalGoals: [], // Placeholder for additional goals if needed
+    additionalGoals: filterWeightGoals(selectedOptions), // Placeholder for additional goals if needed
   };
 
   
