@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './WelcomePage.css';
+import axios from 'axios'; // Ensure axios is imported
 
 const WelcomePage = () => {
   const [name, setName] = useState('');
@@ -10,14 +11,14 @@ const WelcomePage = () => {
   const [gender, setGender] = useState('');
   const [country, setCountry] = useState('');
   const [zipCode, setZipCode] = useState('');
-  const [weight, setWeight] = useState(''); // State for weight
-  const [heightFeet, setHeightFeet] = useState(''); // State for height feet
-  const [heightInches, setHeightInches] = useState(''); // State for height inches
+  const [weight, setWeight] = useState('');
+  const [heightFeet, setHeightFeet] = useState('');
+  const [heightInches, setHeightInches] = useState('');
   const [showFormula, setShowFormula] = useState(false);
-  const calorieCount = 2200; // Example calorie count
+  const calorieCount= 2200
 
   const convertHeightToCM = (feet, inches) => {
-    return Math.round(feet * 30.48 + inches * 2.54); // Convert to cm
+    return Math.round(feet * 30.48 + inches * 2.54);
   };
 
   function filterWeightGoals(goals) {
@@ -26,39 +27,68 @@ const WelcomePage = () => {
   }
 
   function determineWeightGoal(selectedOptions) {
-    if (selectedOptions.includes("Lose Weight")) {
-      return "lose";
-    } else if (selectedOptions.includes("Maintain Weight")) {
-      return "maintain";
-    } else if (selectedOptions.includes("Gain Weight")) {
-      return "gain";
-    } 
-    return null; // Return null if no relevant goal is found
+    if (selectedOptions.includes("Lose Weight")) return "lose";
+    if (selectedOptions.includes("Maintain Weight")) return "maintain";
+    if (selectedOptions.includes("Gain Weight")) return "gain";
+    return null;
   }
-  // Object to hold user details
+
   const userDetails = {
     firstname: name,
     age,
     weight,
-    height: convertHeightToCM(heightFeet, heightInches), // Convert height to cm
+    height: convertHeightToCM(heightFeet, heightInches),
     gender,
     goal: determineWeightGoal(selectedOptions),
     country,
     zipcode: zipCode,
-    additionalGoals: filterWeightGoals(selectedOptions), // Placeholder for additional goals if needed
+    additionalGoals: filterWeightGoals(selectedOptions),
+    activityLevel: "active",
   };
 
-  
+  const updateUserDetails = async (userDetails) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Authentication token not found');
 
-  
+      const response = await axios.put(
+        'http://localhost:3000/api/update-details',
+        userDetails,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log('User details updated:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating user details:', error);
+      if (error.response) console.error('Response error:', error.response.data.message);
+      throw error;
+    }
+  };
 
-  const handleContinue = () => {
+  const handleContinue = async (event) => {
+    event.preventDefault(); // Prevent default behavior if used in a form
+
+    console.log('Current step:', step); // Log step value for debugging
+
+    if (step === 4) {
+      console.log('Processing step 5');
+      try {
+        await updateUserDetails(userDetails);
+      } catch (error) {
+        console.error('Failed to update user details:', error);
+      }
+    }
+
     if (step < 6) {
       setStep((prevStep) => prevStep + 1);
-      console.log(userDetails);
+      console.log('User details:', userDetails);
     } else {
-      console.log(userDetails); // Log the user details when submitting
-      // Optionally, you can handle form submission here
+      console.log('Final submission:', userDetails);
     }
   };
 
