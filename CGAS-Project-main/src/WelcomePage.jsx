@@ -16,7 +16,7 @@ const WelcomePage = () => {
   const [heightInches, setHeightInches] = useState('');
   const [showFormula, setShowFormula] = useState(false);
   const [selectedActivityLevel, setSelectedActivityLevel] = useState('');
-  const calorieCount= 2200
+  const [calorieCount, setCalorieCount] = useState(2200); 
   const activityLevels = {
     sedentary: 'Sedentary (Little to no exercise, desk job)',
     light: 'Lightly Active (Light exercise 1-3 days a week)',
@@ -69,6 +69,8 @@ const WelcomePage = () => {
         }
       );
       console.log('User details updated:', response.data);
+      setCalorieCount(response.data.dailyCalorieRequirement);
+      console.log(calorieCount)
       return response.data;
     } catch (error) {
       console.error('Error updating user details:', error);
@@ -82,10 +84,10 @@ const WelcomePage = () => {
 
     console.log('Current step:', step); // Log step value for debugging
 
-    if (step === 4) {
+    if (step === 5) {
       console.log('Processing step 5');
       try {
-        await updateUserDetails(userDetails);
+        let res= await updateUserDetails(userDetails);
       } catch (error) {
         console.error('Failed to update user details:', error);
       }
@@ -292,36 +294,6 @@ const WelcomePage = () => {
         );
 
       case 5:
-        return (
-          <div>
-            <h1 className="header" style={{ fontSize: '50px', fontFamily: 'Nunito' }}>Congratulations, {name}!</h1>
-            <p className="normal-text">You're one step closer to your goal.</p>
-            <p className="normal-text">Your daily net calorie goal is:</p>
-
-            {/* Calorie Display */}
-            <div className="box" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' }}>
-              <p style={{ fontSize: '40px', color: 'green' }}>{calorieCount}</p>
-              <p style={{ marginLeft: '10px', fontSize: '40px' }}>calories</p>
-            </div>
-
-            {/* Toggle Formula */}
-            <p className="toggle-formula" onClick={toggleFormula} style={{ cursor: 'pointer', color: 'green', marginTop: '30px', width: '820px', marginLeft: '20px' }}>
-              {showFormula ? 'Hide formula' : 'How we calculate your calories'}
-            </p>
-
-            {/* Show Formula if toggled */}
-            {showFormula && (
-              <div className="formula" style={{ marginTop: '10px' }}>
-                <p className="normal-text" style={{ fontSize: '16px' }}>The formula used to calculate your calories is:</p>
-                <p className="normal-text" style={{ fontSize: '16px' }}>
-                  <strong>BMR (Basal Metabolic Rate) =</strong> 10 * weight (kg) + 6.25 * height (cm) - 5 * age + 5 (for males) or - 161 (for females)
-                </p>
-                <p className="normal-text" style={{ fontSize: '16px' }}><strong>Net Calories =</strong> BMR + activity level adjustment</p>
-              </div>
-            )}
-          </div>
-        );
-        case 6:
         const options2 = [
           { label: 'Little to no exercise, desk job', value: 'sedentary' },
           { label: 'Light exercise 1-3 days a week', value: 'light' },
@@ -369,6 +341,36 @@ const WelcomePage = () => {
             </div>
           </div>
         );
+        case 6:return (
+          <div>
+            <h1 className="header" style={{ fontSize: '50px', fontFamily: 'Nunito' }}>Congratulations, {name}!</h1>
+            <p className="normal-text">You're one step closer to your goal.</p>
+            <p className="normal-text">Your daily net calorie goal is:</p>
+
+            {/* Calorie Display */}
+            <div className="box" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' }}>
+              <p style={{ fontSize: '40px', color: 'green' }}>{calorieCount}</p>
+              <p style={{ marginLeft: '10px', fontSize: '40px' }}>calories</p>
+            </div>
+
+            {/* Toggle Formula */}
+            <p className="toggle-formula" onClick={toggleFormula} style={{ cursor: 'pointer', color: 'green', marginTop: '30px', width: '820px', marginLeft: '20px' }}>
+              {showFormula ? 'Hide formula' : 'How we calculate your calories'}
+            </p>
+
+            {/* Show Formula if toggled */}
+            {showFormula && (
+              <div className="formula" style={{ marginTop: '10px' }}>
+                <p className="normal-text" style={{ fontSize: '16px' }}>The formula used to calculate your calories is:</p>
+                <p className="normal-text" style={{ fontSize: '16px' }}>
+                  <strong>BMR (Basal Metabolic Rate) =</strong> 10 * weight (kg) + 6.25 * height (cm) - 5 * age + 5 (for males) or - 161 (for females)
+                </p>
+                <p className="normal-text" style={{ fontSize: '16px' }}><strong>Net Calories =</strong> BMR + activity level adjustment</p>
+              </div>
+            )}
+          </div>
+        );
+
       default:
         return null;
     }
