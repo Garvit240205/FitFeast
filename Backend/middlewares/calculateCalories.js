@@ -42,16 +42,19 @@ const calculateDailyCalories = (user) => {
 
   // Additional adjustments based on `additionalGoals`
   if (additionalGoals) {
-    if (additionalGoals.includes('gain muscle')) {
+    if (additionalGoals.includes('Gain Muscle')) {
       dailyCalories += 250;
     }
-    if (additionalGoals.includes('manage stress')) {
+    if (additionalGoals.includes('Manage Stress')) {
       dailyCalories += 50;
     }
-    if (additionalGoals.includes('increase step count')) {
+    if (additionalGoals.includes('Increase Step Count')) {
       dailyCalories += 300;
     }
-    if (additionalGoals.includes('modify diet')) {
+    if (additionalGoals.includes('Modify Diet')) {
+      dailyCalories += 0; // No direct change; diet modification adjusts macros rather than calories
+    }
+    if (additionalGoals.includes('Manage Sleep')) {
       dailyCalories += 0; // No direct change; diet modification adjusts macros rather than calories
     }
   }
