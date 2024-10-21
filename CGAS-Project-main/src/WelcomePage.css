@@ -85,9 +85,22 @@
     transition: border-radius 0.3s ease;
     width: 350px;
   }
+  .option-button2 {
+    padding: 12px 25px;
+    border-radius: 10px;
+    border: 1px solid black;
+    background-color: #6c7d80;
+    color: black;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 20px;
+    margin: 10px 0; /* Spacing between buttons */
+    transition: border-radius 0.3s ease;
+    width: 800px;
+  }
   
   .button:hover,
-  .option-button:hover {
+  .option-button:hover,.option-button2:hover {
     border-radius: 40px;
   }
   
@@ -124,7 +137,7 @@
     
   }
   
-  .option-button.selected {
+  .option-button.selected,.option-button2.selected {
     background-color: #4b9ef6;
   }
   
