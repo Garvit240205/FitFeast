@@ -407,10 +407,28 @@ const FitnessProfile = () => {
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => (
                 <div key={post.id} className="meal-post">
-                  <div className="meal-header">
-                    <strong>{post.username}</strong> - {post.meal}
+                  <div className="profile-date-container">
+                    <img
+                      className="prof-pic"
+                      src="https://via.placeholder.com/100"
+                      alt="Profile"
+                    />
+                    <strong className="profile-name">IIIT Delhi</strong>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-dot"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+                    </svg>
+                    <p className="date">{selectedDate}</p>
                   </div>
-                  <p>{post.description}</p>
+                  <img className="posts-img" src="public/Thor.jpg"></img>
+                  <p className="post-desc">{post.description}</p>
+                  <p className="post-desc">Calories: 200kcal</p>
                 </div>
               ))
             ) : (
