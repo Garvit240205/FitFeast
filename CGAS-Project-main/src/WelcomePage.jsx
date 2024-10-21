@@ -15,8 +15,22 @@ const WelcomePage = () => {
   const [heightFeet, setHeightFeet] = useState('');
   const [heightInches, setHeightInches] = useState('');
   const [showFormula, setShowFormula] = useState(false);
+<<<<<<< ours
   const calorieCount= 2200
+||||||| ancestor
+  const calorieCount = 2200; // Example calorie count
+=======
+  const [selectedActivityLevel, setSelectedActivityLevel] = useState('');
+  const calorieCount = 2200; // Example calorie count
+>>>>>>> theirs
 
+  const activityLevels = {
+    'sedentary': 'Sedentary (Little to no exercise, desk job)',
+    'light': 'Lightly Active (Light exercise 1-3 days a week)',
+    'moderate': 'Moderately Active (Moderate exercise 3-5 days a week)',
+    'active': 'Active (Intense exercise 6-7 days a week)',
+    'very active': 'Very Active (Very intense exercise, physical job)'
+  };
   const convertHeightToCM = (feet, inches) => {
     return Math.round(feet * 30.48 + inches * 2.54);
   };
@@ -42,8 +56,15 @@ const WelcomePage = () => {
     goal: determineWeightGoal(selectedOptions),
     country,
     zipcode: zipCode,
+<<<<<<< ours
     additionalGoals: filterWeightGoals(selectedOptions),
     activityLevel: "active",
+||||||| ancestor
+    additionalGoals: filterWeightGoals(selectedOptions), // Placeholder for additional goals if needed
+=======
+    additionalGoals: filterWeightGoals(selectedOptions), // Placeholder for additional goals if needed
+    activityLevel: selectedActivityLevel && activityLevels[selectedActivityLevel] ? activityLevels[selectedActivityLevel] : '', // Correctly map the activity level
+>>>>>>> theirs
   };
 
   const updateUserDetails = async (userDetails) => {
@@ -84,11 +105,26 @@ const WelcomePage = () => {
       }
     }
 
+<<<<<<< ours
     if (step < 6) {
+||||||| ancestor
+  const handleContinue = () => {
+    if (step < 6) {
+=======
+  const handleContinue = () => {
+    if (step < 7) {
+>>>>>>> theirs
       setStep((prevStep) => prevStep + 1);
       console.log('User details:', userDetails);
     } else {
+<<<<<<< ours
       console.log('Final submission:', userDetails);
+||||||| ancestor
+      console.log(userDetails); // Log the user details when submitting
+      // Optionally, you can handle form submission here
+=======
+      console.log(userDetails); // Log the user details when submitting
+>>>>>>> theirs
     }
   };
 
@@ -314,7 +350,43 @@ const WelcomePage = () => {
             )}
           </div>
         );
+        case 6:
+          const options2 = [
+            { label: 'Little to no exercise, desk job', value: 'sedentary' },
+            { label: 'Light exercise 1-3 days a week', value: 'light' },
+            { label: 'Moderate exercise 3-5 days a week', value: 'moderate' },
+            { label: 'Intense exercise 6-7 days a week', value: 'active' },
+            { label: 'Very intense exercise, physical job', value: 'very active' }
+          ];
 
+          
+          const handleOptionClick2 = (value) => {
+            setSelectedActivityLevel(value);
+          };
+          return (
+            <div>
+              <h1 className="header">Activity</h1>
+              <p className="bold-text">Hey {name}. Let's talk about your daily activity!</p>
+              <p className="normal-text" style={{ marginTop: '10px' }}>
+                Select only one that suits you the most.
+              </p>
+              <div className="options-container2" style={{ display: 'flex', marginTop: '20px' }}>
+                {/* Left Column */}
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center', justifyContent: 'center', marginLeft: '10px' }}>
+                  {options2.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleOptionClick2(option.value)}
+                      className={`option-button2 ${selectedActivityLevel === option.value ? 'selected' : ''}`}
+                      style={{ marginBottom: '10px' }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
       default:
         return null;
     }
@@ -337,12 +409,12 @@ const WelcomePage = () => {
   return (
     <div className="container">
       <div className="progress-container">
-        {Array.from({ length: 6 }).map((_, index) => (
+        {Array.from({ length: 7 }).map((_, index) => (
           <div key={index} className={`step-bar ${index <= step ? 'filled' : ''}`} />
         ))}
       </div>
       {renderStepContent()}
-      {step < 5 ? (
+      {step < 6 ? (
         <button onClick={handleContinue} className="button">
           Continue
         </button>
