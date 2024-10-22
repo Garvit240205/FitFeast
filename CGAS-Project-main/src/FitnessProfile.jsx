@@ -199,7 +199,7 @@ const FitnessProfile = () => {
         <div className="content">
           <div className="stats">
             {[{ label: "Calories consumed", value: "2,055" },
-              { label: "Calories burned", value: "2,000" }
+              { label: "Calorie Goal", value: "3,000" }
             ].map((stat, index) => (
               <div key={index} className="stat-card">
                 <p className="stat-value">{stat.value}</p>
@@ -313,13 +313,13 @@ const FitnessProfile = () => {
               <Legend />
 
               
-              <Area
+              {/* <Area
                 type="monotone"
                 dataKey="caloriesBurned"
                 stroke="#2451B7"
                 fill="url(#colorBurned)"
                 stackId={1}
-              />
+              /> */}
               
               <Area
                 type="monotone"
