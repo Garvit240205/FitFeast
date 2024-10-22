@@ -216,14 +216,14 @@ const Profile = () => {
             />
           )}
           {/* Modal for full-sized image */}
-      {isModalOpen && (
-        <div className="modal" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="close" onClick={closeModal}>&times;</span>
-            <img className="full-image" src={selectedImage} alt="Full Size" />
-          </div>
-        </div>
-      )}
+          {isModalOpen && (
+            <div className="modal" onClick={closeModal}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <span className="close" onClick={closeModal}>&times;</span>
+                <img className="full-image" src={selectedImage} alt="Full Size" />
+              </div>
+            </div>
+          )}
 
 
                 {/* Like and Share Icons */}
