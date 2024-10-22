@@ -52,6 +52,20 @@ const Profile = () => {
     setNewPost({ image: null, description: "" }); // Reset input fields
     setShowPostModal(false); // Close modal
   };
+
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
+
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage('');
+  };
   return (
     <div>
       {/* Bootstrap Navbar */}
@@ -182,11 +196,27 @@ const Profile = () => {
                   <p className="date">{post.date}</p>
                 </div>
                 <p className="post-para">{post.description}</p>
-                {post.image && <img className="post-img" src={post.image} alt="Post" />}
-                </div>
-          ))}
+                {post.image && (
+            <img
+              className="post-img"
+              src={post.image}
+              alt="Post"
+              onClick={() => openModal(post.image)}
+              style={{ cursor: 'pointer' }} // Make it clear it's clickable
+            />
+          )}
+          {/* Modal for full-sized image */}
+      {isModalOpen && (
+        <div className="modal" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close" onClick={closeModal}>&times;</span>
+            <img className="full-image" src={selectedImage} alt="Full Size" />
+          </div>
+        </div>
+      )}
 
-            {/* Like and Share Icons */}
+
+                {/* Like and Share Icons */}
             <div className="icon-row">
               <span onClick={toggleLike} style={{ cursor: "pointer" }}>
                 {liked ? (
@@ -221,6 +251,10 @@ const Profile = () => {
                   <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
                 </svg>
             </div>
+                </div>
+          ))}
+
+            
         {/* <div className="posts">
           <div className="post">
             <div className="profile-date-container">
