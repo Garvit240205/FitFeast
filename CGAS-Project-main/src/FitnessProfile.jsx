@@ -24,13 +24,26 @@ const FitnessProfile = () => {
   const [isAnimated, setIsAnimated] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date()); // State for selected date
   const [posts, setPosts] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [mealType, setMealType] = useState("Breakfast");
+  const [calories, setCalories] = useState("");
+  const [ingredients, setIngredients] = useState("");
+  // State for new post
+  const [newPost, setNewPost] = useState({
+    image: null,
+    calories: "",
+    ingredients: "",
+    mealType: "Breakfast",
+  });
+  const generateRandomCalories = () => {
+    const randomCalories = Math.floor(Math.random() * 1000) + 1; // Random calories between 1 and 1000
+    setNewPost({ ...newPost, calories: randomCalories });
+  };
   useEffect(() => {
-    setIsAnimated(true);
-    // Initialize with some posts for the sake of the example
     setPosts([
-      { id: 1, username: "JohnDoe", meal: "Breakfast", date: "2024-10-20", description: "Omelette, Toast, and Orange Juice" },
-      { id: 2, username: "JaneDoe", meal: "Lunch", date: "2024-10-20", description: "Chicken Salad with Avocado" },
-      { id: 3, username: "JohnDoe", meal: "Dinner", date: "2024-10-19", description: "Grilled Salmon with Veggies" },
+      { id: 1, img: "Thor.png", username: "JohnDoe", meal: "Breakfast", date: "2024-10-20", description: "Omelette, Toast, and Orange Juice" },
+      { id: 2, img: "Thor.png", username: "JaneDoe", meal: "Lunch", date: "2024-10-20", description: "Chicken Salad with Avocado" },
+      { id: 3, img: "Thor.png", username: "JohnDoe", meal: "Dinner", date: "2024-10-19", description: "Grilled Salmon with Veggies" },
     ]);
   }, []);
 
@@ -49,49 +62,67 @@ const FitnessProfile = () => {
     { label: "Fats", value: 60, goal: 70 },
   ];
   const toggleSun = () => setSun(!sun);
-  const handleAddPost = () => {
-    alert("Add Post clicked!");
-  };
-  const nutrientData = {
-    labels: nutrients.map((n) => n.label),
-    datasets: [
-      {
-        label: "Consumed",
-        data: nutrients.map((n) => n.value),
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-      },
-      {
-        label: "Goal",
-        data: nutrients.map((n) => n.goal),
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
-      },
-    ],
+  const handlePostChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === 'image') {
+      setNewPost({ ...newPost, image: URL.createObjectURL(files[0]) }); // Set the image file
+    } else {
+      setNewPost({ ...newPost, [name]: value });
+    }
   };
 
-  // Data for Area Chart (Calorie Trend)
-  const calorieTrendData = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    datasets: [
-      {
-        label: "Calories Consumed",
-        data: [1800, 2200, 2100, 1900, 2500, 2300, 2055],
-        borderColor: "rgba(54, 162, 235, 0.8)",
-        backgroundColor: "rgba(54, 162, 235, 0.4)", // Add this line for the area effect
-        fill: true, // Enable area fill
-        tension: 0.4,
-        pointRadius: 5,
-      },
-      {
-        label: "Calories Burned",
-        data: [1600, 2000, 1800, 1700, 2400, 2100, 2000],
-        borderColor: "rgba(255, 159, 64, 0.8)",
-        backgroundColor: "rgba(255, 159, 64, 0.4)", // Add this line for the area effect
-        fill: true, // Enable area fill
-        tension: 0.4,
-        pointRadius: 5,
-      },
-    ],
+  const handleSavePost = () => {
+    // Logic to save the post
+    console.log('Saving post:', newPost);
+    // Add your saving logic here
+    setShowPostModal(false); // Close the modal after saving
   };
+  // Function to handle adding a post
+  const handleAddPost = (e) => {
+    e.preventDefault();
+
+    // Create new post entry
+    const newEntry = {
+      id: posts.length + 1, // You may want to adjust this for a more robust ID system
+      img: newPost.image,
+      username: "CurrentUser", // Replace with actual user
+      meal: newPost.mealType,
+      date: new Date().toISOString().split("T")[0],
+      description: `Calories: ${newPost.calories}, Ingredients: ${newPost.ingredients}, Meal: ${newPost.mealType}`,
+    };
+
+    // Update posts state
+    setPosts([...posts, newEntry]);
+
+    // Clear new post inputs
+    setNewPost({
+      image: null,
+      calories: "",
+      ingredients: "",
+      mealType: "Breakfast",
+    });
+
+    // Optionally close the modal if applicable
+    setShowModal(false);
+  };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewPost((prevPost) => ({ ...prevPost, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+  
+    reader.onloadend = () => {
+      setNewPost((prevPost) => ({ ...prevPost, image: reader.result }));
+    };
+  
+    if (file) {
+      reader.readAsDataURL(file); // Convert image file to data URL
+    }
+  };
+
   const calorieData = [
     {
       day:"Mon",
@@ -142,7 +173,18 @@ const FitnessProfile = () => {
       weight:66
     }
   ]
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
 
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage('');
+  };
   return (
     <div className="design-root">
       <div className="layout-container">
@@ -356,13 +398,105 @@ const FitnessProfile = () => {
               />
             </AreaChart>
             </ResponsiveContainer>
+
+
+            {/* Form for adding a post */}
+
+            {showModal && (
+          <div className={`modal ${showModal ? 'show d-block' : 'fade'}`} tabIndex="-1" role="dialog">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Meal</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="mb-3">
+                    <label htmlFor="image" className="form-label">Upload Image</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      id="image"
+                      name="image"
+                      accept="image/*"
+                      onChange={handlePostChange}
+                    />
+                  </div>
+                  {/* <div className="mb-3">
+                    <label htmlFor="description" className="form-label">Description</label>
+                    <textarea
+                      className="form-control"
+                      id="description"
+                      name="description"
+                      rows="3"
+                      value={newPost.description}
+                      onChange={handlePostChange}
+                    ></textarea>
+                  </div> */}
+                  <div className="mb-3">
+                    <label htmlFor="calories" className="form-label">Calories</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="calories"
+                      name="calories"
+                      value={newPost.calories}
+                      onChange={handlePostChange}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-secondary mt-2"
+                      onClick={generateRandomCalories}
+                    >
+                      AI Generated
+                    </button>
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="mealType" className="form-label">Meal Type</label>
+                    <select
+                      className="form-control"
+                      id="mealType"
+                      name="mealType"
+                      value={newPost.mealType}
+                      onChange={handlePostChange}
+                    >
+                      <option value="breakfast">Breakfast</option>
+                      <option value="lunch">Lunch</option>
+                      <option value="dinner">Dinner</option>
+                      <option value="snack">Snack</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+                <button type="button" className="btn btn-primary" onClick={handleAddPost}>Save Meal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        )}
+
+        {/* <div className="posts">
+          {posts.map((post) => (
+            <div key={post.id} className="post">
+              <h4>{post.username} - {post.meal} on {post.date}</h4>
+              <p>{post.description}</p>
+            </div>
+          ))}
+        </div> */}
           {/* Floating Action Button */}
           <button 
             className="snap-button" 
-            onClick={handleAddPost}
+            onClick={() => setShowModal(true)}
           >
             <div className="snap-container">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-camera" viewBox="0 0 20 20" style={{marginTop:'5px'}}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-camera" viewBox="0 0 20 20" style={{marginTop:'5px'}}>
               <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"/>
               <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
             </svg>
@@ -427,14 +561,25 @@ const FitnessProfile = () => {
                     </svg>
                     <p className="date">{selectedDate}</p>
                   </div>
-                  <img className="posts-img" src="public/Thor.jpg"></img>
+                  <img className="posts-img" src={post.img} onClick={() => openModal(post.img)}
+              style={{ cursor: 'pointer' }}></img>
+                   {/* Modal for full-sized image */}
+                  {isModalOpen && (
+                    <div className="modal" onClick={closeModal}>
+                      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <span className="close" onClick={closeModal}>&times;</span>
+                        <img className="full-image" src={selectedImage} alt="Full Size" />
+                      </div>
+                    </div>
+                  )}
                   <p className="post-desc">{post.description}</p>
-                  <p className="post-desc">Calories: 200kcal</p>
                 </div>
               ))
             ) : (
               <p>No data available for the selected date.</p>
             )}
+
+           
       </div>
     </div>
         </div>
