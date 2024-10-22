@@ -14,6 +14,12 @@ import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+<<<<<<< ours
     <Profile />
+||||||| ancestor
+    <FitnessProfile />
+=======
+    <Home />
+>>>>>>> theirs
   </StrictMode>,
 )
