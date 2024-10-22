@@ -12,6 +12,16 @@ const Profile = () => {
     phone: "",
   });
   const [sun, setSun] = useState(false);
+  const [posts, setPosts] = useState([ // Initial posts
+    {
+      profilePic: "https://via.placeholder.com/100",
+      name: "IIIT Delhi",
+      date: "Jun 8, 2023",
+      description:
+        "Excited to host @sama, CEO of @OpenAI at IIIT-Delhi today!! #OpenAIatIIITDelhi #ChatGPT #AI",
+      image: "Thor.jpg",
+    },
+  ]);
 
   const toggleSun = () => setSun(!sun);
   const toggleLike = () => setLiked(!liked); // Toggle between liked and unliked states
@@ -19,8 +29,28 @@ const Profile = () => {
     const { name, value } = e.target;
     setUserDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
-  const handleAddPost = () => {
-    alert("Add Post clicked!");
+  const [showPostModal, setShowPostModal] = useState(false);
+  const handleAddPost = () => setShowPostModal(true); // NEW: Open post modal
+  const handlePostChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "image") {
+      setNewPost({ ...newPost, image: URL.createObjectURL(files[0]) });
+    } else {
+      setNewPost({ ...newPost, [name]: value });
+    }
+  };
+  const [newPost, setNewPost] = useState({ image: null, description: "" });
+  const handleSavePost = () => {
+    const newPostEntry = {
+      profilePic: "https://via.placeholder.com/100", // Default profile pic
+      name: "Garvit Kochar", // User's name
+      date: new Date().toLocaleDateString(), // Current date
+      description: newPost.description,
+      image: newPost.image,
+    };
+    setPosts([...posts, newPostEntry]); // Add new post to posts array
+    setNewPost({ image: null, description: "" }); // Reset input fields
+    setShowPostModal(false); // Close modal
   };
   return (
     <div>
@@ -144,33 +174,17 @@ const Profile = () => {
 
         {activeTab === "posts" ? (
           <div className="all-posts">
-          <div className="posts">
-          <div className="post">
-            <div className="profile-date-container">
-              <img
-                className="prof-pic"
-                src="https://via.placeholder.com/100"
-                alt="Profile"
-              />
-              <strong className="profile-name">IIIT Delhi</strong>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-dot"
-                viewBox="0 0 16 16"
-              >
-                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
-              </svg>
-              <p className="date">Jun 8, 2023</p>
-            </div>
-            <p className="post-para">
-              Excited to host <strong>@sama</strong>, CEO of{" "}
-              <strong>@OpenAI</strong> at IIIT-Delhi today!! #OpenAIatIIITDelhi
-              #ChatGPT #AI
-            </p>
-            <img className="post-img" src="Thor.jpg" alt="Post" />
+          {posts.map((post, index) => (
+              <div className="post" key={index}>
+                <div className="profile-date-container">
+                  <img className="prof-pic" src={post.profilePic} alt="Profile" />
+                  <strong className="profile-name">{post.name}</strong>
+                  <p className="date">{post.date}</p>
+                </div>
+                <p className="post-para">{post.description}</p>
+                {post.image && <img className="post-img" src={post.image} alt="Post" />}
+                </div>
+          ))}
 
             {/* Like and Share Icons */}
             <div className="icon-row">
@@ -207,9 +221,7 @@ const Profile = () => {
                   <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
                 </svg>
             </div>
-          </div>
-        </div>
-        <div className="posts">
+        {/* <div className="posts">
           <div className="post">
             <div className="profile-date-container">
               <img
@@ -237,7 +249,6 @@ const Profile = () => {
             </p>
             <img className="post-img" src="Thor.jpg" alt="Post" />
 
-            {/* Like and Share Icons */}
             <div className="icon-row">
               <span onClick={toggleLike} style={{ cursor: "pointer" }}>
                 {liked ? (
@@ -272,7 +283,7 @@ const Profile = () => {
                 </svg>
             </div>
           </div>
-        </div>
+        </div> */}
         </div>
         
 
@@ -291,7 +302,53 @@ const Profile = () => {
         >
           +
         </button>
-      
+      {/* Add Post Modal */}
+      {showPostModal && (
+        <div className="modal show d-block">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add New Post</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowPostModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="mb-3">
+                    <label htmlFor="image" className="form-label">Upload Image</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      id="image"
+                      name="image"
+                      accept="image/*"
+                      onChange={handlePostChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="description" className="form-label">Description</label>
+                    <textarea
+                      className="form-control"
+                      id="description"
+                      name="description"
+                      rows="3"
+                      value={newPost.description}
+                      onChange={handlePostChange}
+                    ></textarea>
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowPostModal(false)}>Close</button>
+                <button type="button" className="btn btn-primary" onClick={handleSavePost}>Save Post</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Bootstrap Modal for Editing Profile */}
       {showModal && (
         <div className="modal show d-block" tabIndex="-1">

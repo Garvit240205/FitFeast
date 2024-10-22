@@ -391,7 +391,7 @@ const FitnessProfile = () => {
             </div>
           </div> */}
           <div className="meals-section">
-          <h2>Meals Consumed</h2>
+          <h1 style={{fontSize:'50px',textAlign:'center',marginTop:'20px'}}>Meals Consumed</h1>
           <div className="date-picker-container">
             <label htmlFor="date">Select Date:</label>
             <input
@@ -401,6 +401,7 @@ const FitnessProfile = () => {
               onChange={handleDateChange}
               className="date-picker"
             />
+            <hr style={{marginTop:'20px'}}></hr>
           </div>
 
           <div className="meals-list">
