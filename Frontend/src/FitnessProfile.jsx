@@ -81,7 +81,7 @@ const FitnessProfile = () => {
 
 
 const handleAddPost = async (e) => {
-  e.preventDefault();
+  // e.preventDefault();
 
   // Create new post entry
   const newEntry = {
@@ -97,7 +97,7 @@ const handleAddPost = async (e) => {
   formData.append('mealType', newPost.mealType);
   formData.append('image', newPost.image);
   formData.append('calories', newPost.calories);
-
+  console.log(formData)
   try {
     const token = localStorage.getItem('token');
     // Send a POST request to your backend API
@@ -457,6 +457,8 @@ const handleAddPost = async (e) => {
       className="form-control"
       id="calories"
       name="calories"
+      value={newPost.calories} // Use the state value here
+      onChange={handleInputChange}
       required
     />
     <button
@@ -481,14 +483,15 @@ const handleAddPost = async (e) => {
       <option value="snack">Snack</option>
     </select>
   </div>
-  <button type="submit" className="btn btn-primary">Submit</button>
+  {/* <button type="submit" className="btn btn-primary">Submit</button> */}
+  <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+                <button type="submit" className="btn btn-primary">Save Meal</button>
+              </div>
 </form>
 
               </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
-                <button type="button" className="btn btn-primary" onClick={handleAddPost}>Save Meal</button>
-              </div>
+              
             </div>
           </div>
         </div>
