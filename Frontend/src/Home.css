@@ -1,0 +1,116 @@
+body {
+  background: radial-gradient(ellipse at center, #fefae0 0%, #fefae0 100%);
+  background-size: 400% 400%;
+  height: 100vh;
+  margin: 0;
+}
+
+.home-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 80px;
+  opacity: 0.9;
+}
+
+.home-add-post-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #02ad57; /* Bootstrap primary color */
+  color: white;
+  border: none;
+  font-size: 24px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-add-post-btn:hover {
+  background-color: #04683a; /* Darker shade on hover */
+}
+
+.home-all-posts {
+  margin-top: 80px;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Posts Section */
+.home-post {
+  background-color: #f5f5f5;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+/* Profile and Date Container */
+.home-profile-date-container {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.home-prof-pic {
+  height: 50px;
+  width: 50px;
+  border-radius: 30px;
+  margin-right: 10px;
+}
+
+.home-post-img {
+  margin-top: 20px;
+  border-radius: 20px;
+  margin-left: 60px;
+  height: 500px;
+  width: 500px;
+}
+
+.home-post-para {
+  margin-left: 60px;
+}
+
+.home-icon-row {
+  display: flex;
+  align-items: center;
+  margin-left: 70px;
+  margin-top: 20px;
+  gap: 440px;
+}
+
+/* Navbar Link Styling */
+.navbar-nav .nav-item .nav-link {
+  border: none;
+  border-radius: 25px;
+  padding: 10px 15px;
+  margin-right: 10px;
+  color: black;
+  text-align: center;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+  background-color: black;
+  color: white;
+}
+
+.navbar-nav .nav-item span svg {
+  border: none;
+  border-radius: 25px;
+  padding: 5px;
+  margin-right: 10px;
+  transition: background-color 0.3s, fill 0.3s;
+}
+
+.navbar-nav .nav-item span svg:hover {
+  background-color: black;
+  fill: white;
+}
+
