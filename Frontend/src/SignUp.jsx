@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import {jwtDecode } from "jwt-decode";
 import './SignUp.css';
 
 function Image() {
@@ -63,9 +65,38 @@ export function SignUpPage() {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prevState) => !prevState);
   };
+  const handleGoogleSignIn = async (credentialResponse) => {
+    const token = credentialResponse?.credential;
+    if (!token) {
+        console.error("Token is missing.");
+        setError("Token is missing. Please try again.");
+        return;
+    }
+    const user = jwtDecode(token);
+    console.log("Decoded user:", user);
 
+    try {
+        // Dynamically import jwt-decode
+        const jwt_decode = (await import("jwt-decode")).default;
+        const user = jwtDecode(token);
+
+        const response = await axios.post('http://localhost:3000/api/google-login', { token });
+        console.log("Google Sign-In successful:", response.data);
+        setSuccess('Logged in with Google!');
+        setTimeout(() => {
+            navigate("/Home");
+        }, 1000);
+    } catch (error) {
+        console.error('Google sign-in failed:', error);
+        setError('Google sign-in failed. Please try again.');
+        setSuccess('');
+    }
+};
+
+  
   return (
     <div>
+      <GoogleOAuthProvider clientId="225589132267-2mbhelusrktjd8j7m8u3mkbj7fbtlvmt.apps.googleusercontent.com">
       <div className="signup-container" style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
         <Image />
 
@@ -170,14 +201,16 @@ export function SignUpPage() {
           </button>
 
           <p className='or'>or</p>
-
-          <button className='signup-google-button' type="button" style={{ padding: '10px', backgroundColor: '#6c757d', color: 'white', border: 'none', cursor: 'pointer' }}>
-            <div className='google-image-text-container'>
-              <img src="google.png" className='google-image' alt="Google" />
-              <p className='signup-google-text'>Sign up with Google</p>
-            </div>
-          </button>
+          
+          <div className='google-container'>
+          <GoogleLogin className='nsm7Bb-HzV7m-LgbsSe-MJoBVe'
+            onSuccess={handleGoogleSignIn}
+            onError={() => setError('Google sign-in failed.')}
+          />
+          </div>
+          
         </form>
+        
 
         <a href='/'>
           <p className='already-para'>Already have an account?</p>
@@ -194,6 +227,7 @@ export function SignUpPage() {
           </a>
         </div>
       </div>
+      </GoogleOAuthProvider>
     </div>
   );
 }

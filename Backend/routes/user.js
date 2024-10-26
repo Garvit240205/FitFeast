@@ -34,6 +34,55 @@ userRouter.post('/signup', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+const { OAuth2Client } = require('google-auth-library');
+
+const client = new OAuth2Client("225589132267-2mbhelusrktjd8j7m8u3mkbj7fbtlvmt.apps.googleusercontent.com");
+
+
+const cors = require('cors');
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173', // Add your client origin here
+];
+
+userRouter.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
+userRouter.post('/google-login', async (req, res) => {
+  const { token } = req.body;
+  try {
+    // Verify the token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: "225589132267-2mbhelusrktjd8j7m8u3mkbj7fbtlvmt.apps.googleusercontent.com",
+    });
+    console.log(ticket)
+    const payload = ticket.getPayload();
+    console.log(payload)
+    const username = payload?.email; // Use email as the unique identifier
+    
+    // Check if user already exists
+    
+    let user = await User.findOne({ username });
+    
+    if (!user) {
+      password='dsa'
+      // If the user does not exist, create a new one
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = new User({ username, password: hashedPassword });
+      await user.save();
+    }
+
+    res.status(200).json({ message: "User authenticated successfully" });
+  } catch (error) {
+    console.error('Google authentication failed:', error);
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
+
 
 // Signin endpoint
 userRouter.post('/signin', async (req, res) => {

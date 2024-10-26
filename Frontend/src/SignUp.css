@@ -67,7 +67,7 @@ body {
 }
 
 .signup-email-button,
-.signup-google-button {
+.S9gUrf-YoZ4jf {
   margin-top: 20px;
   display: block;
   font-family: 'Afacad Flux', sans-serif;
@@ -82,16 +82,15 @@ body {
   color: white; /* Button text color */
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added transition for box-shadow */
 }
-
 .signup-email-button:hover,
-.signup-google-button:hover {
+.S9gUrf-YoZ4jf:hover {
   background-color: #45a049; /* Button hover color */
   transform: scale(1.05); /* Scale on hover */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Shadow effect on hover */
 }
 
 .signup-email-button:active,
-.signup-google-button:active {
+.S9gUrf-YoZ4jf:active {
   transform: scale(0.95); /* Scale down on click */
   box-shadow: none; /* Remove shadow when active */
 }
@@ -112,9 +111,13 @@ body {
   margin-right: 10px;
   object-fit: contain; /* Ensures proper scaling */
 }
-
+.google-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .signup-email-button::after,
-.signup-google-button::after {
+.S9gUrf-YoZ4jf::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -129,7 +132,7 @@ body {
 }
 
 .signup-email-button:hover::after,
-.signup-google-button:hover::after {
+.S9gUrf-YoZ4jf:hover::after {
   transform: translate(100%, 100%) scale(1); /* Show bubble on hover */
 }
 
