@@ -162,23 +162,30 @@ userRouter.put('/update-details', authenticateToken, async (req, res, next) => {
   }
 });
 
+// Route to get user details
+userRouter.get('/details', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-
-// Meal-related routes (protected)
-userRouter.post('/meal', authenticateToken, (req, res) => {
-  res.json({ message: 'User meal endpoint to post a meal' });
+    // Include dailyCalorieRequirement in the response
+    res.json({
+      user: {
+        _id: user._id,
+        firstname: user.firstname,
+        dailyCalorieRequirement: user.calorieRequirement, // Ensure this matches the field name
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-userRouter.put('/meal', authenticateToken, (req, res) => {
-  res.json({ message: 'User meal endpoint to update a meal' });
-});
 
-userRouter.delete('/meal', authenticateToken, (req, res) => {
-  res.json({ message: 'User meal endpoint to delete a meal' });
-});
 
-userRouter.get('/meal/preview', authenticateToken, (req, res) => {
-  res.json({ message: 'User meal endpoint to view all the meals logged' });
-});
+
 
 module.exports = userRouter;
