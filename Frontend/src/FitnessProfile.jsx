@@ -72,6 +72,38 @@ const FitnessProfile = () => {
     }
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent the default form submission
+  
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+  
+    // Create a new FormData object
+    const formData = new FormData(event.target);
+  
+    try {
+      const response = await fetch('http://localhost:3000/meals/add', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData // Send the form data as the request body
+      });
+  
+      if (response.ok) {
+        // Handle successful response
+        console.log('Meal added successfully');
+        setShowModal(false); // Close the modal if needed
+      } else {
+        // Handle errors from the server
+        const errorData = await response.json();
+        console.error('Error adding meal:', errorData);
+      }
+    } catch (error) {
+      console.error('Error in request:', error);
+    }
+  };
+  
+
   const handleSavePost = () => {
     // Logic to save the post
     console.log('Saving post:', newPost);
@@ -438,7 +470,10 @@ const handleAddPost = async (e) => {
                 ></button>
               </div>
               <div className="modal-body">
-              <form action="http://localhost:3000/meals/add" method="POST" encType="multipart/form-data">
+              <form
+  onSubmit={handleSubmit}
+  encType="multipart/form-data"
+>
   <div className="mb-3">
     <label htmlFor="image" className="form-label">Upload Image</label>
     <input
@@ -457,7 +492,7 @@ const handleAddPost = async (e) => {
       className="form-control"
       id="calories"
       name="calories"
-      value={newPost.calories} // Use the state value here
+      value={newPost.calories}
       onChange={handleInputChange}
       required
     />
@@ -483,12 +518,12 @@ const handleAddPost = async (e) => {
       <option value="snack">Snack</option>
     </select>
   </div>
-  {/* <button type="submit" className="btn btn-primary">Submit</button> */}
   <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
-                <button type="submit" className="btn btn-primary">Save Meal</button>
-              </div>
+    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+    <button type="submit" className="btn btn-primary">Save Meal</button>
+  </div>
 </form>
+
 
               </div>
               

@@ -1,4 +1,3 @@
-// routes/meal.js
 const express = require('express');
 const authenticateToken = require('../middlewares/authMiddleware'); // Authentication middleware
 const Meal = require('../models/meal'); // Import the Meal model
@@ -6,38 +5,92 @@ const foodRecognitionMiddleware = require('../middlewares/foodRecognition'); // 
 
 // Define a function to create the router with the upload instance
 const createMealRouter = (upload) => {
-    const mealRouter = express.Router(); // Move router creation inside the function
+    const mealRouter = express.Router();
 
     // POST: Add a new meal
     mealRouter.post('/add', upload.single('image'), foodRecognitionMiddleware, authenticateToken, async (req, res) => {
-        console.log('Request Body:', req.body); // Log request body for debugging
-        console.log('Uploaded File:', req.file); // Log uploaded file for debugging
+        console.log('Request Body:', req.body);
+        console.log('Uploaded File:', req.file);
+        console.log('Food Info:', req.foodInfo); // Log the foodInfo from middleware
 
-        const { mealType, totalCalories } = req.body;
-        const imageUrl = req.file ? req.file.path : null; // Ensure req.file exists
+        const { mealType } = req.body;
+        const imageUrl = req.file ? req.file.path : null;
 
         try {
+            // Validate required fields
+            if (!mealType || !req.user || !req.foodInfo) {
+                return res.status(400).json({ message: 'Missing required fields' });
+            }
+
+            // Construct meal data
             const meal = new Meal({
-                user: req.user._id,  // Logged-in user’s ID
+                user: req.user._id,
                 mealType,
-                items: req.foodInfo ? req.foodInfo.items : [], // Use the food info from the middleware if it exists
-                totalCalories,
-                imageUrl, // Save the image URL in the meal entry if necessary
+                status: req.foodInfo ? 'success' : 'failure',
+                nutrition: {
+                    recipesUsed: req.foodInfo.recipesUsed || 0,
+                    calories: {
+                        value: req.foodInfo.nutrition?.calories?.value || Number(req.body.calories || 0),
+                        unit: req.foodInfo.nutrition?.calories?.unit || 'calories',
+                        standardDeviation: req.foodInfo.nutrition?.calories?.standardDeviation || 0
+                    },
+                    fat: {
+                        value: req.foodInfo.nutrition?.fat?.value || 0,
+                        unit: 'g',
+                        standardDeviation: req.foodInfo.nutrition?.fat?.standardDeviation || 0
+                    },
+                    protein: {
+                        value: req.foodInfo.nutrition?.protein?.value || 0,
+                        unit: 'g',
+                        standardDeviation: req.foodInfo.nutrition?.protein?.standardDeviation || 0
+                    },
+                    carbs: {
+                        value: req.foodInfo.nutrition?.carbs?.value || 0,
+                        unit: 'g',
+                        standardDeviation: req.foodInfo.nutrition?.carbs?.standardDeviation || 0
+                    }
+                },
+                category: {
+                    name: req.foodInfo.category?.name || 'Unknown',
+                    probability: req.foodInfo.category?.probability || 0
+                },
+                recipes: req.foodInfo.recipes ? req.foodInfo.recipes.map(recipe => ({
+                    id: recipe.id,
+                    title: recipe.title,
+                    imageType: recipe.imageType,
+                    url: recipe.url
+                })) : [],
+                requestBody: {
+                    calories: req.body.calories,
+                    mealType: req.body.mealType
+                },
+                uploadedFile: req.file ? {
+                    fieldname: req.file.fieldname,
+                    originalname: req.file.originalname,
+                    encoding: req.file.encoding,
+                    mimetype: req.file.mimetype,
+                    destination: req.file.destination,
+                    filename: req.file.filename,
+                    path: req.file.path,
+                    size: req.file.size
+                } : {},
+                imageUrl // Save the image URL if needed
             });
 
             await meal.save();
 
             res.status(201).json({ message: 'Meal added successfully', meal });
         } catch (error) {
-            console.error('Error adding meal:', error); // Log the error
-            res.status(500).json({ message: 'Internal server error', error: error.message }); // Include error message in response for debugging
+            console.error('Error adding meal:', error);
+            res.status(500).json({ message: 'Internal server error', error: error.message });
         }
     });
 
+
     // PUT: Update an existing meal for the authenticated user
     mealRouter.put('/update/:id', authenticateToken, async (req, res) => {
-        const { id } = req.params; // Meal ID
-        const { mealType, items, totalCalories } = req.body;
+        const { id } = req.params;
+        const { mealType, nutrition, category, recipes, requestBody } = req.body;
 
         try {
             const meal = await Meal.findOne({ _id: id, user: req.user._id });
@@ -46,9 +99,11 @@ const createMealRouter = (upload) => {
             }
 
             // Update fields
-            meal.mealType = mealType || meal.mealType; // Preserve existing value if not provided
-            meal.items = items || meal.items; // Preserve existing value if not provided
-            meal.totalCalories = totalCalories || meal.totalCalories; // Preserve existing value if not provided
+            meal.mealType = mealType || meal.mealType;
+            meal.nutrition = nutrition || meal.nutrition;
+            meal.category = category || meal.category;
+            meal.recipes = recipes || meal.recipes;
+            meal.requestBody = requestBody || meal.requestBody;
 
             await meal.save();
 
@@ -61,7 +116,7 @@ const createMealRouter = (upload) => {
 
     // DELETE: Remove a meal for the authenticated user
     mealRouter.delete('/remove/:id', authenticateToken, async (req, res) => {
-        const { id } = req.params; // Meal ID
+        const { id } = req.params;
 
         try {
             const meal = await Meal.findOneAndDelete({ _id: id, user: req.user._id });
@@ -88,7 +143,7 @@ const createMealRouter = (upload) => {
         }
     });
 
-    return mealRouter; // Return the configured router
+    return mealRouter;
 };
 
-module.exports = createMealRouter; // Export the createMealRouter function
+module.exports = createMealRouter;
