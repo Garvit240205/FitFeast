@@ -18,29 +18,60 @@ import {
 
 
 const FitnessProfile = () => {
-  const calorieGoal = 3000;
-  const caloriesConsumed = 2055;
-  const progressPercentage = (caloriesConsumed / calorieGoal) * 100;
+  const [dailyCalorieRequirement, setCalorieGoal] = useState(0);
+  const [caloriesConsumed, setCaloriesConsumed] = useState(2055);
+  const progressPercentage = (caloriesConsumed / dailyCalorieRequirement) * 100;
   const [sun, setSun] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date()); // State for selected date
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [posts, setPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [mealType, setMealType] = useState("Breakfast");
   const [calories, setCalories] = useState("");
   const [ingredients, setIngredients] = useState("");
-  // State for new post
   const [newPost, setNewPost] = useState({
     image: null,
     calories: "",
     ingredients: "",
     mealType: "Breakfast",
   });
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        console.log('Token:', token);
+        const response = await axios.get('/api/details', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        console.log('Response:', response);
+  
+        const user = response.data.user;
+        if (!user || typeof user.dailyCalorieRequirement === 'undefined') {
+          console.error('User details or dailyCalorieRequirement is missing in the response:', response.data);
+          return;
+        }
+  
+        setCalorieGoal(user.dailyCalorieRequirement || 2000);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+  
+    fetchUserDetails();
+  }, []);
+  
+
+
+  
   const generateRandomCalories = () => {
     const randomCalories = Math.floor(Math.random() * 1000) + 1; // Random calories between 1 and 1000
     setNewPost({ ...newPost, calories: randomCalories });
   };
   useEffect(() => {
+    
     setPosts([
       { id: 1, img: "Thor.png", username: "JohnDoe", meal: "Breakfast", date: "2024-10-20", description: "Omelette, Toast, and Orange Juice" },
       { id: 2, img: "Thor.png", username: "JaneDoe", meal: "Lunch", date: "2024-10-20", description: "Chicken Salad with Avocado" },
@@ -296,7 +327,7 @@ const handleAddPost = async (e) => {
         <div className="content">
           <div className="stats">
             {[{ label: "Calories consumed", value: "2,055" },
-              { label: "Calorie Goal", value: "3,000" }
+              { label: "Calorie Goal", value: dailyCalorieRequirement }
             ].map((stat, index) => (
               <div key={index} className="stat-card">
                 <p className="stat-value">{stat.value}</p>
