@@ -84,7 +84,7 @@ export function SignUpPage() {
         console.log("Google Sign-In successful:", response.data);
         setSuccess('Logged in with Google!');
         setTimeout(() => {
-            navigate("/Home");
+            navigate("/WelcomePage");
         }, 1000);
     } catch (error) {
         console.error('Google sign-in failed:', error);
