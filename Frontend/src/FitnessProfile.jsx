@@ -301,28 +301,36 @@ const FitnessProfile = () => {
         { day: '2024-10-25', weight: 71 },
         // Add more initial weight data as needed
     ]);
-
-    const handleAddWeight = () => {
-        if (weight) {
-            const today = new Date().toISOString().split("T")[0]; // Get today's date
-            const updatedWeightData = [...weightData];
-
-            // Check if today's weight is already logged
-            const todayIndex = updatedWeightData.findIndex(data => data.day === today);
-            if (todayIndex !== -1) {
-                // Update the weight if today's data exists
-                updatedWeightData[todayIndex].weight = parseFloat(weight);
-            } else {
-                // Add new weight entry for today
-                updatedWeightData.push({ day: today, weight: parseFloat(weight) });
-            }
-
-            setWeightData(updatedWeightData);
-            setWeight(""); // Clear the input after adding
-        } else {
-            alert("Please enter a weight.");
-        }
+    // Fetch weights from the backend
+    const fetchWeights = async () => {
+      const response = await axios.get('http://localhost:3000/weight/weights');
+      setWeightData(response.data);
     };
+
+    useEffect(() => {
+      fetchWeights();
+    }, []);
+
+    const handleAddWeight = async () => {
+      if (weight) {
+          const today = new Date().toISOString().split("T")[0]; // Get today's date
+
+          // Check if today's weight is already logged
+          const existingWeight = weightData.find(data => data.day === today);
+          if (existingWeight) {
+              // Update existing weight
+              await axios.put(`http://localhost:3000/weight/weights/${existingWeight._id}`, { weight: parseFloat(weight) });
+          } else {
+              // Add new weight entry for today
+              await axios.post('http://localhost:3000/weight/weights', { day: today, weight: parseFloat(weight) });
+          }
+
+          setWeight(""); // Clear the input after adding
+          fetchWeights(); // Refresh the weight data
+      } else {
+          alert("Please enter a weight.");
+      }
+  };
 
     // Filter to get only the last 7 days of data
     const last7DaysData = weightData.filter(data => {
