@@ -71,7 +71,7 @@ const WelcomePage = () => {
         }
       );
       console.log('User details updated:', response.data);
-      setCalorieCount(response.data.dailyCalorieRequirement);
+      setCalorieCount(response.data.dailyCalorieRequirement.calories);
       console.log(calorieCount)
       return response.data;
     } catch (error) {
