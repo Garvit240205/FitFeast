@@ -65,6 +65,29 @@ export function SignUpPage() {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prevState) => !prevState);
   };
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const fetchUserDetails = async (token) => {
+    try {
+      await delay(1000);
+      const response = await fetch('http://localhost:3000/api/details', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`, // Include JWT token
+        },
+      });
+
+      const data = await response.json();
+      console.log(data)
+      if (data.redirect === 'FitnessProfile') {
+        navigate('/FitnessProfile');
+      } else {
+        navigate('/WelcomePage');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      setError('Failed to fetch user details.');
+    }
+  };
   const handleGoogleSignIn = async (credentialResponse) => {
     const token = credentialResponse?.credential;
     if (!token) {
@@ -83,9 +106,10 @@ export function SignUpPage() {
         const response = await axios.post('http://localhost:3000/api/google-login', { token });
         console.log("Google Sign-In successful:", response.data);
         setSuccess('Logged in with Google!');
-        setTimeout(() => {
-            navigate("/WelcomePage");
-        }, 1000);
+        setError('')
+        // Fetch user details and handle redirection
+        await fetchUserDetails(response.data.token);
+        localStorage.setItem('token', response.data.token);
     } catch (error) {
         console.error('Google sign-in failed:', error);
         setError('Google sign-in failed. Please try again.');

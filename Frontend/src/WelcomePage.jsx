@@ -17,6 +17,8 @@ const WelcomePage = () => {
   const [showFormula, setShowFormula] = useState(false);
   const [selectedActivityLevel, setSelectedActivityLevel] = useState('');
   const [calorieCount, setCalorieCount] = useState(2200); 
+  const [error, setError] = useState('');
+
   const activityLevels = {
     sedentary: 'Sedentary (Little to no exercise, desk job)',
     light: 'Lightly Active (Light exercise 1-3 days a week)',
@@ -79,25 +81,55 @@ const WelcomePage = () => {
     }
   };
 
-  const handleContinue = async (event) => {
-    event.preventDefault(); // Prevent default behavior if used in a form
+  const validateStep = () => {
+    switch (step) {
+      case 0:
+        if (!name) return 'Please enter your name.';
+        break;
+      case 1:
+        if (selectedOptions.length === 0) return 'Please select at least one goal.';
+        break;
+      case 3:
+        if (!gender) return 'Please select your gender.';
+        if (!age) return 'Please enter your age.';
+        if (!country) return 'Please select your country.';
+        if (!zipCode) return 'Please enter your ZIP code.';
+        break;
+      case 4:
+        if (!heightFeet || !heightInches) return 'Please enter your height.';
+        if (!weight) return 'Please enter your weight.';
+        break;
+      case 5:
+        if (!selectedActivityLevel) return 'Please select an activity level.';
+        break;
+      default:
+        return '';
+    }
+    return '';
+  };
 
-    console.log('Current step:', step); // Log step value for debugging
+  const handleContinue = async (event) => {
+    event.preventDefault();
+
+    const errorMessage = validateStep(); // Validate the current step
+    if (errorMessage) {
+      setError(errorMessage); // Display the error if validation fails
+      return;
+    }
+
+    setError(''); // Clear any existing error
 
     if (step === 5) {
-      console.log('Processing step 5');
       try {
-        let res= await updateUserDetails(userDetails);
+        await updateUserDetails(userDetails);
       } catch (error) {
-        console.error('Failed to update user details:', error);
+        setError('Failed to update user details. Please try again.');
+        console.error(error);
       }
     }
 
-    if (step < 7) {
-      setStep((prevStep) => prevStep + 1);
-      console.log('User details:', userDetails);
-    } else {
-      console.log('Final submission:', userDetails);
+    if (step < 6) {
+      setStep(step + 1);
     }
   };
 
@@ -421,6 +453,7 @@ const WelcomePage = () => {
         ))}
       </div>
       {renderStepContent()}
+      {error && <p className="error-message" style={{color:'red'}}>{error}</p>} {/* Display error */}
       {step < 6 ? (
         <button onClick={handleContinue} className="button">
           Continue

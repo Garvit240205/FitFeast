@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
   country: { type: String },
   zipcode: { type: String },
   activityLevel: {type: String},
-  calorieRequirement: {type: Number}
+  calorieRequirement: {type: Number},
+  welcomeDetails: {type: Boolean}
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
