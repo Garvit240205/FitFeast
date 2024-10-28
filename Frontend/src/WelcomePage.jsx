@@ -132,26 +132,26 @@ const WelcomePage = () => {
         );
       case 1:
         const options = ['Lose Weight', 'Maintain Weight', 'Gain Weight', 'Gain Muscle', 'Modify My Diet', 'Manage Stress', 'Increase Step Count', 'Manage Sleep'];
-
+        
         const handleOptionClick = (option) => {
           const isFirstThreeOptions = ['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(option);
-
-          if (isFirstThreeOptions) {
-            if (selectedOptions.includes(option)) {
-              setSelectedOptions(selectedOptions.filter(opt => opt !== option));
+          
+          if (selectedOptions.includes(option)) {
+            // Deselect the option if already selected
+            setSelectedOptions(selectedOptions.filter(opt => opt !== option));
+          } else if (selectedOptions.length < 3) {
+            // Allow selecting new options only if fewer than 3 are selected
+            if (isFirstThreeOptions) {
+              const filteredSelectedOptions = selectedOptions.filter(
+                opt => !['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(opt)
+              );
+              setSelectedOptions([...filteredSelectedOptions, option]);
             } else {
-              const filteredSelectedOptions = selectedOptions.filter(opt => !['Lose Weight', 'Maintain Weight', 'Gain Weight'].includes(opt));
-              setSelectedOptions(filteredSelectedOptions.concat(option));
-            }
-          } else {
-            if (selectedOptions.includes(option)) {
-              setSelectedOptions(selectedOptions.filter(opt => opt !== option));
-            } else {
-              setSelectedOptions(selectedOptions.concat(option));
+              setSelectedOptions([...selectedOptions, option]);
             }
           }
         };
-
+        
         return (
           <div>
             <h1 className="header">Goals</h1>
@@ -161,7 +161,16 @@ const WelcomePage = () => {
             </p>
             <div className="options-container" style={{ display: 'flex', marginTop: '20px' }}>
               {/* Left Column */}
-              <div style={{ display: 'flex', flexDirection: 'column', width: '43%', alignItems: 'center', justifyContent: 'center', marginLeft: '10px' }}>
+              <div
+                style={{
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  width: '43%', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  marginLeft: '10px'
+                }}
+              >
                 {options.slice(0, 4).map((option) => (
                   <button
                     key={option}
@@ -174,7 +183,15 @@ const WelcomePage = () => {
                 ))}
               </div>
               {/* Right Column */}
-              <div style={{ display: 'flex', flexDirection: 'column', width: '45%', alignItems: 'center', justifyContent: 'center' }}>
+              <div
+                style={{
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  width: '45%', 
+                  alignItems: 'center', 
+                  justifyContent: 'center'
+                }}
+              >
                 {options.slice(4).map((option) => (
                   <button
                     key={option}
@@ -409,7 +426,7 @@ const WelcomePage = () => {
           Continue
         </button>
       ) : (
-        <Link to="/Home">
+        <Link to="/FitnessProfile">
     <button className="button">
       Continue
     </button>

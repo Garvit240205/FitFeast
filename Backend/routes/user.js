@@ -52,7 +52,7 @@ userRouter.use(cors({
 }));
 
 userRouter.post('/google-login', async (req, res) => {
-  const { token } = req.body;
+  let { token } = req.body;
   try {
     // Verify the token
     const ticket = await client.verifyIdToken({
@@ -75,8 +75,10 @@ userRouter.post('/google-login', async (req, res) => {
       user = new User({ username, password: hashedPassword });
       await user.save();
     }
-
-    res.status(200).json({ message: "User authenticated successfully" });
+    // Generate a JWT token with the user's _id
+    token = jwt.sign({ _id: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    console.log(token)
+    res.json({ message: "User authenticated successfully",token });
   } catch (error) {
     console.error('Google authentication failed:', error);
     res.status(401).json({ message: "Invalid token" });
@@ -169,7 +171,7 @@ userRouter.get('/details', authenticateToken, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
+    console.log('success')
     // Include dailyCalorieRequirement in the response
     res.json({
       user: {
