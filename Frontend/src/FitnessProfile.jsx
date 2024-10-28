@@ -130,6 +130,55 @@ const FitnessProfile = () => {
     }
   };
   const [meals, setMeals] = useState([]);
+  const [caloriesData,setCaloriesData]= useState([]);
+
+  const fetchLast7DaysCalories = async () => {
+    const last7DaysData = [];
+    const token = localStorage.getItem('token');
+  
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const selectedDate = date.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+  
+      try {
+        const response = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+  
+        // Sum nutrition values for the day
+        let dayCalories = 0, dayProtein = 0, dayFat = 0, dayCarbs = 0;
+        response.data.meals.forEach(meal => {
+          dayCalories += meal.nutrition.calories.value;
+          dayProtein += meal.nutrition.protein.value;
+          dayFat += meal.nutrition.fat.value;
+          dayCarbs += meal.nutrition.carbs.value;
+        });
+  
+        // Add to array with formatted data for the chart
+        last7DaysData.push({
+          day: selectedDate,
+          caloriesConsumed: dayCalories,
+          protein: dayProtein,
+          fat: dayFat,
+          carbs: dayCarbs
+        });
+  
+      } catch (error) {
+        console.error(`Error fetching meals for ${selectedDate}:`, error);
+      }
+    }
+  
+    setCaloriesData(last7DaysData); // Store data for graph
+  };
+  
+  // Call this once to initially load data, and again when today's data is updated
+  useEffect(() => {
+    fetchLast7DaysCalories();
+  }, []);
+  
   const fetchMeals = async (selectedDate) => {
     try {
       const token = localStorage.getItem('token');
@@ -159,6 +208,14 @@ const FitnessProfile = () => {
       setProteinConsumed(proteinsum)
       setCarbConsumed(carbsum)
       setFatConsumed(fatsum)
+
+      // Update last 7 days data structure with today's values
+      const today = new Date().toISOString().split("T")[0];
+      const updatedCaloriesData = caloriesData.map(data =>
+        data.day === today ? { day: today, caloriesConsumed: sum, protein: proteinsum, fat: fatsum, carbs: carbsum } : data
+      );
+
+      setCaloriesData(updatedCaloriesData);
     } catch (error) {
       console.error('Error fetching meals:', error);
     }
@@ -223,33 +280,33 @@ const FitnessProfile = () => {
     }
   };
 
-  const calorieData = [
-    {
-      day:"Mon",
-      caloriesConsumed:1800,
-      caloriesBurned:1600
-    },
-    {
-      day:"Tue",
-      caloriesConsumed:2800,
-      caloriesBurned:2600
-    },
-    {
-      day:"Wed",
-      caloriesConsumed:1000,
-      caloriesBurned:1600
-    },
-    {
-      day:"Thu",
-      caloriesConsumed:4800,
-      caloriesBurned:1600
-    },
-    {
-      day:"Fri",
-      caloriesConsumed:1200,
-      caloriesBurned:900
-    }
-  ]
+  // const calorieData = [
+  //   {
+  //     day:"Mon",
+  //     caloriesConsumed:1800,
+  //     caloriesBurned:1600
+  //   },
+  //   {
+  //     day:"Tue",
+  //     caloriesConsumed:2800,
+  //     caloriesBurned:2600
+  //   },
+  //   {
+  //     day:"Wed",
+  //     caloriesConsumed:1000,
+  //     caloriesBurned:1600
+  //   },
+  //   {
+  //     day:"Thu",
+  //     caloriesConsumed:4800,
+  //     caloriesBurned:1600
+  //   },
+  //   {
+  //     day:"Fri",
+  //     caloriesConsumed:1200,
+  //     caloriesBurned:900
+  //   }
+  // ]
 
   // const weightData = [
   //   {
@@ -290,6 +347,7 @@ const FitnessProfile = () => {
 
 
   
+
   const [weight, setWeight] = useState("");
     const [weightData, setWeightData] = useState([
         // Initialize with existing weight data
@@ -457,32 +515,32 @@ const FitnessProfile = () => {
           
           {/* Calorie Graph */}
           <ResponsiveContainer width="100%" height={500}>
-                <AreaChart data={calorieData}>
-                    <defs>
-                        <linearGradient id="colorBurned" x1={0} x2={0} y1={0} y2={1}>
-                            <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
-                            <stop offset="75%" stopColor="#2451B7" stopOpacity={0.05} />
-                        </linearGradient>
-                        <linearGradient id="colorConsumed" x1={0} x2={0} y1={0} y2={1}>
-                            <stop offset="0%" stopColor="#FF6347" stopOpacity={0.4} />
-                            <stop offset="75%" stopColor="#FF6347" stopOpacity={0.05} />
-                        </linearGradient>
-                    </defs>
-                    
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    
-                    <Area
-                        type="monotone"
-                        dataKey="caloriesConsumed"
-                        stroke="#FF6347"
-                        fill="url(#colorConsumed)"
-                        stackId={2}
-                    />
-                </AreaChart>
-            </ResponsiveContainer>
+              <AreaChart data={caloriesData}>
+                  <defs>
+                      <linearGradient id="colorBurned" x1={0} x2={0} y1={0} y2={1}>
+                          <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
+                          <stop offset="75%" stopColor="#2451B7" stopOpacity={0.05} />
+                      </linearGradient>
+                      <linearGradient id="colorConsumed" x1={0} x2={0} y1={0} y2={1}>
+                          <stop offset="0%" stopColor="#FF6347" stopOpacity={0.4} />
+                          <stop offset="75%" stopColor="#FF6347" stopOpacity={0.05} />
+                      </linearGradient>
+                  </defs>
+                  
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  
+                  <Area
+                      type="monotone"
+                      dataKey="caloriesConsumed"
+                      stroke="#FF6347"
+                      fill="url(#colorConsumed)"
+                      stackId={2}
+                  />
+              </AreaChart>
+          </ResponsiveContainer>
 
             {/* Weight Graph */}
             <ResponsiveContainer width="100%" height={500}>
