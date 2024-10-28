@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import './SignIn.css';
@@ -23,6 +23,28 @@ export function SignInPage() {
     return emailRegex.test(email);
   };
   const [success, setSuccess] = useState('');
+  const fetchUserDetails = async (token) => {
+    try {
+      await delay(1000);
+      const response = await fetch('http://localhost:3000/api/details', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`, // Include JWT token
+        },
+      });
+
+      const data = await response.json();
+      if (data.redirect === 'FitnessProfile') {
+        navigate('/FitnessProfile');
+      } else {
+        navigate('/WelcomePage');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      setError('Failed to fetch user details.');
+    }
+  };
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const handleSignIn = async (e) => {
     e.preventDefault();
     if (!isValidEmail(username)) {
@@ -30,24 +52,27 @@ export function SignInPage() {
       setSuccess('');
       return;
     }
+
     try {
       const response = await axios.post('http://localhost:3000/api/signin', {
         username,
         password,
       });
 
-      localStorage.setItem('token', response.data.token);
-      setError('')
+      const token = response.data.token;
+      localStorage.setItem('token', token);
+      setError('');
       setSuccess('Welcome!');
-      setTimeout(() => {
-        navigate("/WelcomePage");
-      }, 1000);
+
+      // Fetch user details and handle redirection
+      await fetchUserDetails(token);
     } catch (error) {
       console.error('Error during sign-in:', error);
       setError('Failed to sign in. Please check your credentials.');
       setSuccess('');
     }
   };
+
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);

@@ -138,6 +138,7 @@ userRouter.put('/update-details', authenticateToken, async (req, res, next) => {
     user.country = country;
     user.zipcode = zipcode;
     user.activityLevel = activityLevel;
+    user.welcomeDetails=true;
 
     req.user = user; // Pass the user object to the middleware
 
@@ -173,13 +174,18 @@ userRouter.get('/details', authenticateToken, async (req, res) => {
     }
     console.log('success')
     // Include dailyCalorieRequirement in the response
-    res.json({
-      user: {
-        _id: user._id,
-        firstname: user.firstname,
-        dailyCalorieRequirement: user.calorieRequirement, // Ensure this matches the field name
-      },
-    });
+    if (user.welcomeDetails) {
+      res.json({
+        redirect: 'FitnessProfile',
+        user: {
+          _id: user._id,
+          firstname: user.firstname,
+          dailyCalorieRequirement: user.calorieRequirement,
+        },
+      });
+    } else {
+      res.json({ redirect: 'WelcomePage' });
+    }
   } catch (error) {
     console.error('Error fetching user details:', error);
     res.status(500).json({ message: 'Internal server error' });
