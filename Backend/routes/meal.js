@@ -14,7 +14,9 @@ const createMealRouter = (upload) => {
         console.log('Food Info:', req.foodInfo); // Log the foodInfo from middleware
 
         const { mealType } = req.body;
-        const imageUrl = req.file ? req.file.path : null;
+        
+        // Store the relative path from `Backend/uploads` onwards
+        const imageUrl = req.file ? `Backend/uploads/${req.file.filename}` : null;
 
         try {
             // Validate required fields
@@ -69,12 +71,12 @@ const createMealRouter = (upload) => {
                     originalname: req.file.originalname,
                     encoding: req.file.encoding,
                     mimetype: req.file.mimetype,
-                    destination: req.file.destination,
+                    destination: `Backend/uploads`, // Save the relative directory for destination
                     filename: req.file.filename,
-                    path: req.file.path,
+                    path: imageUrl, // Save the relative path for the path
                     size: req.file.size
                 } : {},
-                imageUrl // Save the image URL if needed
+                imageUrl // Save the relative image URL if needed
             });
 
             await meal.save();
@@ -131,19 +133,45 @@ const createMealRouter = (upload) => {
         }
     });
 
-    // GET: Preview all meals for the authenticated user
-    mealRouter.get('/preview', authenticateToken, async (req, res) => {
-        try {
-            const meals = await Meal.find({ user: req.user._id });
+// GET: Preview all meals for the authenticated user on a specific date
+mealRouter.get('/preview', authenticateToken, async (req, res) => {
+    try {
+        const { date } = req.query;
 
-            res.json({ message: 'User meals preview', meals });
-        } catch (error) {
-            console.error('Error fetching meals:', error);
-            res.status(500).json({ message: 'Internal server error' });
+        // Validate the date parameter
+        if (!date) {
+            return res.status(400).json({ message: 'Date is required' });
         }
-    });
+
+        // Parse the input date to ensure it's in the correct format (e.g., YYYY-MM-DD)
+        const selectedDate = new Date(date);
+
+        if (isNaN(selectedDate.getTime())) {
+            return res.status(400).json({ message: 'Invalid date format' });
+        }
+
+        // Find meals for the user on the specified date
+        // This assumes that your Meal model has a field `createdAt` that records the creation date of the meal
+        const meals = await Meal.find({
+            user: req.user._id,
+            createdAt: {
+                $gte: new Date(selectedDate.setHours(0, 0, 0, 0)), // Start of the day
+                $lt: new Date(selectedDate.setHours(23, 59, 59, 999)) // End of the day
+            }
+        });
+
+        res.json({ message: 'User meals preview for the selected date', meals });
+    } catch (error) {
+        console.error('Error fetching meals:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
     return mealRouter;
 };
+
+
+
 
 module.exports = createMealRouter;
