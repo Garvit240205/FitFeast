@@ -344,6 +344,7 @@ body {
   border-width: 2px;
 }
 .posts-img{
+  display: inline-block;
   height: 500px;
   width: 500px;
   border-radius: 20px;
@@ -352,6 +353,7 @@ body {
   margin-left: 60px;
 }
 .post-desc{
+  font-size: large;
   margin-left: 60px;
 }
 .meals-list {
