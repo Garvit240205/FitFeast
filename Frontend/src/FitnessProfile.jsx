@@ -55,7 +55,7 @@ const FitnessProfile = () => {
           return;
         }
   
-        setCalorieGoal(user.dailyCalorieRequirement || 0);
+        setCalorieGoal(user.dailyCalorieRequirement.calories || 0);
         setCaloriesConsumed(0);
       } catch (error) {
         console.error('Error fetching user details:', error);
