@@ -19,15 +19,22 @@ import {
 
 const FitnessProfile = () => {
   const [dailyCalorieRequirement, setCalorieGoal] = useState(0);
-  const [caloriesConsumed, setCaloriesConsumed] = useState(440);
+  const [caloriesConsumed, setCaloriesConsumed] = useState(0);
+  const [dailyProteinRequirement, setProteinGoal] = useState(0);
+  const [dailyFatRequirement, setFatGoal] = useState(0);
+  const [dailyCarbRequirement, setCarbGoal] = useState(0);
+
+  const [ProteinConsumed, setProteinConsumed] = useState(0);
+  const [FatConsumed, setFatConsumed] = useState(0);
+  const [CarbConsumed, setCarbConsumed] = useState(0);
+
   const progressPercentage = (caloriesConsumed / dailyCalorieRequirement) * 100;
   const [sun, setSun] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] =useState(new Date().toISOString().split("T")[0]);
   const [posts, setPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [mealType, setMealType] = useState("Breakfast");
-  const [calories, setCalories] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [newPost, setNewPost] = useState({
     image: null,
@@ -35,6 +42,23 @@ const FitnessProfile = () => {
     ingredients: "",
     mealType: "Breakfast",
   });
+  // const [today, setToday] = useState(new Date().toDateString());
+  // const [todaysData, setTodaysData] = useState({ calories: 0, proteins: 0, fats: 0, carbs: 0 });
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await fetchTodaysMetrics();
+  //     setTodaysData(data);
+  //   };
+
+  //   // Check if the date has changed since the last render
+  //   const currentDate = new Date().toDateString();
+  //   if (currentDate !== today) {
+  //     setToday(currentDate);
+  //     fetchData();
+  //   }
+  // }, [today, fetchTodaysMetrics]);
+
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -47,9 +71,13 @@ const FitnessProfile = () => {
           }
         });
         console.log('Response:', response);
-  
+        localStorage.setItem('username',response.data.user.firstname)
+        console.log(response.data.user.firstname)
         const user = response.data.user;
         console.log(user)
+        setProteinGoal(response.data.user.dailyCalorieRequirement.protein)
+        setFatGoal(response.data.user.dailyCalorieRequirement.fat)
+        setCarbGoal(response.data.user.dailyCalorieRequirement.carbs)
         if (!user || typeof user.dailyCalorieRequirement === 'undefined') {
           console.error('User details or dailyCalorieRequirement is missing in the response:', response.data);
           return;
@@ -82,18 +110,15 @@ const FitnessProfile = () => {
   }, []);
 
   const filteredPosts = posts.filter((post) => post.date === selectedDate);
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
-  };
+  
   useEffect(() => {
     // Start the animation when the component mounts
     setIsAnimated(true);
   }, []);
   const nutrients = [
-    { label: "Proteins", value: 30, goal: 50 },
-    { label: "Fibre", value: 30, goal: 60 },
-    { label: "Carbs", value: 40, goal: 100 },
-    { label: "Fats", value: 60, goal: 70 },
+    { label: "Proteins", value: ProteinConsumed, goal: dailyProteinRequirement },
+    { label: "Carbs", value: CarbConsumed, goal: dailyCarbRequirement },
+    { label: "Fats", value: FatConsumed, goal: dailyFatRequirement },
   ];
   const toggleSun = () => setSun(!sun);
   const handlePostChange = (e) => {
@@ -104,21 +129,53 @@ const FitnessProfile = () => {
       setNewPost({ ...newPost, [name]: value });
     }
   };
+  const [meals, setMeals] = useState([]);
+  const fetchMeals = async (selectedDate) => {
+    try {
+      const token = localStorage.getItem('token');
+        console.log('Token:', token);
+        // console.log(selectedDate)
+        const response = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        console.log(response)
+      setMeals(response.data.meals); 
+      let sum=0;
+      let proteinsum=0;
+      let fatsum=0;
+      let carbsum=0;
+      for(let i=0;i<response.data.meals.length;i++){
+        sum+=response.data.meals[i].nutrition.calories.value;
+        proteinsum+=response.data.meals[i].nutrition.protein.value;
+        fatsum+=response.data.meals[i].nutrition.fat.value;
+        carbsum+=response.data.meals[i].nutrition.carbs.value;
+      }
+      // setProteinGoal(response.data.user.dailyCalorieRequirement.protein)
+      // setFatGoal(response.data.user.dailyCalorieRequirement.fat)
+      // setCarbGoal(response.data.user.dailyCalorieRequirement.carbs)
+      setCaloriesConsumed(sum);
+      setProteinConsumed(proteinsum)
+      setCarbConsumed(carbsum)
+      setFatConsumed(fatsum)
+    } catch (error) {
+      console.error('Error fetching meals:', error);
+    }
+  };
+
+  // Update meals whenever the selected date changes
+  useEffect(() => {
+    fetchMeals(selectedDate);
+  }, [selectedDate]);
+
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value); // Update the selected date
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent the default form submission
-  
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-  // Create new post entry
-  // const newEntry = {
-  //   id: posts.length + 1,
-  //   img: newPost.image,
-  //   username: "CurrentUser", // Replace with actual user
-  //   meal: newPost.mealType,
-  //   date: new Date().toISOString().split("T")[0],
-  //   description: `Calories: ${newPost.calories}, Ingredients: ${newPost.ingredients}, Meal: ${newPost.mealType}`,
-  // };
-
+    const token = localStorage.getItem('token'); // Retrieve the token from 
     // Create a new FormData object
     const formData = new FormData(event.target);
     
@@ -132,19 +189,10 @@ const FitnessProfile = () => {
       });
   
       if (response.ok) {
-        // Handle successful response
-        // Update posts state with the newly added meal entry from the response
-        // setPosts([...posts, { ...newEntry, id: response.data.meal._id }]); // Assuming the response contains the meal ID
-
-        // // Clear new post inputs
-        // setNewPost({
-        //   image: null,
-        //   calories: "",
-        //   ingredients: "",
-        //   mealType: "Breakfast",
-        // });
         console.log('Meal added successfully');
         setShowModal(false); // Close the modal if needed
+        // Fetch the updated list of meals
+        await fetchMeals(selectedDate);
       } else {
         // Handle errors from the server
         const errorData = await response.json();
@@ -155,63 +203,7 @@ const FitnessProfile = () => {
     }
   };
   
-
-  const handleSavePost = () => {
-    // Logic to save the post
-    console.log('Saving post:', newPost);
-    // Add your saving logic here
-    setShowPostModal(false); // Close the modal after saving
-  };
-
-
-const handleAddPost = async (e) => {
-  // e.preventDefault();
-
-  // Create new post entry
-  const newEntry = {
-    id: posts.length + 1,
-    img: newPost.image,
-    username: "CurrentUser", // Replace with actual user
-    meal: newPost.mealType,
-    date: new Date().toISOString().split("T")[0],
-    description: `Calories: ${newPost.calories}, Ingredients: ${newPost.ingredients}, Meal: ${newPost.mealType}`,
-  };
-
-  // Create FormData to send with Axios
-  const formData = new FormData();
-  formData.append('mealType', newPost.mealType);
-  formData.append('image', newPost.image);
-  formData.append('calories', newPost.calories);
-  console.log(formData)
-  try {
-    const token = localStorage.getItem('token');
-    // Send a POST request to your backend API
-    const response = await axios.post('http://localhost:3000/meals/add', formData, {
-      headers: {
-        'Authorization': `Bearer ${token}`, // Replace with actual JWT token
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    console.log('Meal added:', response.data);
-    
-    // Update posts state with the newly added meal entry from the response
-    setPosts([...posts, { ...newEntry, id: response.data.meal._id }]); // Assuming the response contains the meal ID
-
-    // Clear new post inputs
-    setNewPost({
-      image: null,
-      calories: "",
-      ingredients: "",
-      mealType: "Breakfast",
-    });
-
-    // Optionally close the modal if applicable
-    setShowModal(false);
-  } catch (error) {
-    console.error('Error adding meal:', error);
-  }
-};
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -259,32 +251,33 @@ const handleAddPost = async (e) => {
     }
   ]
 
-  const weightData = [
-    {
-      day:"Mon",
-      weight:67
-    },
-    {
-      day:"Tue",
-      weight:69
-    },
-    {
-      day:"Wed",
-      weight:70
-    },
-    {
-      day:"Thu",
-      weight:68
-    },
-    {
-      day:"Fri",
-      weight:66
-    }
-  ]
+  // const weightData = [
+  //   {
+  //     day:"Mon",
+  //     weight:67
+  //   },
+  //   {
+  //     day:"Tue",
+  //     weight:69
+  //   },
+  //   {
+  //     day:"Wed",
+  //     weight:70
+  //   },
+  //   {
+  //     day:"Thu",
+  //     weight:68
+  //   },
+  //   {
+  //     day:"Fri",
+  //     weight:66
+  //   }
+  // ]
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
 
   const openModal = (image) => {
+    console.log(image)
     setSelectedImage(image);
     setIsModalOpen(true);
   };
@@ -293,13 +286,59 @@ const handleAddPost = async (e) => {
     setIsModalOpen(false);
     setSelectedImage('');
   };
+
+
+
+  
+  const [weight, setWeight] = useState("");
+    const [weightData, setWeightData] = useState([
+        // Initialize with existing weight data
+        { day: '2024-10-20', weight: 70 },
+        { day: '2024-10-21', weight: 71 },
+        { day: '2024-10-22', weight: 50 },
+        { day: '2024-10-23', weight: 57 },
+        { day: '2024-10-24', weight: 80 },
+        { day: '2024-10-25', weight: 71 },
+        // Add more initial weight data as needed
+    ]);
+
+    const handleAddWeight = () => {
+        if (weight) {
+            const today = new Date().toISOString().split("T")[0]; // Get today's date
+            const updatedWeightData = [...weightData];
+
+            // Check if today's weight is already logged
+            const todayIndex = updatedWeightData.findIndex(data => data.day === today);
+            if (todayIndex !== -1) {
+                // Update the weight if today's data exists
+                updatedWeightData[todayIndex].weight = parseFloat(weight);
+            } else {
+                // Add new weight entry for today
+                updatedWeightData.push({ day: today, weight: parseFloat(weight) });
+            }
+
+            setWeightData(updatedWeightData);
+            setWeight(""); // Clear the input after adding
+        } else {
+            alert("Please enter a weight.");
+        }
+    };
+
+    // Filter to get only the last 7 days of data
+    const last7DaysData = weightData.filter(data => {
+      const date = new Date(data.day);
+      const today = new Date();
+      const daysDifference = Math.ceil((today - date) / (1000 * 60 * 60 * 24));
+      return daysDifference <= 8; // Keep data from the last 7 days
+    });
+
   return (
     <div className="design-root">
       <div className="layout-container">
         <nav className="navbar navbar-expand-lg navbar-light bg-light home-navbar">
           <div className="container-fluid">
             <a className="navbar-brand" href="/Home">
-              Garvit Kochar
+              {localStorage.getItem('username')}
             </a>
             <button
               className="navbar-toggler"
@@ -392,11 +431,11 @@ const handleAddPost = async (e) => {
                           />
                           <path
                             className="small-circle-progress"
-                            strokeDasharray={isAnimated ? `${progressPercentage}, 100` : "0, 100"} // Trigger animation
+                            strokeDasharray={isAnimated ? `${nutrientProgress}, 100` : "0, 100"} // Trigger animation
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                           />
                           <text x="18" y="20.35" className="small-circle-text">
-                            {stat.value}
+                            {stat.value+'g'}
                           </text>
                         </svg>
                       </div>
@@ -407,107 +446,78 @@ const handleAddPost = async (e) => {
               </div>
             </div>
           </div>
-
-          {/* Area Chart inside Curved Box */}
-          {/* <div className="curved-box-container">
-            <svg className="curved-box" viewBox="0 0 400 200">
-              <defs>
-                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
-                  <feOffset dx="0" dy="4" result="offsetblur" />
-                  <feFlood floodColor="rgba(54, 162, 235, 0.5)" />
-                  <feComposite in2="offsetblur" operator="in" />
-                  <feMerge>
-                    <feMergeNode />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <rect
-                x="10"
-                y="10"
-                width="370"
-                height="100"
-                rx="20"
-                ry="20"
-                fill="white"
-                stroke="green"
-                strokeWidth="1"
-                filter="url(#shadow)"
-              />
-            </svg>
-
-            <div className="chart-container">
-              <h3>Calorie Trend This Week</h3>
-              <Line data={calorieTrendData} options={lineOptions} />
-            </div>
-          </div> */}
           
+          {/* Calorie Graph */}
           <ResponsiveContainer width="100%" height={500}>
-            <AreaChart data={calorieData}>
-              <defs>
-                <linearGradient id="colorBurned" x1={0} x2={0} y1={0} y2={1}>
-                  <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
-                  <stop offset="75%" stopColor="#2451B7" stopOpacity={0.05} />
-                </linearGradient>
-
-                <linearGradient id="colorConsumed" x1={0} x2={0} y1={0} y2={1}>
-                  <stop offset="0%" stopColor="#FF6347" stopOpacity={0.4} />
-                  <stop offset="75%" stopColor="#FF6347" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip></Tooltip>
-              <Legend />
-
-              
-              {/* <Area
-                type="monotone"
-                dataKey="caloriesBurned"
-                stroke="#2451B7"
-                fill="url(#colorBurned)"
-                stackId={1}
-              /> */}
-              
-              <Area
-                type="monotone"
-                dataKey="caloriesConsumed"
-                stroke="#FF6347" // Tomato color for stroke
-                fill="url(#colorConsumed)"
-                stackId={2}
-              />
-            </AreaChart>
+                <AreaChart data={calorieData}>
+                    <defs>
+                        <linearGradient id="colorBurned" x1={0} x2={0} y1={0} y2={1}>
+                            <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
+                            <stop offset="75%" stopColor="#2451B7" stopOpacity={0.05} />
+                        </linearGradient>
+                        <linearGradient id="colorConsumed" x1={0} x2={0} y1={0} y2={1}>
+                            <stop offset="0%" stopColor="#FF6347" stopOpacity={0.4} />
+                            <stop offset="75%" stopColor="#FF6347" stopOpacity={0.05} />
+                        </linearGradient>
+                    </defs>
+                    
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    
+                    <Area
+                        type="monotone"
+                        dataKey="caloriesConsumed"
+                        stroke="#FF6347"
+                        fill="url(#colorConsumed)"
+                        stackId={2}
+                    />
+                </AreaChart>
             </ResponsiveContainer>
 
+            {/* Weight Graph */}
             <ResponsiveContainer width="100%" height={500}>
-            <AreaChart data={weightData}>
-              <defs>
-                <linearGradient id="colorBurned" x1={0} x2={0} y1={0} y2={1}>
-                  <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
-                  <stop offset="75%" stopColor="#2451B7" stopOpacity={0.05} />
-                </linearGradient>
-
-              </defs>
-              
-              <XAxis dataKey="weight" />
-              <YAxis />
-              <Tooltip></Tooltip>
-              <Legend />
-
-              
-              <Area
-                type="monotone"
-                dataKey="weight"
-                stroke="#2451B7"
-                fill="url(#colorBurned)"
-                stackId={1}
-              />
-            </AreaChart>
+                <AreaChart data={last7DaysData}>
+                    <defs>
+                        <linearGradient id="colorWeight" x1={0} x2={0} y1={0} y2={1}>
+                            <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
+                            <stop offset="75%" stopColor="#2451B7" stopOpacity={0.05} />
+                        </linearGradient>
+                    </defs>
+                    
+                    <XAxis dataKey="day" /> {/* Keep x-axis consistent */}
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    
+                    <Area
+                        type="monotone"
+                        dataKey="weight"
+                        stroke="#2451B7"
+                        fill="url(#colorWeight)"
+                        stackId={1}
+                    />
+                </AreaChart>
             </ResponsiveContainer>
 
-
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <input
+                type="number"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                placeholder="Enter weight"
+                style={{ padding: '10px', fontSize: '16px', marginRight: '10px',border:'solid',borderRadius:'15px',borderWidth:'2px',marginTop:'20px' }}
+            />
+            <button 
+                onClick={handleAddWeight} 
+                disabled={!weight}
+                className="button"
+                style={{ padding: '10px 20px', fontSize: '16px', cursor: weight ? 'pointer' : 'not-allowed',justifyContent:'center',alignItems:'center',width:'150px',marginTop:'30px' }}
+            >
+                Add Weight
+            </button>
+        </div>
             {/* Form for adding a post */}
 
             {showModal && (
@@ -524,58 +534,58 @@ const handleAddPost = async (e) => {
               </div>
               <div className="modal-body">
               <form
-  onSubmit={handleSubmit}
-  encType="multipart/form-data"
->
-  <div className="mb-3">
-    <label htmlFor="image" className="form-label">Upload Image</label>
-    <input
-      type="file"
-      className="form-control"
-      id="image"
-      name="image"
-      accept="image/*"
-      required
-    />
-  </div>
-  <div className="mb-3">
-    <label htmlFor="calories" className="form-label">Calories</label>
-    <input
-      type="text"
-      className="form-control"
-      id="calories"
-      name="calories"
-      value={newPost.calories}
-      onChange={handleInputChange}
-      required
-    />
-    <button
-      type="button"
-      className="btn btn-secondary mt-2"
-      onClick={generateRandomCalories}
-    >
-      AI Generated
-    </button>
-  </div>
-  <div className="mb-3">
-    <label htmlFor="mealType" className="form-label">Meal Type</label>
-    <select
-      className="form-control"
-      id="mealType"
-      name="mealType"
-      required
-    >
-      <option value="breakfast">Breakfast</option>
-      <option value="lunch">Lunch</option>
-      <option value="dinner">Dinner</option>
-      <option value="snack">Snack</option>
-    </select>
-  </div>
-  <div className="modal-footer">
-    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
-    <button type="submit" className="btn btn-primary" >Save Meal</button>
-  </div>
-</form>
+                  onSubmit={handleSubmit}
+                  encType="multipart/form-data"
+                >
+                  <div className="mb-3">
+                    <label htmlFor="image" className="form-label">Upload Image</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      id="image"
+                      name="image"
+                      accept="image/*"
+                      required
+                    />
+                  </div>
+                  {/* <div className="mb-3">
+                    <label htmlFor="calories" className="form-label">Calories</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="calories"
+                      name="calories"
+                      value={newPost.calories}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-secondary mt-2"
+                      onClick={generateRandomCalories}
+                    >
+                      AI Generated
+                    </button>
+                  </div> */}
+                  <div className="mb-3">
+                    <label htmlFor="mealType" className="form-label">Meal Type</label>
+                    <select
+                      className="form-control"
+                      id="mealType"
+                      name="mealType"
+                      required
+                    >
+                      <option value="breakfast">Breakfast</option>
+                      <option value="lunch">Lunch</option>
+                      <option value="dinner">Dinner</option>
+                      <option value="snack">Snack</option>
+                    </select>
+                  </div>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+                    <button type="submit" className="btn btn-primary" >Save Meal</button>
+                  </div>
+                </form>
 
 
               </div>
@@ -584,15 +594,6 @@ const handleAddPost = async (e) => {
           </div>
         </div>
         )}
-
-        {/* <div className="posts">
-          {posts.map((post) => (
-            <div key={post.id} className="post">
-              <h4>{post.username} - {post.meal} on {post.date}</h4>
-              <p>{post.description}</p>
-            </div>
-          ))}
-        </div> */}
           {/* Floating Action Button */}
           <button 
             className="snap-button" 
@@ -607,26 +608,6 @@ const handleAddPost = async (e) => {
             </div>
           </button>
 
-          {/* <div className="quick-actions">
-            <button className="log-weight">Log your weight</button>
-            <h3 className="quick-actions-title">Quick actions</h3>
-            <div className="streak-card">
-              <div className="streak-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-                  <path
-                    d="M143.38,17.85a8,8,0,0,0-12.63,3.41l-22,60.41L84.59,58.26a8,8,0,0,0-11.93.89C51,87.53,40,116.08,40,144a88,88,0,0,0,176,0C216,84.55,165.21,36,143.38,17.85ZM128,216a72.08,72.08,0,0,1-72-72c0-22,8.09-44.79,24.06-67.84l26.37,25.58a8,8,0,0,0,13.09-3l22.27-61.07C164.21,58.08,200,97.91,200,144A72.08,72.08,0,0,1,128,216Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </div>
-              <div className="streak-info">
-                <p className="streak-days">7 days</p>
-                <p className="streak-message">
-                  Keep it up! You've logged your food every day this week.
-                </p>
-              </div>
-            </div>
-          </div> */}
           <div className="meals-section">
           <h1 style={{fontSize:'50px',textAlign:'center',marginTop:'20px'}}>Meals Consumed</h1>
           <div className="date-picker-container">
@@ -642,16 +623,16 @@ const handleAddPost = async (e) => {
           </div>
 
           <div className="meals-list">
-            {filteredPosts.length > 0 ? (
-              filteredPosts.map((post) => (
-                <div key={post.id} className="meal-post">
+            {meals.length > 0 ? (
+              meals.map((post) => (
+                <div key={post._id} className="meal-post">
                   <div className="profile-date-container">
                     <img
                       className="prof-pic"
                       src="https://via.placeholder.com/100"
                       alt="Profile"
                     />
-                    <strong className="profile-name">IIIT Delhi</strong>
+                    <strong className="profile-name">{post.category.name}</strong>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -664,8 +645,8 @@ const handleAddPost = async (e) => {
                     </svg>
                     <p className="date">{selectedDate}</p>
                   </div>
-                  <img className="posts-img" src={post.img} onClick={() => openModal(post.img)}
-              style={{ cursor: 'pointer' }}></img>
+                  <img className="posts-img" src={'Chole Bhature.jpg'} onClick={() => openModal('Chole Bhature.jpg')}
+                  style={{ cursor: 'pointer' }}></img>
                    {/* Modal for full-sized image */}
                   {isModalOpen && (
                     <div className="modal" onClick={closeModal}>
@@ -675,7 +656,23 @@ const handleAddPost = async (e) => {
                       </div>
                     </div>
                   )}
-                  <p className="post-desc">{post.description}</p>
+                  {/* <div style={{display:'inline-block',width:'500px'}}> */}
+                  <div>
+                    <p className="post-desc">Calories: {post.nutrition.calories.value}</p>
+                    <p className="post-desc">MealType: {post.requestBody.mealType}</p>
+                    <p className="post-desc" style={{display:'inline-block',marginRight:'0px'}}>Fat: {post.nutrition.fat.value+post.nutrition.fat.unit+','}</p>
+                    <p className="post-desc" style={{display:'inline-block',marginLeft:'10px'}}>Protein: {post.nutrition.protein.value+post.nutrition.protein.unit+','}</p>
+                    <p className="post-desc" style={{display:'inline-block',marginLeft:'10px'}}>Carbs: {post.nutrition.carbs.value+post.nutrition.carbs.unit}</p>
+                    <p className="post-desc">Posted on: {new Date(post.createdAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    })}</p>
+                  </div>
+                  
                 </div>
               ))
             ) : (

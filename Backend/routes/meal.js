@@ -13,14 +13,14 @@ const createMealRouter = (upload) => {
         console.log('Uploaded File:', req.file);
         console.log('Food Info:', req.foodInfo); // Log the foodInfo from middleware
 
-        const { mealType } = req.body;
+        const { mealType } = req.body.mealType;
         
         // Store the relative path from `Backend/uploads` onwards
         const imageUrl = req.file ? `Backend/uploads/${req.file.filename}` : null;
 
         try {
             // Validate required fields
-            if (!mealType || !req.user || !req.foodInfo) {
+            if (!mealType || !req.user) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
@@ -137,6 +137,7 @@ const createMealRouter = (upload) => {
 mealRouter.get('/preview', authenticateToken, async (req, res) => {
     try {
         const { date } = req.query;
+        console.log(date)
 
         // Validate the date parameter
         if (!date) {
