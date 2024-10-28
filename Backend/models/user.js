@@ -14,10 +14,10 @@ const userSchema = new mongoose.Schema({
   zipcode: { type: String },
   activityLevel: { type: String },
   calorieRequirement: {
-    calories: { type: Number, required: true },
-    carbs: { type: Number, required: true },
-    protein: { type: Number, required: true },
-    fat: { type: Number, required: true }
+    calories: { type: Number },
+    carbs: { type: Number },
+    protein: { type: Number},
+    fat: { type: Number }
   },
   welcomeDetails: { type: Boolean }
 }, { timestamps: true });
