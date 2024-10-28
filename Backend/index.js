@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const userRouter = require('./routes/user'); // Import the user router
-const mealRouter = require('./routes/meal'); // Import the meal router
+const mealRouter = require('./routes/meal');// Import the meal router
+const weightRouter = require('./routes/weights'); 
 const cors = require('cors');
 const multer = require('multer'); // Import Multer
 const path = require('path'); // Import path for file handling
@@ -62,6 +63,7 @@ mongoose.connect(mongoURI)
 
 // Use the user router
 app.use('/api', userRouter);
+app.use('/weight',weightRouter)
 app.use('/meals', mealRouter(upload)); // Pass the upload instance to the meal router
 
 // Start the server
