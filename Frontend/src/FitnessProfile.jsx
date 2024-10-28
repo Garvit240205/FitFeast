@@ -19,7 +19,7 @@ import {
 
 const FitnessProfile = () => {
   const [dailyCalorieRequirement, setCalorieGoal] = useState(0);
-  const [caloriesConsumed, setCaloriesConsumed] = useState(2055);
+  const [caloriesConsumed, setCaloriesConsumed] = useState(440);
   const progressPercentage = (caloriesConsumed / dailyCalorieRequirement) * 100;
   const [sun, setSun] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
@@ -41,7 +41,7 @@ const FitnessProfile = () => {
       try {
         const token = localStorage.getItem('token');
         console.log('Token:', token);
-        const response = await axios.get('/api/details', {
+        const response = await axios.get('http://localhost:3000/api/details', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -49,12 +49,14 @@ const FitnessProfile = () => {
         console.log('Response:', response);
   
         const user = response.data.user;
+        console.log(user)
         if (!user || typeof user.dailyCalorieRequirement === 'undefined') {
           console.error('User details or dailyCalorieRequirement is missing in the response:', response.data);
           return;
         }
   
-        setCalorieGoal(user.dailyCalorieRequirement || 2000);
+        setCalorieGoal(user.dailyCalorieRequirement || 0);
+        setCaloriesConsumed(0);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
@@ -107,10 +109,19 @@ const FitnessProfile = () => {
     event.preventDefault(); // Prevent the default form submission
   
     const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-  
+  // Create new post entry
+  // const newEntry = {
+  //   id: posts.length + 1,
+  //   img: newPost.image,
+  //   username: "CurrentUser", // Replace with actual user
+  //   meal: newPost.mealType,
+  //   date: new Date().toISOString().split("T")[0],
+  //   description: `Calories: ${newPost.calories}, Ingredients: ${newPost.ingredients}, Meal: ${newPost.mealType}`,
+  // };
+
     // Create a new FormData object
     const formData = new FormData(event.target);
-  
+    
     try {
       const response = await fetch('http://localhost:3000/meals/add', {
         method: 'POST',
@@ -122,6 +133,16 @@ const FitnessProfile = () => {
   
       if (response.ok) {
         // Handle successful response
+        // Update posts state with the newly added meal entry from the response
+        // setPosts([...posts, { ...newEntry, id: response.data.meal._id }]); // Assuming the response contains the meal ID
+
+        // // Clear new post inputs
+        // setNewPost({
+        //   image: null,
+        //   calories: "",
+        //   ingredients: "",
+        //   mealType: "Breakfast",
+        // });
         console.log('Meal added successfully');
         setShowModal(false); // Close the modal if needed
       } else {
@@ -148,6 +169,7 @@ const handleAddPost = async (e) => {
 
   // Create new post entry
   const newEntry = {
+    id: posts.length + 1,
     img: newPost.image,
     username: "CurrentUser", // Replace with actual user
     meal: newPost.mealType,
@@ -326,7 +348,7 @@ const handleAddPost = async (e) => {
         </nav>
         <div className="content">
           <div className="stats">
-            {[{ label: "Calories consumed", value: "2,055" },
+            {[{ label: "Calories consumed", value: caloriesConsumed },
               { label: "Calorie Goal", value: dailyCalorieRequirement }
             ].map((stat, index) => (
               <div key={index} className="stat-card">
@@ -551,7 +573,7 @@ const handleAddPost = async (e) => {
   </div>
   <div className="modal-footer">
     <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
-    <button type="submit" className="btn btn-primary">Save Meal</button>
+    <button type="submit" className="btn btn-primary" >Save Meal</button>
   </div>
 </form>
 
