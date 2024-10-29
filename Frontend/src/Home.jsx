@@ -2,6 +2,7 @@ import React, { useState,useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from 'axios';
 import "./Home.css"; // You may want to create a new CSS file for the Home page styles
+import {jwtDecode} from 'jwt-decode';
 
 const Home = () => {
   const [liked, setLiked] = useState(false); // State to toggle like
@@ -11,7 +12,6 @@ const Home = () => {
   const [posts, setPosts] = useState([
   ]);
 
-  const toggleLike = () => setLiked(!liked); // Toggle between liked and unliked states
   const handleAddPost = () => setShowPostModal(true); // NEW: Open post modal
   const [activeTab, setActiveTab] = useState("posts");
   const [showPostModal, setShowPostModal] = useState(false);
@@ -25,7 +25,17 @@ const Home = () => {
       setNewPost({ ...newPost, [name]: value });
     }
   };
+  
 
+  const getUserIdFromToken = (token) => {
+    try {
+      const decodedToken = jwtDecode(token);
+      return decodedToken._id; // Change this based on how your token is structured
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null; // Or handle the error as needed
+    }
+  };
   // Fetch all posts from the backend
   const fetchAllPosts = async () => {
     const token = localStorage.getItem('token');
@@ -37,6 +47,13 @@ const Home = () => {
       });
       console.log(response)
       setPosts(response.data);
+      // Set likedPosts based on the fetched posts
+      const userId = getUserIdFromToken(token); // Assume you have a function to get the user ID from the token
+      const initialLikedPosts = response.data.reduce((acc, post) => {
+        acc[post._id] = post.likedBy.includes(userId);
+        return acc;
+      }, {});
+      setLikedPosts(initialLikedPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -89,7 +106,43 @@ const handleSavePost = async () => {
   }
 };
 
+const [likedPosts, setLikedPosts] = useState({});
+// Handle like/unlike functionality
+const token=localStorage.getItem('token');
+const toggleLike = async (postId) => {
+  const isLiked = likedPosts[postId];
+  const endpoint = isLiked ? 'unlike' : 'like';
+  const method = isLiked ? 'DELETE' : 'POST';
 
+  try {
+    const response = await fetch(`http://localhost:3000/posts/${postId}/${endpoint}`, {
+      method: method,
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    console.log(response);
+    if (!response.ok) {
+      throw new Error(`Failed to toggle like: ${response.statusText}`);
+    }
+
+    const updatedPost = await response.json();
+
+    // Update the post's likes count in the state
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === postId ? { ...post, likes: updatedPost.likes } : post
+      )
+    );
+
+    const updatedLikedPosts = {
+      ...likedPosts,
+      [postId]: !isLiked,
+    };
+
+    setLikedPosts(updatedLikedPosts);
+  } catch (error) {
+    console.error("Error toggling like:", error);
+  }
+};
 
   // const handleSavePost = () => {
   //   const newPostEntry = {
@@ -357,8 +410,8 @@ const handleSavePost = async () => {
 
                 {/* Like and Share Icons */}
             <div className="icon-row">
-              <span onClick={toggleLike} style={{ cursor: "pointer" }}>
-                {liked ? (
+              <span onClick={() => toggleLike(post._id)} style={{ cursor: "pointer",marginRight:'0px' }}>
+                {likedPosts[post._id] ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -386,6 +439,7 @@ const handleSavePost = async () => {
                 )}
                 
               </span>
+              <span style={{marginLeft:'0px',fontFamily:'Nunito',fontWeight:'bold'}}>{post.likes} likes</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-share-fill" viewBox="0 0 16 16">
                   <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
                 </svg>
