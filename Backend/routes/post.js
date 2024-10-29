@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Create a new post
 router.post('/add', authenticateToken,async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     const { description, image_url } = req.body;
     
     if (!req.user || !req.user._id) {
