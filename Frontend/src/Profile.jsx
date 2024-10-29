@@ -71,7 +71,7 @@ const Profile = () => {
       {/* Bootstrap Navbar */}
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <div className="container-fluid">
-            <a className='navbar-brand' href='/Home'>Garvit Kochar</a>
+            <a className='navbar-brand' href='/Home'>{localStorage.getItem('username')}</a>
             
             <button
               className="navbar-toggler"
@@ -111,7 +111,12 @@ const Profile = () => {
                 </li>
                 <li className="nav-item">
                   <a className="nav-link active" href="/Profile">
-                    Profile
+                    User Profile
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/FitnessProfile">
+                    Fitness Profile
                   </a>
                 </li>
               </ul>
