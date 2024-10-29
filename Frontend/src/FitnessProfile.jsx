@@ -29,7 +29,7 @@ const FitnessProfile = () => {
   const [CarbConsumed, setCarbConsumed] = useState(0);
 
   const progressPercentage = (caloriesConsumed / dailyCalorieRequirement) * 100;
-  const [sun, setSun] = useState(false);
+  const [sun, setSun] = useState(localStorage.getItem('theme') === 'dark');
   const [isAnimated, setIsAnimated] = useState(false);
   const [selectedDate, setSelectedDate] =useState(new Date().toISOString().split("T")[0]);
   const [posts, setPosts] = useState([]);
@@ -120,7 +120,21 @@ const FitnessProfile = () => {
     { label: "Carbs", value: CarbConsumed, goal: dailyCarbRequirement },
     { label: "Fats", value: FatConsumed, goal: dailyFatRequirement },
   ];
-  const toggleSun = () => setSun(!sun);
+  const toggleSun = () => {
+    const newTheme = !sun;
+    setSun(newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light'); // Store the preference
+  };
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setSun(true);
+    } else {
+      setSun(false);
+    }
+  }, []);
+  
   const handlePostChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
