@@ -11,7 +11,6 @@ const Home = () => {
   const [posts, setPosts] = useState([
   ]);
 
-  const toggleLike = () => setLiked(!liked); // Toggle between liked and unliked states
   const handleAddPost = () => setShowPostModal(true); // NEW: Open post modal
   const [activeTab, setActiveTab] = useState("posts");
   const [showPostModal, setShowPostModal] = useState(false);
@@ -89,8 +88,39 @@ const handleSavePost = async () => {
   }
 };
 
+const [likedPosts, setLikedPosts] = useState({});
+// Handle like/unlike functionality
+const token=localStorage.getItem('token');
+const toggleLike = async (postId) => {
+  const isLiked = likedPosts[postId];
+  const endpoint = isLiked ? 'unlike' : 'like';
 
+<<<<<<< ours
 
+||||||| ancestor
+=======
+  try {
+    const response = await fetch (`http://localhost:3000/posts/${postId}/${endpoint}`,{
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === postId ? { ...post, likes: response.data.likes } : post
+      )
+    );
+
+    // Toggle the liked state for the specific post
+    setLikedPosts((prevLikedPosts) => ({
+      ...prevLikedPosts,
+      [postId]: !isLiked,
+    }));
+  } catch (error) {
+    console.error("Error toggling like:", error);
+  }
+};
+>>>>>>> theirs
   // const handleSavePost = () => {
   //   const newPostEntry = {
   //     profilePic: "https://via.placeholder.com/100", // Default profile pic
@@ -357,8 +387,8 @@ const handleSavePost = async () => {
 
                 {/* Like and Share Icons */}
             <div className="icon-row">
-              <span onClick={toggleLike} style={{ cursor: "pointer" }}>
-                {liked ? (
+              <span onClick={() => toggleLike(post._id)} style={{ cursor: "pointer" }}>
+                {likedPosts[post._id] ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -386,6 +416,7 @@ const handleSavePost = async () => {
                 )}
                 
               </span>
+              <span>{post.likes} likes</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-share-fill" viewBox="0 0 16 16">
                   <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
                 </svg>
