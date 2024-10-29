@@ -58,40 +58,37 @@ const Home = () => {
   });
 };
 const handleSavePost = async () => {
-  const formData = new FormData();
   const token = localStorage.getItem('token');
 
-  // Append the description and image URL to FormData
-  formData.append('description', newPost.description);
-  formData.append('image_url', 'https://picsum.photos/200/300'); // This can be an image file if applicable
-
-  for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-  }
   try {
     const response = await fetch('http://localhost:3000/posts/add', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
-      body: formData // Send the form data as the request body
+      body: JSON.stringify({
+        description: newPost.description,
+        image_url: 'https://picsum.photos/200/300'
+      }) // Pass the JSON object as the request body
     });
 
-      console.log(response);
-      if (response.ok) {
-          console.log('Post added successfully');
-          setNewPost({ image: null, description: "" }); // Reset input fields
-          await fetchAllPosts(); // Refresh posts after saving
-      } else {
-          // Handle errors from the server
-          const errorData = await response.json();
-          console.error('Error adding post:', errorData);
-      }
-      setShowPostModal(false);
+    console.log(response);
+    if (response.ok) {
+      console.log('Post added successfully');
+      setNewPost({ image: null, description: "" }); // Reset input fields
+      await fetchAllPosts(); // Refresh posts after saving
+    } else {
+      // Handle errors from the server
+      const errorData = await response.json();
+      console.error('Error adding post:', errorData);
+    }
+    setShowPostModal(false);
   } catch (error) {
-      console.error("Error adding post:", error);
+    console.error("Error adding post:", error);
   }
 };
+
 
 
   // const handleSavePost = () => {
