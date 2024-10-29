@@ -396,7 +396,7 @@ const FitnessProfile = () => {
                   </span>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link active" href="/Home">
+                  <a className="nav-link" href="/Home">
                     Home
                   </a>
                 </li>
@@ -407,7 +407,12 @@ const FitnessProfile = () => {
                 </li>
                 <li className="nav-item">
                   <a className="nav-link" href="/Profile">
-                    Profile
+                    User Profile
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link active" href="/FitnessProfile">
+                    Fitness Profile
                   </a>
                 </li>
               </ul>
@@ -578,6 +583,7 @@ const FitnessProfile = () => {
                       accept="image/*"
                       required
                     />
+                    {/* <FileUploadDemo /> */}
                   </div>
                   {/* <div className="mb-3">
                     <label htmlFor="calories" className="form-label">Calories</label>

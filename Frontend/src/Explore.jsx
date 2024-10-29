@@ -10,7 +10,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-light bg-light home-navbar">
       <div className="container-fluid">
         <a className="navbar-brand" href="/Home">
-          Garvit Kochar
+        {localStorage.getItem('username')}
         </a>
         <button
           className="navbar-toggler"
@@ -50,7 +50,12 @@ const Navbar = () => {
             </li>
             <li className="nav-item">
               <a className="nav-link" href="/Profile">
-                Profile
+                User Profile
+              </a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/FitnessProfile">
+                Fitness Profile
               </a>
             </li>
           </ul>

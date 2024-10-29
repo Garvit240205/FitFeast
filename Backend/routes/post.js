@@ -5,9 +5,10 @@ const authenticateToken = require('../middlewares/authMiddleware'); // Import yo
 const router = express.Router();
 
 // Create a new post
-router.post('/', authenticateToken, (req, res) => {
+router.post('/add', authenticateToken,async (req, res) => {
+    console.log(req.body);
     const { description, image_url } = req.body;
-
+    
     if (!req.user || !req.user._id) {
         return res.status(400).json({ message: 'User ID is required', user: req.user });
     }
@@ -26,7 +27,7 @@ router.post('/', authenticateToken, (req, res) => {
 });
 
 // Get all posts
-router.get('/', (req, res) => {
+router.get('/get',async (req, res) => {
     Post.find()
         .populate('user_id', 'username user_profile_pic') // Populate user details if needed
         .then(posts => res.status(200).json(posts))
