@@ -192,6 +192,17 @@ userRouter.get('/details', authenticateToken, async (req, res) => {
   }
 });
 
+// Route to get a list of users
+userRouter.get('/', authenticateToken, async (req, res) => {
+  try {
+      // Fetch all users from the database, excluding passwords
+      const users = await User.find({}, '-password'); // Exclude the password field from the results
+      res.status(200).json(users);
+  } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 
