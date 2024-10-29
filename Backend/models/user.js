@@ -13,13 +13,15 @@ const userSchema = new mongoose.Schema({
   country: { type: String },
   zipcode: { type: String },
   activityLevel: { type: String },
+  profile_pic: { type: String },      
   calorieRequirement: {
     calories: { type: Number },
     carbs: { type: Number },
-    protein: { type: Number},
+    protein: { type: Number },
     fat: { type: Number }
   },
-  welcomeDetails: { type: Boolean }
+  welcomeDetails: { type: Boolean },
+  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]  // Reference to user's posts
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
