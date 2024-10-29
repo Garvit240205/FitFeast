@@ -12,7 +12,7 @@ router.post('/add', authenticateToken,async (req, res) => {
     if (!req.user || !req.user._id) {
         return res.status(400).json({ message: 'User ID is required', user: req.user });
     }
-
+    console.log(req.user._id);
     const newPost = new Post({
         user_id: req.user._id, // Ensure this is set correctly
         description,
@@ -43,6 +43,7 @@ router.get('/user/:userId',authenticateToken, (req, res) => {
     Post.find({ user_id: userId }) // Find posts where the user_id matches the given userId
         .populate('user_id', 'username user_profile_pic') // Populate user details if needed
         .then(posts => {
+            console.log(posts);
             if (posts.length === 0) {
                 return res.status(404).json({ message: 'No posts found for this user' });
             }
@@ -160,6 +161,21 @@ router.delete('/:id/unlike', authenticateToken, (req, res) => {
         })
         .then(updatedPost => res.status(200).json(updatedPost))
         .catch(err => res.status(500).json({ message: 'Error unliking post', error: err }));
+});
+
+// Get posts liked by the authenticated user
+router.get('/liked/:id', authenticateToken, (req, res) => {
+    const userId = req.user._id; // Get the user ID from the token
+
+    Post.find({ likedBy: userId }) // Find posts where the user ID is in the likedBy array
+        .populate('user_id', 'username user_profile_pic') // Populate user details if needed
+        .then(posts => {
+            if (posts.length === 0) {
+                return res.status(404).json({ message: 'No liked posts found' });
+            }
+            res.status(200).json(posts);
+        })
+        .catch(err => res.status(500).json({ message: 'Error fetching liked posts', error: err }));
 });
 
 module.exports = router;

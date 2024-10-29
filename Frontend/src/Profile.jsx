@@ -1,57 +1,199 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Profile.css";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const Profile = () => {
-  const [liked, setLiked] = useState(false); // State to toggle like
+  const [liked, setLiked] = useState(false); 
   const [activeTab, setActiveTab] = useState("posts");
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
-  const [userDetails, setUserDetails] = useState({
-    username: "",
-    email: "",
-    phone: "",
-  });
+  const [showModal, setShowModal] = useState(false);
+  const [userDetails, setUserDetails] = useState({ username: "", email: "", phone: "" });
   const [sun, setSun] = useState(false);
-  const [posts, setPosts] = useState([ // Initial posts
-    {
-      profilePic: "https://via.placeholder.com/100",
-      name: "IIIT Delhi",
-      date: "Jun 8, 2023",
-      description:
-        "Excited to host @sama, CEO of @OpenAI at IIIT-Delhi today!! #OpenAIatIIITDelhi #ChatGPT #AI",
-      image: "Thor.jpg",
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
+  const [likedPosts, setLikedPosts] = useState({});
+  const token = localStorage.getItem('token');
+  const [noPosts, setNoPosts] = useState(false); // New state for 404 error
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [newPost, setNewPost] = useState({ image: null, description: "" });
+  const getUserIdFromToken = (token) => {
+    try {
+      const decodedToken = jwtDecode(token);
+      return decodedToken._id; // Adjust based on your token structure
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+    }
+  };
+
+  const fetchUserPosts = async () => {
+    try {
+      const userId = getUserIdFromToken(token);
+      const response = await axios.get(`http://localhost:3000/posts/user/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setPosts(response.data);
+      setNoPosts(false); // Reset no posts message if posts are found
+      const initialLikedPosts = response.data.reduce((acc, post) => {
+        acc[post._id] = post.likedBy.includes(userId);
+        return acc;
+      }, {});
+      setLikedPosts(initialLikedPosts);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        setNoPosts(true); // Set no posts message if 404 error is encountered
+      } else {
+        console.error("Error fetching user posts:", error);
+      }
+    }
+  };
+  const fetchLikedPosts = async () => {
+    try {
+      const userId = getUserIdFromToken(token);
+      const response = await axios.get(`http://localhost:3000/posts/liked/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      console.log(response);
+      const initialLikedPosts = response.data.reduce((acc, post) => {
+        acc[post._id] = post.likedBy.includes(userId);
+        return acc;
+      }, {});
+      setLikedPosts(initialLikedPosts);
+      
+      // const initialLikedPosts = response.data.reduce((acc, post) => {
+      //   acc[post._id] = post.likedBy.includes(userId);
+      //   return acc;
+      // }, {});
+      // setLikedPosts(initialLikedPosts);
+      setPosts(response.data);
+      console.log(posts);
+      console.log(likedPosts);
+      // console.log(likedPosts.length);
+    } catch (error) {
+      console.error("Error fetching liked posts:", error);
+      setPosts([]);
+      setLikedPosts({});
+    }
+  };
+  useEffect(() => {
+    fetchUserPosts();
+    fetchLikedPosts();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === "likes") {
+      fetchLikedPosts(); // Fetch liked posts when the active tab is "liked"
+    }
+    else{
+      fetchUserPosts();
+    }
+  }, [activeTab]);
+
+  const handlePostChange = (e) => {
+    const { name, value, files } = e.target;
+    setNewPost({
+      ...newPost,
+      [name]: name === "image" ? URL.createObjectURL(files[0]) : value
+    });
+  };
+
+  const handleSavePost = async () => {
+    const token = localStorage.getItem('token');
+  
+    try {
+      const response = await fetch('http://localhost:3000/posts/add', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          description: newPost.description,
+          image_url: 'https://picsum.photos/200/300'
+        }) // Pass the JSON object as the request body
+      });
+  
+      console.log(response);
+      if (response.ok) {
+        console.log('Post added successfully');
+        setNewPost({ image: null, description: "" }); // Reset input fields
+        await fetchUserPosts(); // Refresh posts after saving
+        // await fetchLikedPosts();
+      } else {
+        // Handle errors from the server
+        const errorData = await response.json();
+        console.error('Error adding post:', errorData);
+      }
+      setShowPostModal(false);
+    } catch (error) {
+      console.error("Error adding post:", error);
+    }
+  };
+
+  const toggleLike = async (postId) => {
+    const isLiked = likedPosts[postId];
+    const endpoint = isLiked ? 'unlike' : 'like';
+    const method = isLiked ? 'DELETE' : 'POST';
+    console.log(postId);
+    try {
+      const response = await fetch(`http://localhost:3000/posts/${postId}/${endpoint}`, {
+        method: method,
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      console.log(response);
+      if (!response.ok) {
+        throw new Error(`Failed to toggle like: ${response.statusText}`);
+      }
+  
+      const updatedPost = await response.json();
+  
+      // Update the post's likes count in the state
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId ? { ...post, likes: updatedPost.likes } : post
+        )
+      );
+  
+      const updatedLikedPosts = {
+        ...likedPosts,
+        [postId]: !isLiked,
+      };
+  
+      setLikedPosts(updatedLikedPosts);
+      // await fetchLikedPosts();
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
 
   const toggleSun = () => setSun(!sun);
-  const toggleLike = () => setLiked(!liked); // Toggle between liked and unliked states
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
-  const [showPostModal, setShowPostModal] = useState(false);
+  
   const handleAddPost = () => setShowPostModal(true); // NEW: Open post modal
-  const handlePostChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "image") {
-      setNewPost({ ...newPost, image: URL.createObjectURL(files[0]) });
-    } else {
-      setNewPost({ ...newPost, [name]: value });
-    }
-  };
-  const [newPost, setNewPost] = useState({ image: null, description: "" });
-  const handleSavePost = () => {
-    const newPostEntry = {
-      profilePic: "https://via.placeholder.com/100", // Default profile pic
-      name: "Garvit Kochar", // User's name
-      date: new Date().toLocaleDateString(), // Current date
-      description: newPost.description,
-      image: newPost.image,
-    };
-    setPosts([...posts, newPostEntry]); // Add new post to posts array
-    setNewPost({ image: null, description: "" }); // Reset input fields
-    setShowPostModal(false); // Close modal
-  };
+  // const handlePostChange = (e) => {
+  //   const { name, value, files } = e.target;
+  //   if (name === "image") {
+  //     setNewPost({ ...newPost, image: URL.createObjectURL(files[0]) });
+  //   } else {
+  //     setNewPost({ ...newPost, [name]: value });
+  //   }
+  // };
+  
+  // const handleSavePost = () => {
+  //   const newPostEntry = {
+  //     profilePic: "https://via.placeholder.com/100", // Default profile pic
+  //     name: "Garvit Kochar", // User's name
+  //     date: new Date().toLocaleDateString(), // Current date
+  //     description: newPost.description,
+  //     image: newPost.image,
+  //   };
+  //   setPosts([...posts, newPostEntry]); // Add new post to posts array
+  //   setNewPost({ image: null, description: "" }); // Reset input fields
+  //   setShowPostModal(false); // Close modal
+  // };
 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -192,31 +334,34 @@ const Profile = () => {
         </div>
 
         {activeTab === "posts" ? (
-          <div className="all-posts">
-          {posts.map((post, index) => (
-              <div className="post" key={index}>
-                <div className="profile-date-container">
-                  <img className="prof-pic" src={post.profilePic} alt="Profile" />
-                  <strong className="profile-name">{post.name}</strong>
-                  <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-dot"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
-                    </svg>
-                  <p className="date">{post.date}</p>
-                </div>
-                <p className="post-para">{post.description}</p>
-                {post.image && (
+  <div className="all-posts">
+    {noPosts ? (
+      <p>No posts by this user.</p> // Display this message if no posts are found
+    ) : (
+      posts.map((post,index) => (
+        <div className="post" key={index}>
+          <div className="profile-date-container">
+            <img className="prof-pic" src={'Thor.jpg'} alt="Profile" />
+            <strong className="profile-name">{localStorage.getItem('username')}</strong>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-dot"
+              viewBox="0 0 16 16"
+            >
+              <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+            </svg>
+            <p className="date">{new Date(post.createdAt).toISOString().split("T")[0]}</p>
+          </div>
+          <p className="post-para">{post.description}</p>
+          {post.image_url && (
             <img
               className="post-img"
-              src={post.image}
+              src={post.image_url}
               alt="Post"
-              onClick={() => openModal(post.image)}
+              onClick={() => openModal(post.image_url)}
               style={{ cursor: 'pointer' }} // Make it clear it's clickable
             />
           )}
@@ -230,118 +375,142 @@ const Profile = () => {
             </div>
           )}
 
-
-                {/* Like and Share Icons */}
-            <div className="icon-row">
-              <span onClick={toggleLike} style={{ cursor: "pointer" }}>
-                {liked ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-heart-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-heart"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
-                  </svg>
-                )}
-                
-              </span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-share-fill" viewBox="0 0 16 16">
-                  <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
+          {/* Like and Share Icons */}
+          <div className="icon-row">
+            <span onClick={() => toggleLike(post._id)} style={{ cursor: "pointer" }}>
+              {likedPosts[post._id] ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-heart-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
+                  />
                 </svg>
-            </div>
-                </div>
-          ))}
-
-            
-        {/* <div className="posts">
-          <div className="post">
-            <div className="profile-date-container">
-              <img
-                className="prof-pic"
-                src="https://via.placeholder.com/100"
-                alt="Profile"
-              />
-              <strong className="profile-name">IIIT Delhi</strong>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-dot"
-                viewBox="0 0 16 16"
-              >
-                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
-              </svg>
-              <p className="date">Jun 8, 2023</p>
-            </div>
-            <p className="post-para">
-              Excited to host <strong>@sama</strong>, CEO of{" "}
-              <strong>@OpenAI</strong> at IIIT-Delhi today!! #OpenAIatIIITDelhi
-              #ChatGPT #AI
-            </p>
-            <img className="post-img" src="Thor.jpg" alt="Post" />
-
-            <div className="icon-row">
-              <span onClick={toggleLike} style={{ cursor: "pointer" }}>
-                {liked ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-heart-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-heart"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
-                  </svg>
-                )}
-              </span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-share-fill" viewBox="0 0 16 16">
-                  <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-heart"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
                 </svg>
-            </div>
+              )}
+            </span>
+            <span style={{marginLeft:'0px',fontFamily:'Nunito',fontWeight:'bold'}}>{post.likes} likes</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-share-fill"
+              viewBox="0 0 16 16"
+            >
+              <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
+            </svg>
           </div>
-        </div> */}
         </div>
-        
-
-        
-        ) : (
-          <div className="likes">
-            <p>No likes yet.</p>
+      ))
+    )}
+  </div>
+) : (
+  <div className="all-posts">
+            {posts.length>0 ? (
+              posts.map((post, index) => (
+                <div className="post" key={index}>
+          <div className="profile-date-container">
+            <img className="prof-pic" src={'Thor.jpg'} alt="Profile" />
+            <strong className="profile-name">{localStorage.getItem('username')}</strong>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-dot"
+              viewBox="0 0 16 16"
+            >
+              <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+            </svg>
+            <p className="date">{post.createdAt}</p>
           </div>
-        )}
+          <p className="post-para">{post.description}</p>
+          {post.image_url && (
+            <img
+              className="post-img"
+              src={post.image_url}
+              alt="Post"
+              onClick={() => openModal(post.image_url)}
+              style={{ cursor: 'pointer' }} // Make it clear it's clickable
+            />
+          )}
+          {/* Modal for full-sized image */}
+          {isModalOpen && (
+            <div className="modal" onClick={closeModal}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <span className="close" onClick={closeModal}>&times;</span>
+                <img className="full-image" src={selectedImage} alt="Full Size" />
+              </div>
+            </div>
+          )}
+
+          {/* Like and Share Icons */}
+          <div className="icon-row">
+            <span onClick={() => toggleLike(post._id)} style={{ cursor: "pointer" }}>
+              {likedPosts[post._id] ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-heart-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-heart"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+                </svg>
+              )}
+            </span>
+            <span style={{marginLeft:'0px',fontFamily:'Nunito',fontWeight:'bold'}}>{post.likes} likes</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-share-fill"
+              viewBox="0 0 16 16"
+            >
+              <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
+            </svg>
+          </div>
+        </div>
+              ))
+            ) : (
+              <p>No likes yet.</p>
+            )}
+          </div>
+)}
+
       </div>
 
         {/* Floating Action Button */}
