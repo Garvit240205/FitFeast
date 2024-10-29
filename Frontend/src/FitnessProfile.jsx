@@ -279,57 +279,6 @@ const FitnessProfile = () => {
       reader.readAsDataURL(file); // Convert image file to data URL
     }
   };
-
-  // const calorieData = [
-  //   {
-  //     day:"Mon",
-  //     caloriesConsumed:1800,
-  //     caloriesBurned:1600
-  //   },
-  //   {
-  //     day:"Tue",
-  //     caloriesConsumed:2800,
-  //     caloriesBurned:2600
-  //   },
-  //   {
-  //     day:"Wed",
-  //     caloriesConsumed:1000,
-  //     caloriesBurned:1600
-  //   },
-  //   {
-  //     day:"Thu",
-  //     caloriesConsumed:4800,
-  //     caloriesBurned:1600
-  //   },
-  //   {
-  //     day:"Fri",
-  //     caloriesConsumed:1200,
-  //     caloriesBurned:900
-  //   }
-  // ]
-
-  // const weightData = [
-  //   {
-  //     day:"Mon",
-  //     weight:67
-  //   },
-  //   {
-  //     day:"Tue",
-  //     weight:69
-  //   },
-  //   {
-  //     day:"Wed",
-  //     weight:70
-  //   },
-  //   {
-  //     day:"Thu",
-  //     weight:68
-  //   },
-  //   {
-  //     day:"Fri",
-  //     weight:66
-  //   }
-  // ]
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
 
@@ -399,7 +348,7 @@ const FitnessProfile = () => {
     });
 
   return (
-    <div className="design-root">
+    <div className={`design-root ${sun ? 'dark-mode' : ''}`}>
       <div className="layout-container">
         <nav className="navbar navbar-expand-lg navbar-light bg-light home-navbar">
           <div className="container-fluid">
@@ -573,7 +522,9 @@ const FitnessProfile = () => {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="Enter weight"
-                style={{ padding: '10px', fontSize: '16px', marginRight: '10px',border:'solid',borderRadius:'15px',borderWidth:'2px',marginTop:'20px' }}
+
+                className="date-picker"
+                style={{ padding: '10px', fontSize: '16px', marginRight: '10px',marginTop:'20px' }}
             />
             <button 
                 onClick={handleAddWeight} 

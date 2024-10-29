@@ -373,3 +373,54 @@ body {
   font-size: 1.2rem;
   font-weight: bold;
 }
+
+
+
+
+
+
+
+.dark-mode {
+  background-color: #121212; /* Dark background */
+  color: #ffffff; /* Light text */
+}
+
+.dark-mode .modal-content {
+  background: rgba(50, 50, 50, 0.85);
+}
+
+.dark-mode .stat-card,
+.dark-mode .meal-post,
+.dark-mode .new-button {
+  background-color: #333;
+  color: #f5f5f5;
+  border-color: #444;
+}
+
+.dark-mode .date-picker {
+  background: #333;
+  border-color: #555;
+  color: #f5f5f5;
+}
+
+/* Update button hover color */
+.dark-mode .new-button:hover {
+  background-color: #555;
+}
+
+.dark-mode .modal-close {
+  color: #ddd;
+}
+
+.dark-mode .circle-background {
+  stroke: #e6e6e6;
+}
+
+
+.dark-mode .circle-text,
+.dark-mode .small-circle-text,
+.dark-mode .progress-label,
+.dark-mode .stat-label {
+  fill: #f5f5f5;
+  color: white;
+}

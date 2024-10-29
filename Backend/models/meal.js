@@ -110,10 +110,6 @@ const mealSchema = new mongoose.Schema({
     }
   ],
   requestBody: {
-    calories: {
-      type: String,
-      required: true
-    },
     mealType: {
       type: String,
       required: true

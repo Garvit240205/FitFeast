@@ -9,15 +9,17 @@ const createMealRouter = (upload) => {
 
     // POST: Add a new meal
     mealRouter.post('/add', upload.single('image'), foodRecognitionMiddleware, authenticateToken, async (req, res) => {
+        // console.log(req)
         console.log('Request Body:', req.body);
         console.log('Uploaded File:', req.file);
         console.log('Food Info:', req.foodInfo); // Log the foodInfo from middleware
 
-        const { mealType } = req.body.mealType;
+        const { mealType } = req.body;
         
         // Store the relative path from `Backend/uploads` onwards
         const imageUrl = req.file ? `Backend/uploads/${req.file.filename}` : null;
-
+        console.log(mealType)
+        console.log(req.user)
         try {
             // Validate required fields
             if (!mealType || !req.user) {
