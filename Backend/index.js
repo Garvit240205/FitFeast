@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const userRouter = require('./routes/user'); // Import the user router
 const mealRouter = require('./routes/meal');// Import the meal router
 const weightRouter = require('./routes/weights'); 
+const postRouter = require('./routes/post'); 
 const cors = require('cors');
 const multer = require('multer'); // Import Multer
 const path = require('path'); // Import path for file handling
@@ -65,7 +66,7 @@ mongoose.connect(mongoURI)
 app.use('/api', userRouter);
 app.use('/weight',weightRouter)
 app.use('/meals', mealRouter(upload)); // Pass the upload instance to the meal router
-
+app.use('/posts', postRouter)
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
