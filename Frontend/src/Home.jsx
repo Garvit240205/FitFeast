@@ -185,7 +185,7 @@ const toggleLike = async (postId) => {
   return (
     <div className={`design-root ${sun ? 'dark-mode' : ''}`}>
       {/* Bootstrap Navbar */}
-      <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} bg-${sun ? 'dark' : 'light'} home-navbar`}>
+      <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} home-navbar`}>
         <div className="container-fluid">
           <a className="navbar-brand" href="/Home">
             {localStorage.getItem('username')}

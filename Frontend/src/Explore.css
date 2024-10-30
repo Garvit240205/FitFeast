@@ -1,15 +1,7 @@
 /* Common styles for navbar */
 .navbar {
-  background-color: #333;
-  color: white;
-  padding: 1rem;
-  text-align: center;
 }
 
-/* Dark mode styles for navbar */
-.dark-mode .navbar {
-  background-color: #222; /* Darker background */
-}
 
 /* User profile grid */
 .user-profile-grid-2 {

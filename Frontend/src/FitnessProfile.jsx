@@ -362,7 +362,7 @@ const FitnessProfile = () => {
   return (
     <div className={`design-root ${sun ? 'dark-mode' : ''}`}>
       <div className="layout-container">
-        <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} bg-${sun ? 'dark' : 'light'} home-navbar`}>
+        <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} home-navbar`}>
           <div className="container-fluid">
             <a className="navbar-brand" href="/Home">
               {localStorage.getItem('username')}

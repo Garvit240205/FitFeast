@@ -1,20 +1,5 @@
-/* Light Mode Styles */
-body {
-  background: radial-gradient(ellipse at center, #fefae0 0%, #fefae0 100%);
-  background-size: 400% 400%;
-  height: 100vh;
-  margin: 0;
-  color: black; /* Default text color for light mode */
-}
 
 .home-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  height: 80px;
-  opacity: 0.9;
 }
 
 .home-add-post-btn {
@@ -40,8 +25,8 @@ body {
 }
 
 .home-all-posts {
-  margin-top: 80px;
-  padding: 20px;
+  margin-top: 0px;
+  padding: 82px;
   min-height: 100vh;
 }
 
@@ -97,12 +82,16 @@ body {
   text-align: center;
   transition: background-color 0.3s, color 0.3s;
 }
-
+.dark-mode  .nav-item .nav-link{
+  color: white;
+}
 .navbar-nav .nav-item .nav-link:hover {
   background-color: black;
   color: white;
 }
-
+.dark-mode  .nav-item .nav-link:hover{
+  color: black;
+}
 .navbar-nav .nav-item span svg {
   border: none;
   border-radius: 25px;
@@ -118,7 +107,7 @@ body {
 
 /* Dark Mode Styles */
 .dark-mode {
-  background: radial-gradient(ellipse at center, #1c1c1c 0%, #1c1c1c 100%);
+  background: radial-gradient(ellipse at center, #0d0d0d 0%, #020202 100%);
   color: white; /* Default text color for dark mode */
 }
 
