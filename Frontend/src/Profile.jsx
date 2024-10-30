@@ -428,7 +428,7 @@ const Profile = () => {
                 <div className="post" key={index}>
           <div className="profile-date-container">
             <img className="prof-pic" src={'Thor.jpg'} alt="Profile" />
-            <strong className="profile-name">{localStorage.getItem('username')}</strong>
+            <strong className="profile-name">{post.user_id.firstname}</strong>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -439,7 +439,7 @@ const Profile = () => {
             >
               <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
             </svg>
-            <p className="date">{post.createdAt}</p>
+            <p className="date">{new Date(post.createdAt).toISOString().split("T")[0]}</p>
           </div>
           <p className="post-para">{post.description}</p>
           {post.image_url && (

@@ -374,7 +374,7 @@ const toggleLike = async (postId) => {
               <div className="post" key={index}>
                 <div className="profile-date-container">
                   <img className="prof-pic" src={'Thor.jpg'} alt="Profile" />
-                  <strong className="profile-name">{localStorage.getItem('username')}</strong>
+                  <strong className="profile-name">{post.user_id.firstname}</strong>
                   <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
