@@ -138,7 +138,7 @@ const FitnessProfile = () => {
   const handlePostChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
-      setNewPost({ ...newPost, image: URL.createObjectURL(files[0]) }); // Set the image file
+      setNewPost({ ...newPost, image: URL.createObjectURL(files[0]) });
     } else {
       setNewPost({ ...newPost, [name]: value });
     }
@@ -153,7 +153,7 @@ const FitnessProfile = () => {
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const selectedDate = date.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+      const selectedDate = date.toISOString().split("T")[0];
   
       try {
         const response = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
@@ -162,7 +162,6 @@ const FitnessProfile = () => {
           }
         });
   
-        // Sum nutrition values for the day
         let dayCalories = 0, dayProtein = 0, dayFat = 0, dayCarbs = 0;
         response.data.meals.forEach(meal => {
           dayCalories += meal.nutrition.calories.value;
@@ -171,7 +170,6 @@ const FitnessProfile = () => {
           dayCarbs += meal.nutrition.carbs.value;
         });
   
-        // Add to array with formatted data for the chart
         last7DaysData.push({
           day: selectedDate,
           caloriesConsumed: dayCalories,

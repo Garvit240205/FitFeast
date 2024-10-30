@@ -6,9 +6,7 @@ import {jwtDecode} from 'jwt-decode';
 
 const Home = () => {
   const [liked, setLiked] = useState(false); // State to toggle like
-  const [sun, setSun] = useState(false);
 
-  const toggleSun = () => setSun(!sun);
   const [posts, setPosts] = useState([
   ]);
 
@@ -159,6 +157,21 @@ const toggleLike = async (postId) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
 
+  const [sun, setSun] = useState(localStorage.getItem('theme') === 'dark');
+  const toggleSun = () => {
+    const newTheme = !sun;
+    setSun(newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light'); // Store the preference
+  };
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setSun(true);
+    } else {
+      setSun(false);
+    }
+  }, []);
+  
   const openModal = (image) => {
     setSelectedImage(image);
     setIsModalOpen(true);
@@ -170,9 +183,9 @@ const toggleLike = async (postId) => {
   };
 
   return (
-    <div>
+    <div className={`design-root ${sun ? 'dark-mode' : ''}`}>
       {/* Bootstrap Navbar */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light home-navbar">
+      <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} bg-${sun ? 'dark' : 'light'} home-navbar`}>
         <div className="container-fluid">
           <a className="navbar-brand" href="/Home">
             {localStorage.getItem('username')}
@@ -193,7 +206,7 @@ const toggleLike = async (postId) => {
             <li className="navbar-brand">
             
             <span onClick={toggleSun}>{sun ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" className="bi bi-brightness-high" viewBox="0 0 16 16" style={{height:'30px',width:'30px',marginTop:'27px',marginRight:'10px',cursor:'pointer',alignItems:'center',justifyContent:'center'  }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" className="bi bi-brightness-high" viewBox="0 0 16 16" style={{height:'30px',width:'30px',marginTop:'27px',marginRight:'10px',cursor:'pointer',alignItems:'center',justifyContent:'center'  }}>
               <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
             </svg>
             ):(
