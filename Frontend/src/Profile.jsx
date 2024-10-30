@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Profile.css";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { Link, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [liked, setLiked] = useState(false); 
@@ -25,7 +26,7 @@ const Profile = () => {
       return null;
     }
   };
-
+  const navigate = useNavigate();
   const fetchUserPosts = async () => {
     try {
       const userId = getUserIdFromToken(token);
@@ -107,6 +108,12 @@ const Profile = () => {
       fetchUserPosts();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    if(showModal){
+      navigate('/WelcomePage')
+    }
+  }, [showModal]);
 
   const handlePostChange = (e) => {
     const { name, value, files } = e.target;
@@ -605,7 +612,7 @@ const Profile = () => {
                 <form>
                   <div className="mb-3">
                     <label htmlFor="username" className="form-label">
-                      Username
+                      Name
                     </label>
                     <input
                       type="text"
@@ -618,7 +625,7 @@ const Profile = () => {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label">
-                      Email
+                      Age
                     </label>
                     <input
                       type="email"
@@ -629,7 +636,7 @@ const Profile = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="mb-3">
+                  {/* <div className="mb-3">
                     <label htmlFor="phone" className="form-label">
                       Phone Number
                     </label>
@@ -641,7 +648,7 @@ const Profile = () => {
                       value={userDetails.phone}
                       onChange={handleInputChange}
                     />
-                  </div>
+                  </div> */}
                 </form>
               </div>
               <div className="modal-footer">
