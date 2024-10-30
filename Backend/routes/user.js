@@ -181,6 +181,7 @@ userRouter.get('/details', authenticateToken, async (req, res) => {
           _id: user._id,
           firstname: user.firstname,
           dailyCalorieRequirement: user.calorieRequirement,
+          createdAt: user.createdAt,
         },
       });
     } else {

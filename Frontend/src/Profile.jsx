@@ -47,6 +47,24 @@ const Profile = () => {
       }
     }
   };
+
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/details", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const { user, redirect } = response.data;
+      setUserDetails({
+        firstname: user.firstname,
+        dailyCalorieRequirement: user.dailyCalorieRequirement,
+        createdAt: user.createdAt,
+      });
+      console.log(response);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
+
   const fetchLikedPosts = async () => {
     try {
       const userId = getUserIdFromToken(token);
@@ -76,6 +94,7 @@ const Profile = () => {
     }
   };
   useEffect(() => {
+    fetchUserDetails();
     fetchUserPosts();
     fetchLikedPosts();
   }, []);
@@ -213,7 +232,7 @@ const Profile = () => {
       {/* Bootstrap Navbar */}
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <div className="container-fluid">
-            <a className='navbar-brand' href='/Home'>{localStorage.getItem('username')}</a>
+            <a className='navbar-brand' href='/Home'>{userDetails.firstname}</a>
             
             <button
               className="navbar-toggler"
@@ -284,7 +303,7 @@ const Profile = () => {
             alt="Profile"
           />
           <div className="name-edit">
-            <h2>Garvit Kochar</h2>
+            <h2>{userDetails.firstname}</h2>
             <button
               className="edit-button"
               onClick={() => setShowModal(true)} // Show modal on click
@@ -294,7 +313,7 @@ const Profile = () => {
           </div>
           
           <div className="details">
-            <p className="bio">IIITD</p>
+            <p className="bio">{userDetails.bio}</p>
             <div className="calen-join">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -306,7 +325,9 @@ const Profile = () => {
               >
                 <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
               </svg>
-              <p style={{ marginLeft: "10px" }}>Joined December 2017</p>
+              <p style={{ marginLeft: "10px" }}>Joined {userDetails.createdAt && !isNaN(new Date(userDetails.createdAt))
+  ? new Date(userDetails.createdAt).toISOString().split("T")[0]
+  : "Date not available"}</p>
             </div>
           </div>
 
@@ -342,7 +363,7 @@ const Profile = () => {
         <div className="post" key={index}>
           <div className="profile-date-container">
             <img className="prof-pic" src={'Thor.jpg'} alt="Profile" />
-            <strong className="profile-name">{localStorage.getItem('username')}</strong>
+            <strong className="profile-name">{post.user_id.firstname}</strong>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
