@@ -251,7 +251,7 @@ const Profile = () => {
   return (
     <div className={`design-root ${sun ? 'dark-mode' : ''}`}>
       {/* Bootstrap Navbar */}
-        <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} bg-${sun ? 'dark' : 'light'} home-navbar`}>
+        <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} home-navbar blur`}>
           <div className="container-fluid">
             <a className='navbar-brand' href='/Home'>{userDetails.firstname}</a>
             
@@ -360,10 +360,11 @@ const Profile = () => {
           {/* Sub-Navbar */}
           <div className="profile-navbar">
             <ul className="nav nav-tabs">
-              <li className="nav-item">
+              <li className="nav-item" >
                 <button
                   className={`nav-link ${activeTab === "posts" ? "active" : ""}`}
                   onClick={() => setActiveTab("posts")}
+                  style={{color:'green'}}
                 >
                   Posts
                 </button>
@@ -372,6 +373,7 @@ const Profile = () => {
                 <button
                   className={`nav-link ${activeTab === "likes" ? "active" : ""}`}
                   onClick={() => setActiveTab("likes")}
+                  style={{color:'green'}}
                 >
                   Likes
                 </button>
@@ -556,7 +558,7 @@ const Profile = () => {
               <p>No likes yet.</p>
             )}
           </div>
-)}
+          )}
 
       </div>
 

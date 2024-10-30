@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const Navbar = ({ sun, toggleSun }) => {
   return (
-    <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} bg-${sun ? 'dark' : 'light'} home-navbar`}>
+    <nav className={`navbar navbar-expand-lg navbar-${sun ? 'dark' : 'light'} home-navbar`}>
       <div className="container-fluid">
         <a className="navbar-brand" href="/Home">
           {localStorage.getItem('username')}
