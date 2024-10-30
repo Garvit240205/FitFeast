@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Explore.css';
+import axios from 'axios';
 
 const Navbar = () => {
   const [sun, setSun] = useState(false);
@@ -84,10 +85,10 @@ const ProfileGrid = ({ profiles }) => {
         {profiles.map((profile, index) => (
           <ProfileCard 
             key={index} 
-            name={profile.name} 
-            bio={profile.bio} 
-            image={profile.image} 
-            coverImage={profile.coverImage}
+            name={profile.firstname} 
+            bio={profile.bio}
+            image={'Thor.jpg'} 
+            coverImage={'google.png'}
           />
         ))}
       </div>
@@ -95,54 +96,30 @@ const ProfileGrid = ({ profiles }) => {
   );
 };
 
-// Sample data for profiles
-const sampleProfiles = [
-  {
-    name: 'John Doe',
-    bio: 'Software Engineer',
-    image: 'https://via.placeholder.com/100',
-    coverImage: 'https://via.placeholder.com/300x150',
-  },
-  {
-    name: 'Jane Smith',
-    bio: 'Graphic Designer',
-    image: 'https://via.placeholder.com/100',
-    coverImage: 'https://via.placeholder.com/300x150',
-  },
-  {
-    name: 'Jane Smith',
-    bio: 'Graphic Designer',
-    image: 'https://via.placeholder.com/100',
-    coverImage: 'https://via.placeholder.com/300x150',
-  },
-  {
-    name: 'Jane Smith',
-    bio: 'Graphic Designer',
-    image: 'https://via.placeholder.com/100',
-    coverImage: 'https://via.placeholder.com/300x150',
-  },
-  {
-    name: 'Jane Smith',
-    bio: 'Thank you for your interest in the HPAIR 2025 Harvard Conference! This year, our Harvard Conference will take place from February 7 to 9, 2025. Please note that your application will not be saved if you do not submit this form. Applicants are required to submit their own original responses and should not use AI-generated answers. If you have any questions, please email help@hpair.org.',
-    image: 'https://via.placeholder.com/100',
-    coverImage: 'https://via.placeholder.com/300x150',
-  },
-  {
-    name: 'Jane Smith',
-    bio: 'Graphic Designer',
-    image: 'https://via.placeholder.com/100',
-    coverImage: 'https://via.placeholder.com/300x150',
-  },
-  {
-    name: 'Jane Smith',
-    bio: 'Graphic Designer',
-    image: 'https://via.placeholder.com/100',
-    coverImage: 'https://via.placeholder.com/300x150',
-  },
-];
-
 const Explore = () => {
-  return <ProfileGrid profiles={sampleProfiles} />;
+  const [profiles, setProfiles] = useState([]);
+  const token=localStorage.getItem('token');
+  useEffect(() => {
+    // Fetch users from the backend API
+    const fetchProfiles = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/", {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        console.log(response);
+        setProfiles(response.data); // Set profiles to the response data
+        
+      } catch (error) {
+        console.error('Error fetching profiles:', error);
+      }
+    };
+
+    fetchProfiles();
+  }, []);
+  
+  return <ProfileGrid profiles={profiles} />;
 };
 
 export default Explore;
