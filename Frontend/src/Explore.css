@@ -1,5 +1,4 @@
-
-
+/* Common styles for navbar */
 .navbar {
   background-color: #333;
   color: white;
@@ -7,6 +6,12 @@
   text-align: center;
 }
 
+/* Dark mode styles for navbar */
+.dark-mode .navbar {
+  background-color: #222; /* Darker background */
+}
+
+/* User profile grid */
 .user-profile-grid-2 {
   display: flex; /* Use flexbox for layout */
   flex-wrap: wrap; /* Allow wrapping to new lines */
@@ -15,6 +20,7 @@
   margin-top: 70px;
 }
 
+/* User profile card */
 .user-profile-card-2 {
   width: 250px; /* Fixed width for uniformity */
   height: 240px; /* Fixed height for uniformity */
@@ -27,10 +33,21 @@
   transition: box-shadow 0.3s ease;
 }
 
-.user-profile-card-2:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Dark mode styles for profile cards */
+.dark-mode .user-profile-card-2 {
+  background-color: #444; /* Darker background for cards */
+  border-color: #666; /* Lighter border for contrast */
 }
 
+/* Hover effect for profile cards */
+.user-profile-card-2:hover {
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+}
+.dark-mode .user-profile-card-2:hover {
+  box-shadow: 0 8px 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Cover image */
 .cover-image-2 {
   width: 100%; /* Ensure the cover image covers the full width */
   height: 80px; /* Fixed height for the cover image */
@@ -40,6 +57,7 @@
   z-index: 0; /* Behind the profile image */
 }
 
+/* Profile image */
 .profile-image-2 {
   width: 80px; /* Adjust the size of the profile image */
   height: 80px; /* Fixed height for profile image */
@@ -50,6 +68,7 @@
   margin-left: 15px;
 }
 
+/* Profile name and bio styles */
 .profile-name-2 {
   margin: 10px 0;
   text-align: left;
@@ -66,3 +85,7 @@
   text-align: left;
 }
 
+/* Dark mode styles for profile bio */
+.dark-mode .profile-bio-2 {
+  color: #bbb; /* Lighter text color for dark mode */
+}
