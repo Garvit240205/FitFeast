@@ -29,7 +29,7 @@ router.post('/add', authenticateToken,async (req, res) => {
 // Get all posts
 router.get('/get',async (req, res) => {
     Post.find()
-        .populate('user_id', 'username user_profile_pic') // Populate user details if needed
+        .populate('user_id', 'firstname user_profile_pic') // Populate user details if needed
         .then(posts => res.status(200).json(posts))
         .catch(err => res.status(500).json({ message: 'Error fetching posts', error: err }));
 });
@@ -41,7 +41,7 @@ router.get('/user/:userId',authenticateToken, (req, res) => {
     console.log('Received userId:', userId); // Debugging line
 
     Post.find({ user_id: userId }) // Find posts where the user_id matches the given userId
-        .populate('user_id', 'username user_profile_pic') // Populate user details if needed
+        .populate('user_id', 'firstname user_profile_pic') // Populate user details if needed
         .then(posts => {
             console.log(posts);
             if (posts.length === 0) {
@@ -58,7 +58,7 @@ router.get('/:id', (req, res) => {
     const { id } = req.params;
 
     Post.findById(id)
-        .populate('user_id', 'username user_profile_pic') // Populate user details if needed
+        .populate('user_id', 'firstname user_profile_pic') // Populate user details if needed
         .then(post => {
             if (!post) {
                 return res.status(404).json({ message: 'Post not found' });
@@ -168,7 +168,7 @@ router.get('/liked/:id', authenticateToken, (req, res) => {
     const userId = req.user._id; // Get the user ID from the token
 
     Post.find({ likedBy: userId }) // Find posts where the user ID is in the likedBy array
-        .populate('user_id', 'username user_profile_pic') // Populate user details if needed
+        .populate('user_id', 'firstname user_profile_pic') // Populate user details if needed
         .then(posts => {
             if (posts.length === 0) {
                 return res.status(404).json({ message: 'No liked posts found' });
