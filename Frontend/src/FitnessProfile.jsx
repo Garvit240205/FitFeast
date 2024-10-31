@@ -312,17 +312,22 @@ const FitnessProfile = () => {
   const [weight, setWeight] = useState("");
     const [weightData, setWeightData] = useState([
         // Initialize with existing weight data
-        { day: '2024-10-20', weight: 70 },
-        { day: '2024-10-21', weight: 71 },
-        { day: '2024-10-22', weight: 50 },
-        { day: '2024-10-23', weight: 57 },
-        { day: '2024-10-24', weight: 80 },
-        { day: '2024-10-25', weight: 71 },
+        // { day: '2024-10-20', weight: 70 },
+        // { day: '2024-10-21', weight: 71 },
+        // { day: '2024-10-22', weight: 50 },
+        // { day: '2024-10-23', weight: 57 },
+        // { day: '2024-10-24', weight: 80 },
+        // { day: '2024-10-25', weight: 71 },
         // Add more initial weight data as needed
     ]);
     // Fetch weights from the backend
     const fetchWeights = async () => {
-      const response = await axios.get('http://localhost:3000/weight/weights');
+      const response = await axios.get("http://localhost:3000/weight/weights", {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log('Weight Response: ',response);
       setWeightData(response.data);
     };
 
@@ -332,32 +337,71 @@ const FitnessProfile = () => {
 
     const handleAddWeight = async () => {
       if (weight) {
-          const today = new Date().toISOString().split("T")[0]; // Get today's date
-
-          // Check if today's weight is already logged
-          const existingWeight = weightData.find(data => data.day === today);
+        const today = new Date().toISOString().split("T")[0]; // Get today's date
+    
+        // Check if today's weight is already logged
+        let existingWeight;
+        if(weightData){
+          existingWeight = weightData.find(data => data.day === today);
+        }
+        
+        try {
           if (existingWeight) {
-              // Update existing weight
-              await axios.put(`http://localhost:3000/weight/weights/${existingWeight._id}`, { weight: parseFloat(weight) });
+            // Update existing weight
+            const response = await fetch(`http://localhost:3000/weight/weights/${existingWeight._id}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                weight: parseFloat(weight)
+              }) // Pass the JSON object as the request body
+            }); 
           } else {
-              // Add new weight entry for today
-              await axios.post('http://localhost:3000/weight/weights', { day: today, weight: parseFloat(weight) });
+            const response = await fetch('http://localhost:3000/weight/weights', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                day:today,
+                weight: parseFloat(weight)
+              }) // Pass the JSON object as the request body
+            });
+            // Add new weight entry for today
+            // await fetch(
+            //   'http://localhost:3000/weight/weights',
+            //   {method:'POST'},
+            //   { day: today, weight: parseFloat(weight) },
+            //   {
+            //     headers: {
+            //       'Authorization': `Bearer ${localStorage.getItem("token")}`, // Add token from local storage or state
+            //     },
+            //   }
+            // );
           }
-
+    
           setWeight(""); // Clear the input after adding
-          fetchWeights(); // Refresh the weight data
+          await fetchWeights(); // Refresh the weight data
+        } catch (error) {
+          console.error("Error updating weight:", error);
+          alert("There was an error updating your weight. Please try again.");
+        }
       } else {
-          alert("Please enter a weight.");
+        alert("Please enter a weight.");
       }
-  };
+    };
+    
 
     // Filter to get only the last 7 days of data
-    const last7DaysData = weightData.filter(data => {
-      const date = new Date(data.day);
-      const today = new Date();
-      const daysDifference = Math.ceil((today - date) / (1000 * 60 * 60 * 24));
-      return daysDifference <= 8; // Keep data from the last 7 days
-    });
+    // const last7DaysData = weightData.filter(data => {
+    //   const date = new Date(data.day);
+    //   const today = new Date();
+    //   const daysDifference = Math.ceil((today - date) / (1000 * 60 * 60 * 24));
+    //   return daysDifference <= 8; // Keep data from the last 7 days
+    // });
 
   return (
     <div className={`design-root ${sun ? 'dark-mode' : ''}`}>
@@ -515,7 +559,7 @@ const FitnessProfile = () => {
 
             {/* Weight Graph */}
             <ResponsiveContainer width="100%" height={500}>
-                <AreaChart data={last7DaysData}>
+                <AreaChart data={weightData}>
                     <defs>
                         <linearGradient id="colorWeight" x1={0} x2={0} y1={0} y2={1}>
                             <stop offset="0%" stopColor="#2451B7" stopOpacity={0.4} />
