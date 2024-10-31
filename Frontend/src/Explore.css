@@ -14,8 +14,8 @@
 
 /* User profile card */
 .user-profile-card-2 {
-  width: 250px; /* Fixed width for uniformity */
-  height: 240px; /* Fixed height for uniformity */
+  width: 350px; /* Fixed width for uniformity */
+  height: 340px; /* Fixed height for uniformity */
   position: relative;
   border: 1px solid #ccc;
   border-radius: 8px;

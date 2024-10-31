@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Explore.css';
 import axios from 'axios';
+import { CardContainer, CardBody, CardItem,MouseEnterProvider } from './components/ui/3d-card';
 
 const Navbar = ({ sun, toggleSun }) => {
   return (
@@ -70,12 +71,25 @@ const Navbar = ({ sun, toggleSun }) => {
 
 const ProfileCard = ({ name, bio, image, coverImage }) => {
   return (
-    <div className="user-profile-card-2">
-      <div className="cover-image-2" style={{ backgroundImage: `url(${coverImage})` }}></div>
-      <img src={image} alt={name} className="profile-image-2" />
-      <h2 className="profile-name-2">{name}</h2>
-      <p className="profile-bio-2">{bio}</p>
-    </div>
+    // <MouseEnterProvider>
+    <CardContainer className="user-profile-card-2">
+      <div
+        className="cover-image-2"
+        style={{ backgroundImage: `url(${coverImage})`, height: '150px', borderRadius: '0.75rem', overflow: 'hidden' }} // Adjust styles as needed
+      />
+      {/* <CardBody className="bg-gray-50 relative group/card dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border"> */}
+        <CardItem translateZ="50" className="flex justify-center mb-4">
+          <img src={image} alt={name} className="profile-image-2 h-24 w-24 object-cover rounded-full border-2 border-white" /> {/* Adjust image size as needed */}
+        </CardItem>
+        <div translateZ="60" className="profile-name-2 text-xl font-bold text-neutral-600 dark:text-white">
+          {name}
+        </div>
+        <div as="p" translateZ="60" className="profile-bio-2 text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300">
+          {'dwadasd sadasdw dasdaw dwsa'}
+        </div>
+      {/* </CardBody> */}
+    </CardContainer>
+    // </MouseEnterProvider>
   );
 };
 
