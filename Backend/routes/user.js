@@ -6,7 +6,7 @@ const User = require('../models/user'); // Import the User model
 const authenticateToken = require('../middlewares/authMiddleware'); // Import the authentication middleware
 const calculateCaloriesMiddleware = require('../middlewares/calculateCalories');
 const userRouter = express.Router();
-
+const Weight = require('../models/weights');
 // Replace 'your_jwt_secret' with an environment variable or a secure key
 const JWT_SECRET = '4a751785ea0a685ec4d98f1d25b17730bae31ad1fbf1310cda8069a90bce2b47';
 
@@ -139,9 +139,14 @@ userRouter.put('/update-details', authenticateToken, async (req, res, next) => {
     user.zipcode = zipcode;
     user.activityLevel = activityLevel;
     user.welcomeDetails=true;
-
+    const today = new Date().toISOString().split("T")[0]; 
     req.user = user; // Pass the user object to the middleware
-
+    const newWeight = new Weight({
+      user_id: req.user._id, // Associate weight entry with user ID
+      day:today,
+      weight
+    });
+    const savedWeight = await newWeight.save();
     // Use the middleware to calculate and update daily calorie requirement
     next();
   } catch (error) {
@@ -182,6 +187,7 @@ userRouter.get('/details', authenticateToken, async (req, res) => {
           firstname: user.firstname,
           dailyCalorieRequirement: user.calorieRequirement,
           createdAt: user.createdAt,
+          weight: user.weight,
         },
       });
     } else {
