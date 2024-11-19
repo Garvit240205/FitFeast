@@ -1,16 +1,18 @@
 const axios = require('axios');
 const FormData = require('form-data');
-const fs = require('fs');
 
 const foodRecognitionMiddleware = async (req, res, next) => {
   try {
-    const { path: imagePath } = req.file; // Access the uploaded image path
+    // Check if there is a file and it's a valid buffer
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ message: 'No file uploaded or invalid file format' });
+    }
 
     // Step 1: Create a FormData instance
     const form = new FormData();
-    form.append('file', fs.createReadStream(imagePath)); // Add the image file
+    form.append('file', req.file.buffer, { filename: 'image.jpg' }); // Add the image buffer
 
-    // Step 2: Call the Spoonacular API with the image file
+    // Step 2: Call the Spoonacular API with the image buffer
     const apiKey = 'd68479f793444bb9a21da6177ec0c430'; // Hardcoded API key
     const response = await axios.post(
       `https://api.spoonacular.com/food/images/analyze?apiKey=${apiKey}`,
@@ -38,11 +40,6 @@ const foodRecognitionMiddleware = async (req, res, next) => {
 
     // Optional: Log the extracted information
     console.log('Extracted Food Info:', req.foodInfo);
-
-    // Optional: Delete the uploaded file if it’s no longer needed
-    fs.unlink(imagePath, (err) => {
-      if (err) console.error('Error deleting uploaded file:', err);
-    });
 
     // Call the next middleware or route handler
     next();

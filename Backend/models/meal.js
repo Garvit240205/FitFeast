@@ -18,138 +18,49 @@ const mealSchema = new mongoose.Schema({
     default: 'success'
   },
   nutrition: {
-    recipesUsed: {
-      type: Number,
-      required: true
-    },
+    recipesUsed: { type: Number, required: true },
     calories: {
-      value: {
-        type: Number,
-        required: true
-      },
-      unit: {
-        type: String,
-        default: 'calories'
-      },
-      standardDeviation: {
-        type: Number,
-        required: true
-      }
+      value: { type: Number, required: true },
+      unit: { type: String, default: 'calories' },
+      standardDeviation: { type: Number, required: true }
     },
     fat: {
-      value: {
-        type: Number,
-        required: true
-      },
-      unit: {
-        type: String,
-        default: 'g'
-      },
-      standardDeviation: {
-        type: Number,
-        required: true
-      }
+      value: { type: Number, required: true },
+      unit: { type: String, default: 'g' },
+      standardDeviation: { type: Number, required: true }
     },
     protein: {
-      value: {
-        type: Number,
-        required: true
-      },
-      unit: {
-        type: String,
-        default: 'g'
-      },
-      standardDeviation: {
-        type: Number,
-        required: true
-      }
+      value: { type: Number, required: true },
+      unit: { type: String, default: 'g' },
+      standardDeviation: { type: Number, required: true }
     },
     carbs: {
-      value: {
-        type: Number,
-        required: true
-      },
-      unit: {
-        type: String,
-        default: 'g'
-      },
-      standardDeviation: {
-        type: Number,
-        required: true
-      }
+      value: { type: Number, required: true },
+      unit: { type: String, default: 'g' },
+      standardDeviation: { type: Number, required: true }
     }
   },
   category: {
-    name: {
-      type: String,
-      required: true
-    },
-    probability: {
-      type: Number,
-      required: true
-    }
+    name: { type: String, required: true },
+    probability: { type: Number, required: true }
   },
   recipes: [
     {
-      id: {
-        type: Number,
-        required: true
-      },
-      title: {
-        type: String,
-        required: true
-      },
-      imageType: {
-        type: String,
-        required: true
-      },
-      url: {
-        type: String,
-        required: true
-      }
+      id: { type: Number, required: true },
+      title: { type: String, required: true },
+      imageType: { type: String, required: true },
+      url: { type: String, required: true }
     }
   ],
   requestBody: {
-    mealType: {
-      type: String,
-      required: true
-    }
+    mealType: { type: String, required: true }
   },
-  uploadedFile: {
-    fieldname: {
-      type: String,
-      required: true
-    },
-    originalname: {
-      type: String,
-      required: true
-    },
-    encoding: {
-      type: String,
-      required: true
-    },
-    mimetype: {
-      type: String,
-      required: true
-    },
-    destination: {
-      type: String,
-      required: true
-    },
-    filename: {
-      type: String,
-      required: true
-    },
-    path: {
-      type: String,
-      required: true
-    },
-    size: {
-      type: Number,
-      required: true
-    }
+  image: {
+    data: Buffer,
+    contentType: String // Stores the MIME type (e.g., 'image/jpeg')
   }
 }, { timestamps: true });
 
 const Meal = mongoose.model('Meal', mealSchema);
+
 module.exports = Meal;
