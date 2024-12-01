@@ -47,7 +47,7 @@ mongoose.connect(mongoURI)
 app.use('/api', userRouter);
 app.use('/weight', weightRouter);
 app.use('/meals', mealRouter(upload)); // Pass the Multer upload instance to the meal router
-app.use('/posts', postRouter);
+app.use('/posts', postRouter(upload));
 
 // Global error handling middleware for file upload errors
 app.use((err, req, res, next) => {
