@@ -73,9 +73,14 @@ const Home = () => {
   });
 };
 const handleSavePost = async () => {
-  const token = localStorage.getItem('token');
-
+  const token = localStorage.getItem("token");
   try {
+    let base64Image = null;
+
+    if (newPost.image) {
+      base64Image = await toBase64(newPost.image); // Convert image to Base64
+    }
+
     const response = await fetch('http://localhost:3000/posts/add', {
       method: 'POST',
       headers: {
@@ -84,9 +89,10 @@ const handleSavePost = async () => {
       },
       body: JSON.stringify({
         description: newPost.description,
-        image_url: 'https://picsum.photos/200/300'
+        image_url: newPost.image,
       }) // Pass the JSON object as the request body
     });
+
 
     console.log(response);
     if (response.ok) {
