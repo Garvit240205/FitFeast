@@ -17,12 +17,13 @@ const Home = () => {
 
   const handlePostChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === "image") {
-      setNewPost({ ...newPost, image: URL.createObjectURL(files[0]) });
+    if (name === "image" && files.length > 0) {
+      setNewPost({ ...newPost, image: files[0] }); // Save the file for processing
     } else {
       setNewPost({ ...newPost, [name]: value });
     }
   };
+  
   
 
   const getUserIdFromToken = (token) => {
@@ -61,6 +62,7 @@ const Home = () => {
     fetchAllPosts(); // Load posts on component mount
   }, []);
 
+<<<<<<< ours
   const toBase64 = file => {
   return new Promise((resolve, reject) => {
     if (!(file instanceof Blob)) {
@@ -74,6 +76,34 @@ const Home = () => {
 };
 const handleSavePost = async () => {
   const token = localStorage.getItem("token");
+||||||| ancestor
+  const toBase64 = file => {
+  return new Promise((resolve, reject) => {
+    if (!(file instanceof Blob)) {
+      return reject(new Error("Provided value is not a File or Blob"));
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+};
+const handleSavePost = async () => {
+  const token = localStorage.getItem('token');
+
+=======
+  const toBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+const handleSavePost = async () => {
+  const token = localStorage.getItem("token");
+>>>>>>> theirs
   try {
     let base64Image = null;
 
@@ -95,6 +125,7 @@ const handleSavePost = async () => {
 
 
     console.log(response);
+
     if (response.ok) {
       console.log('Post added successfully');
       setNewPost({ image: null, description: "" }); // Reset input fields
@@ -109,6 +140,7 @@ const handleSavePost = async () => {
     console.error("Error adding post:", error);
   }
 };
+
 
 const [likedPosts, setLikedPosts] = useState({});
 // Handle like/unlike functionality
