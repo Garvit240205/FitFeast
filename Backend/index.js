@@ -1,13 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const userRouter = require('./routes/user'); // Import the user router
-const mealRouter = require('./routes/meal');// Import the meal router
-const weightRouter = require('./routes/weights'); 
-const postRouter = require('./routes/post'); 
+const mealRouter = require('./routes/meal'); // Import the meal router
+const weightRouter = require('./routes/weights'); // Import the weight router
+const postRouter = require('./routes/post'); // Import the post router
 const cors = require('cors');
 const multer = require('multer'); // Import Multer
 const path = require('path'); // Import path for file handling
-const fs = require('fs'); // Import fs to manage file system operations
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,39 +18,21 @@ app.use(express.urlencoded({ extended: false }));
 // Use CORS to allow requests from your frontend
 app.use(cors({ origin: 'http://localhost:5173' }));
 
-// Define the upload directory
-const uploadDir = path.join(__dirname, 'uploads');
-
-// Check if the uploads directory exists; if not, create it
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true }); // Create the directory
-}
-
-// Set up Multer storage configuration
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir); // Specify the uploads directory
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname); // Use a timestamp to create unique filenames
-    }
-});
-
-// Create a Multer instance
+// Multer setup for in-memory storage (buffer)
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
-  fileFilter: (req, file, cb) => {
-      // Only allow certain file types
-      const filetypes = /jpeg|jpg|png|gif/;
-      const mimetype = filetypes.test(file.mimetype);
-      const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    storage: multer.memoryStorage(), // Use memory storage for direct binary upload to MongoDB
+    limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
+    fileFilter: (req, file, cb) => {
+        // Only allow certain file types
+        const filetypes = /jpeg|jpg|png|gif/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
-      if (mimetype && extname) {
-          return cb(null, true); // Accept the file
-      }
-      cb('Error: File upload only supports the following filetypes - ' + filetypes); // Reject the file
-  }
+        if (mimetype && extname) {
+            return cb(null, true); // Accept the file
+        }
+        cb(new Error('File upload only supports the following filetypes: jpeg, jpg, png, gif')); // Reject the file
+    }
 });
 
 // MongoDB Atlas connection string
@@ -62,11 +43,24 @@ mongoose.connect(mongoURI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-// Use the user router
+// Mount routers with respective paths
 app.use('/api', userRouter);
-app.use('/weight',weightRouter)
-app.use('/meals', mealRouter(upload)); // Pass the upload instance to the meal router
-app.use('/posts', postRouter)
+app.use('/weight', weightRouter);
+app.use('/meals', mealRouter(upload)); // Pass the Multer upload instance to the meal router
+app.use('/posts', postRouter(upload));
+
+// Global error handling middleware for file upload errors
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        // Multer-specific errors
+        return res.status(400).json({ message: 'Multer error', error: err.message });
+    } else if (err) {
+        // General errors
+        return res.status(500).json({ message: 'Server error', error: err.message });
+    }
+    next();
+});
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

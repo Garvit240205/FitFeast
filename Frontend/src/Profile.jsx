@@ -117,43 +117,39 @@ const Profile = () => {
   const handlePostChange = (e) => {
     const { name, value, files } = e.target;
     setNewPost({
-      ...newPost,
-      [name]: name === "image" ? URL.createObjectURL(files[0]) : value
+        ...newPost,
+        [name]: name === "image" ? files[0] : value // Save the actual File object
     });
-  };
+};
 
   const handleSavePost = async () => {
+    const formData = new FormData();
+
     const token = localStorage.getItem('token');
+    formData.append('description', newPost.description);
+    formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
   
     try {
-      const response = await fetch('http://localhost:3000/posts/add', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          description: newPost.description,
-          image_url: 'https://picsum.photos/200/300'
-        }) // Pass the JSON object as the request body
-      });
-  
-      console.log(response);
-      if (response.ok) {
-        console.log('Post added successfully');
-        setNewPost({ image: null, description: "" }); // Reset input fields
-        await fetchUserPosts(); // Refresh posts after saving
-        // await fetchLikedPosts();
-      } else {
-        // Handle errors from the server
-        const errorData = await response.json();
-        console.error('Error adding post:', errorData);
-      }
-      setShowPostModal(false);
-    } catch (error) {
-      console.error("Error adding post:", error);
+        const response = await fetch('http://localhost:3000/posts/add', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}` // Do NOT set 'Content-Type' explicitly
+            },
+            body: formData // Pass FormData as the request body
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error:', errorData);
+        } else {
+            const result = await response.json();
+            console.log('Post added successfully:', result);
+        }
+    } catch (err) {
+        console.error('Error during post creation:', err);
     }
-  };
+};
+
 
   const toggleLike = async (postId) => {
     const isLiked = likedPosts[postId];
