@@ -16,7 +16,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Use CORS to allow requests from your frontend
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: 'http://localhost:5173' }
+    
+));
+
+app.use(cors({origin:["https://fitfeast.vercel.app"],
+    methods:["POST","GET"],
+    credentials: true
+}
+    
+));
+
+
 
 // Multer setup for in-memory storage (buffer)
 const upload = multer({
