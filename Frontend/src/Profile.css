@@ -211,7 +211,7 @@
   color:  #0d824c;
   border-color:#02ad57;
 }
-.modal {
+/* .modal {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -228,7 +228,7 @@
   position: relative;
   max-width: 80%;
   max-height: 80%;
-}
+} */
 
 .full-image {
   max-width: 100%;
