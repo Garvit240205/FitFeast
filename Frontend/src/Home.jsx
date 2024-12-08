@@ -17,12 +17,13 @@ const Home = () => {
 
   const handlePostChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === "image") {
-      setNewPost({ ...newPost, image: URL.createObjectURL(files[0]) });
+    if (name === "image" && files.length > 0) {
+      setNewPost({ ...newPost, image: files[0] }); // Save the file for processing
     } else {
       setNewPost({ ...newPost, [name]: value });
     }
   };
+  
   
 
   const getUserIdFromToken = (token) => {
@@ -61,40 +62,32 @@ const Home = () => {
     fetchAllPosts(); // Load posts on component mount
   }, []);
 
-  const toBase64 = file => {
-  return new Promise((resolve, reject) => {
-    if (!(file instanceof Blob)) {
-      return reject(new Error("Provided value is not a File or Blob"));
-    }
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-};
+  const toBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
 const handleSavePost = async () => {
   const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append('description', newPost.description);
+  formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
   try {
-    let base64Image = null;
-
-    if (newPost.image) {
-      base64Image = await toBase64(newPost.image); // Convert image to Base64
-    }
-
-    const response = await fetch('http://localhost:3000/posts/add', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        description: newPost.description,
-        image_url: newPost.image,
-      }) // Pass the JSON object as the request body
-    });
+  const response = await fetch('http://localhost:3000/posts/add', {
+    method: 'POST',
+    headers: {
+        'Authorization': `Bearer ${token}` // Do NOT set 'Content-Type' explicitly
+    },
+    body: formData // Pass FormData as the request body
+});
 
 
     console.log(response);
+
     if (response.ok) {
       console.log('Post added successfully');
       setNewPost({ image: null, description: "" }); // Reset input fields
@@ -109,6 +102,7 @@ const handleSavePost = async () => {
     console.error("Error adding post:", error);
   }
 };
+
 
 const [likedPosts, setLikedPosts] = useState({});
 // Handle like/unlike functionality
@@ -412,12 +406,12 @@ const toggleLike = async (postId) => {
                   <p className="date">{new Date(post.createdAt).toISOString().split("T")[0]}</p>
                 </div>
                 <p className="post-para">{post.description}</p>
-                {post.image_url && (
+                {post.image && (
             <img
               className="post-img"
-              src={post.image_url}
+              src={post.image}
               alt="Post"
-              onClick={() => openModal(post.image_url)}
+              onClick={() => openModal(post.image)}
               style={{ cursor: 'pointer' }} // Make it clear it's clickable
             />
           )}

@@ -28,6 +28,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const fetchUserPosts = async () => {
     try {
+      console.log('eneterered')
       const userId = getUserIdFromToken(token);
       const response = await axios.get(`http://localhost:3000/posts/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -128,7 +129,6 @@ const Profile = () => {
     const token = localStorage.getItem('token');
     formData.append('description', newPost.description);
     formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
-  
     try {
         const response = await fetch('http://localhost:3000/posts/add', {
             method: 'POST',
@@ -141,10 +141,13 @@ const Profile = () => {
         if (!response.ok) {
             const errorData = await response.json();
             console.error('Error:', errorData);
+            
         } else {
             const result = await response.json();
             console.log('Post added successfully:', result);
+            await fetchUserPosts();
         }
+        setShowPostModal(false);
     } catch (err) {
         console.error('Error during post creation:', err);
     }
@@ -181,6 +184,7 @@ const Profile = () => {
       };
   
       setLikedPosts(updatedLikedPosts);
+      
       // await fetchLikedPosts();
     } catch (error) {
       console.error("Error toggling like:", error);
@@ -217,7 +221,7 @@ const Profile = () => {
 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const openModal = (image) => {
     setSelectedImage(image);
@@ -226,7 +230,7 @@ const Profile = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedImage('');
+    setSelectedImage(null);
   };
 
 
@@ -401,12 +405,12 @@ const Profile = () => {
             <p className="date">{new Date(post.createdAt).toISOString().split("T")[0]}</p>
           </div>
           <p className="post-para">{post.description}</p>
-          {post.image_url && (
+          {post.image && (
             <img
               className="post-img"
-              src={post.image_url}
+              src={post.image}
               alt="Post"
-              onClick={() => openModal(post.image_url)}
+              onClick={() => openModal(post.image)}
               style={{ cursor: 'pointer' }} // Make it clear it's clickable
             />
           )}
@@ -414,7 +418,9 @@ const Profile = () => {
           {isModalOpen && (
             <div className="modal" onClick={closeModal}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <span className="close" onClick={closeModal}>&times;</span>
+                <span className="close" onClick={closeModal}>
+                  &times;
+                </span>
                 <img className="full-image" src={selectedImage} alt="Full Size" />
               </div>
             </div>
@@ -487,24 +493,28 @@ const Profile = () => {
             <p className="date">{new Date(post.createdAt).toISOString().split("T")[0]}</p>
           </div>
           <p className="post-para">{post.description}</p>
-          {post.image_url && (
+          {post.image && (
             <img
               className="post-img"
-              src={post.image_url}
+              src={post.image}
               alt="Post"
-              onClick={() => openModal(post.image_url)}
+              onClick={() => openModal(post.image)}
               style={{ cursor: 'pointer' }} // Make it clear it's clickable
             />
           )}
           {/* Modal for full-sized image */}
           {isModalOpen && (
+            
             <div className="modal" onClick={closeModal}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <span className="close" onClick={closeModal}>&times;</span>
+                <span className="close" onClick={closeModal}>
+                  &times;
+                </span>
                 <img className="full-image" src={selectedImage} alt="Full Size" />
               </div>
             </div>
           )}
+          {isModalOpen ? console.log('yess'):console.log('Noo')}
 
           {/* Like and Share Icons */}
           <div className="icon-row">

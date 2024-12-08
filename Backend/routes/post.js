@@ -36,7 +36,16 @@ const postRouter = (upload) => {
     router.get('/get', async (req, res) => {
         Post.find()
             .populate('user_id', 'firstname user_profile_pic') // Populate user details
-            .then(posts => res.status(200).json(posts))
+            .then(posts =>{
+                const postsWithImages = posts.map(post => ({
+                    ...post.toObject(),
+                    image: post.image.data 
+                        ? `data:${post.image.contentType};base64,${post.image.data.toString('base64')}`
+                        : null,
+                }));
+        
+                res.status(200).json(postsWithImages);
+            })
             .catch(err => res.status(500).json({ message: 'Error fetching posts', error: err }));
     });
 
@@ -50,7 +59,14 @@ const postRouter = (upload) => {
                 if (posts.length === 0) {
                     return res.status(404).json({ message: 'No posts found for this user' });
                 }
-                res.status(200).json(posts);
+                const postsWithImages = posts.map(post => ({
+                    ...post.toObject(),
+                    image: post.image.data 
+                        ? `data:${post.image.contentType};base64,${post.image.data.toString('base64')}`
+                        : null,
+                }));
+        
+                res.status(200).json(postsWithImages);
             })
             .catch(err => res.status(500).json({ message: 'Error fetching posts', error: err }));
     });
@@ -65,7 +81,14 @@ const postRouter = (upload) => {
                 if (!post) {
                     return res.status(404).json({ message: 'Post not found' });
                 }
-                res.status(200).json(post);
+                const postsWithImages = posts.map(post => ({
+                    ...post.toObject(),
+                    image: post.image.data 
+                        ? `data:${post.image.contentType};base64,${post.image.data.toString('base64')}`
+                        : null,
+                }));
+        
+                res.status(200).json(postsWithImages);
             })
             .catch(err => res.status(500).json({ message: 'Error fetching post', error: err }));
     });
@@ -167,7 +190,14 @@ const postRouter = (upload) => {
                 if (posts.length === 0) {
                     return res.status(404).json({ message: 'No liked posts found' });
                 }
-                res.status(200).json(posts);
+                const postsWithImages = posts.map(post => ({
+                    ...post.toObject(),
+                    image: post.image.data 
+                        ? `data:${post.image.contentType};base64,${post.image.data.toString('base64')}`
+                        : null,
+                }));
+        
+                res.status(200).json(postsWithImages);
             })
             .catch(err => res.status(500).json({ message: 'Error fetching liked posts', error: err }));
     });
