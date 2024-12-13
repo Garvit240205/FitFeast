@@ -161,7 +161,7 @@ const FitnessProfile = () => {
             Authorization: `Bearer ${token}`,
           }
         });
-  
+        console.log(response);
         let dayCalories = 0, dayProtein = 0, dayFat = 0, dayCarbs = 0;
         response.data.meals.forEach(meal => {
           dayCalories += meal.nutrition.calories.value;
@@ -729,7 +729,7 @@ const FitnessProfile = () => {
                     </svg>
                     <p className="date">{selectedDate}</p>
                   </div>
-                  <img className="posts-img" src={post.image} onClick={() => openModal(post.image)}
+                  <img className="posts-img" src={post.image} alt="post" onClick={() => openModal(post.image)}
                   style={{ cursor: 'pointer' }}></img>
                    {/* Modal for full-sized image */}
                   {isModalOpen && (
