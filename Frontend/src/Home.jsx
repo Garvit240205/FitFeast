@@ -46,6 +46,7 @@ const Home = () => {
       });
       console.log(response)
       setPosts(response.data);
+      console.log(posts)
       // Set likedPosts based on the fetched posts
       const userId = getUserIdFromToken(token); // Assume you have a function to get the user ID from the token
       const initialLikedPosts = response.data.reduce((acc, post) => {
