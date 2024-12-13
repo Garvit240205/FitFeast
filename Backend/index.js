@@ -11,6 +11,7 @@ const path = require('path'); // Import path for file handling
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const _dirname= path.resolve();
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -71,6 +72,11 @@ app.use((err, req, res, next) => {
     }
     next();
 });
+
+app.use(express.static(path.join(_dirname, "/Frontend/dist")))
+app.get('*', (_, res)=>{
+    res.sendFile(path.resolve(_dirname, "Frontend", "dist", "index.html"))
+})
 
 // Start the server
 app.listen(PORT, () => {

@@ -59,9 +59,9 @@ userRouter.post('/google-login', async (req, res) => {
       idToken: token,
       audience: "225589132267-2mbhelusrktjd8j7m8u3mkbj7fbtlvmt.apps.googleusercontent.com",
     });
-    console.log(ticket)
+    // console.log(ticket)
     const payload = ticket.getPayload();
-    console.log(payload)
+    // console.log(payload)
     const username = payload?.email; // Use email as the unique identifier
     
     // Check if user already exists
@@ -77,7 +77,7 @@ userRouter.post('/google-login', async (req, res) => {
     }
     // Generate a JWT token with the user's _id
     token = jwt.sign({ _id: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
-    console.log(token)
+    // console.log(token)
     res.json({ message: "User authenticated successfully",token });
   } catch (error) {
     console.error('Google authentication failed:', error);
@@ -119,7 +119,7 @@ userRouter.put('/update-details', authenticateToken, async (req, res, next) => {
   const { firstname, age, weight, height, gender, goal, country, zipcode, activityLevel } = req.body;
 
   try {
-    console.log('Authenticated user ID:', req.user._id);
+    // console.log('Authenticated user ID:', req.user._id);
 
     // Find the user by ID in the database
     const user = await User.findById(req.user._id);
