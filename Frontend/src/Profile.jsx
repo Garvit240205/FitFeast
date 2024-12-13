@@ -30,7 +30,7 @@ const Profile = () => {
     try {
       console.log('eneterered')
       const userId = getUserIdFromToken(token);
-      const response = await axios.get(`http://localhost:3000/posts/user/${userId}`, {
+      const response = await axios.get(`https://fitfeast.onrender.com/posts/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setPosts(response.data);
@@ -51,7 +51,7 @@ const Profile = () => {
 
   const fetchUserDetails = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/details", {
+      const response = await axios.get("https://fitfeast.onrender.com/api/details", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const { user, redirect } = response.data;
@@ -69,7 +69,7 @@ const Profile = () => {
   const fetchLikedPosts = async () => {
     try {
       const userId = getUserIdFromToken(token);
-      const response = await axios.get(`http://localhost:3000/posts/liked/${userId}`, {
+      const response = await axios.get(`https://fitfeast.onrender.com/posts/liked/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       console.log(response);
@@ -130,7 +130,7 @@ const Profile = () => {
     formData.append('description', newPost.description);
     formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
     try {
-        const response = await fetch('http://localhost:3000/posts/add', {
+        const response = await fetch('https://fitfeast.onrender.com/posts/add', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}` // Do NOT set 'Content-Type' explicitly
@@ -160,7 +160,7 @@ const Profile = () => {
     const method = isLiked ? 'DELETE' : 'POST';
     console.log(postId);
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}/${endpoint}`, {
+      const response = await fetch(`https://fitfeast.onrender.com/posts/${postId}/${endpoint}`, {
         method: method,
         headers: { 'Authorization': `Bearer ${token}` },
       });

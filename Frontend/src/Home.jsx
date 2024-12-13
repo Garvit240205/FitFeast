@@ -39,7 +39,7 @@ const Home = () => {
   const fetchAllPosts = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.get("http://localhost:3000/posts/get", {
+      const response = await axios.get("https://fitfeast.onrender.com/posts/get", {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -77,7 +77,7 @@ const handleSavePost = async () => {
   formData.append('description', newPost.description);
   formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
   try {
-  const response = await fetch('http://localhost:3000/posts/add', {
+  const response = await fetch('https://fitfeast.onrender.com/posts/add', {
     method: 'POST',
     headers: {
         'Authorization': `Bearer ${token}` // Do NOT set 'Content-Type' explicitly
@@ -113,7 +113,7 @@ const toggleLike = async (postId) => {
   const method = isLiked ? 'DELETE' : 'POST';
 
   try {
-    const response = await fetch(`http://localhost:3000/posts/${postId}/${endpoint}`, {
+    const response = await fetch(`https://fitfeast.onrender.com/posts/${postId}/${endpoint}`, {
       method: method,
       headers: { 'Authorization': `Bearer ${token}` },
     });
