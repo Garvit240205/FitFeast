@@ -3,6 +3,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user'); // Import the User model
+const multer = require('multer');
 const authenticateToken = require('../middlewares/authMiddleware'); // Import the authentication middleware
 const calculateCaloriesMiddleware = require('../middlewares/calculateCalories');
 const userRouter = express.Router();
@@ -212,6 +213,54 @@ userRouter.get('/', authenticateToken, async (req, res) => {
 });
 
 
+// Configure Multer for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
+// Route handler to update profile picture
+userRouter.put('/update-profilepic', authenticateToken, upload.single('profile_pic'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Find the user in the database
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update the user's profile picture
+    user.profile_pic = {
+      data: req.file.buffer,
+      contentType: req.file.mimetype,
+    };
+
+    await user.save();
+
+    res.json({ message: 'Profile picture updated successfully' });
+  } catch (error) {
+    console.error('Error updating profile picture:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Route handler to get profile picture
+userRouter.get('/get-profilepic', authenticateToken, async (req, res) => {
+  try {
+    // Find the user in the database
+    const user = await User.findById(req.user._id);
+    if (!user || !user.profile_pic || !user.profile_pic.data) {
+      return res.status(404).json({ message: 'Profile picture not found' });
+    }
+
+    // Send the profile picture as a response
+    res.set('Content-Type', user.profile_pic.contentType);
+    res.send(user.profile_pic.data);
+  } catch (error) {
+    console.error('Error retrieving profile picture:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 module.exports = userRouter;

@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     fat: { type: Number }
   },
   welcomeDetails: { type: Boolean },
+  profile_pic: {
+    data: Buffer,    // Binary data for the image
+    contentType: String  // MIME type, e.g., 'image/jpeg'
+  },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]  // Reference to user's posts
 }, { timestamps: true });
 

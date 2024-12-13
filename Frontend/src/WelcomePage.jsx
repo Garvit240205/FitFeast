@@ -41,7 +41,8 @@ const WelcomePage = () => {
     if (selectedOptions.includes("Gain Weight")) return "gain";
     return null;
   }
-
+  const [coverImage, setCoverImage] = useState(null);
+  const [profilePic, setProfilePic] = useState(null);
   const userDetails = {
     firstname: name,
     age,
@@ -54,6 +55,9 @@ const WelcomePage = () => {
     additionalGoals: filterWeightGoals(selectedOptions),
     activityLevel: selectedActivityLevel || '',
   };
+  const imageDetails={
+    image:profilePic
+  }
 
   const updateUserDetails = async (userDetails) => {
     try {
@@ -63,6 +67,7 @@ const WelcomePage = () => {
       const response = await axios.put(
         'http://localhost:3000/api/update-details',
         userDetails,
+        imageDetails,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -141,6 +146,16 @@ const WelcomePage = () => {
     }
   };
 
+  // New States for Image Uploads
+  
+  const handleImageChange = (event, type) => {
+    const file = event.target.files[0];
+    if (type === 'cover') {
+      setCoverImage(file);
+    } else if (type === 'profile') {
+      setProfilePic(file);
+    }
+  };
   const toggleFormula = () => {
     setShowFormula(!showFormula);
   };
@@ -422,9 +437,28 @@ const WelcomePage = () => {
         case 7:
           return(
             <div>
-              
-            </div>
-          )
+                  <h1 className="header" style={{ fontSize: '50px', fontFamily: 'Nunito' }}>Almost Done!</h1>
+                  <p className="normal-text">Now, upload your profile and cover images.</p>
+      
+                  {/* Cover Image Upload */}
+                  {/* <input
+                    type="file"
+                    onChange={(e) => handleImageChange(e, 'cover')}
+                    className="input"
+                    style={{ marginTop: '20px' }}
+                  />
+                  {coverImage && <p>Cover image selected: {coverImage.name}</p>} */}
+      
+                  {/* Profile Picture Upload */}
+                  <input
+                    type="file"
+                    onChange={(e) => handleImageChange(e, 'profile')}
+                    className="input"
+                    style={{ marginTop: '20px',display:'flex' }}
+                  />
+                  {profilePic && <p>Profile picture selected: {profilePic.name}</p>}
+                </div>
+              );
       default:
         return null;
     }
@@ -445,7 +479,7 @@ const WelcomePage = () => {
   }, [step]);
   useEffect(() => {
     // Log the user details whenever step changes (i.e., when the user advances in the form)
-    if (step >= 6) {
+    if (step >= 7) {
       console.log('Updated user details:', userDetails);
     }
   }, [step, name, age, weight, heightFeet, heightInches, gender, country, zipCode, selectedActivityLevel]);
@@ -453,13 +487,13 @@ const WelcomePage = () => {
   return (
     <div className="container">
       <div className="progress-container">
-        {Array.from({ length: 7 }).map((_, index) => (
+        {Array.from({ length: 8 }).map((_, index) => (
           <div key={index} className={`step-bar ${index <= step ? 'filled' : ''}`} />
         ))}
       </div>
       {renderStepContent()}
       {error && <p className="error-message" style={{color:'red'}}>{error}</p>} {/* Display error */}
-      {step < 6 ? (
+      {step < 7 ? (
         <button onClick={handleContinue} className="button">
           Continue
         </button>
