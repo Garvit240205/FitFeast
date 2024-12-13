@@ -729,7 +729,7 @@ const FitnessProfile = () => {
                     </svg>
                     <p className="date">{selectedDate}</p>
                   </div>
-                  <img className="posts-img" src={'Chole Bhature.jpg'} onClick={() => openModal('Chole Bhature.jpg')}
+                  <img className="posts-img" src={post.image} onClick={() => openModal(post.image)}
                   style={{ cursor: 'pointer' }}></img>
                    {/* Modal for full-sized image */}
                   {isModalOpen && (
