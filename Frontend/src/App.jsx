@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Home from './Home';
 import Profile from './Profile';
-import Explore from './explore';
+import Explore from './Explore';
 import { SignInPage } from './SignIn';
 import { SignUpPage } from './SignUp';
 import WelcomePage from './WelcomePage.jsx'
