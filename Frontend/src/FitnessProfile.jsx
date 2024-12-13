@@ -203,7 +203,8 @@ const FitnessProfile = () => {
         });
         console.log(response)
       setMeals(response.data.meals); 
-      console.log(meals[0].image)
+      if(meals.length()>=1)
+        console.log("Meals:" + meals[0])
       let sum=0;
       let proteinsum=0;
       let fatsum=0;
