@@ -7,7 +7,7 @@ const authenticateToken  = require('../middlewares/authMiddleware'); // Assuming
 weightRouter.get('/weights', authenticateToken, async (req, res) => {
   const lastWeek = new Date();
   lastWeek.setDate(lastWeek.getDate() - 7);
-  console.log('to get weights entered!');
+  // console.log('to get weights entered!');
   try {
     const weights = await Weight.find({
       user_id: req.user._id, // Filter by user ID

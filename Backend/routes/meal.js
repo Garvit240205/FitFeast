@@ -18,9 +18,9 @@ const createMealRouter = (upload) => {
         authenticateToken,
         async (req, res) => {
             try {
-                console.log('Request Body:', req.body);
-                console.log('Uploaded File:', req.file);
-                console.log('Food Info:', req.foodInfo);
+                // console.log('Request Body:', req.body);
+                // console.log('Uploaded File:', req.file);
+                // console.log('Food Info:', req.foodInfo);
 
                 const { mealType } = req.body;
 

@@ -128,7 +128,7 @@ const WelcomePage = () => {
       }
     }
 
-    if (step < 6) {
+    if (step < 7) {
       setStep(step + 1);
     }
   };
@@ -419,7 +419,12 @@ const WelcomePage = () => {
             )}
           </div>
         );
-
+        case 7:
+          return(
+            <div>
+              
+            </div>
+          )
       default:
         return null;
     }

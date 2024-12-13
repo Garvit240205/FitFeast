@@ -39,7 +39,7 @@ const foodRecognitionMiddleware = async (req, res, next) => {
     };
 
     // Optional: Log the extracted information
-    console.log('Extracted Food Info:', req.foodInfo);
+    // console.log('Extracted Food Info:', req.foodInfo);
 
     // Call the next middleware or route handler
     next();
