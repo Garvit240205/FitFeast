@@ -16,12 +16,9 @@ const _dirname= path.resolve();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Use CORS to allow requests from your frontend
-app.use(cors({ origin: 'http://localhost:5173' }
-    
-));
 
-app.use(cors({origin:["https://your-frontend-url.onrender.com"],
+
+app.use(cors({origin:["https://your-frontend-url.onrender.com", "http://localhost:5173"],
     methods:["POST","GET"],
     credentials: true
 }
