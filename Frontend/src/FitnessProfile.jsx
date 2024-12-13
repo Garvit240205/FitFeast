@@ -65,7 +65,7 @@ const FitnessProfile = () => {
       try {
         const token = localStorage.getItem('token');
         console.log('Token:', token);
-        const response = await axios.get('http://localhost:3000/api/details', {
+        const response = await axios.get('https://fitfeast.onrender.com/api/details', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -156,7 +156,7 @@ const FitnessProfile = () => {
       const selectedDate = date.toISOString().split("T")[0];
   
       try {
-        const response = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
+        const response = await axios.get(`https://fitfeast.onrender.com/meals/preview?date=${selectedDate}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -196,7 +196,7 @@ const FitnessProfile = () => {
       const token = localStorage.getItem('token');
         console.log('Token:', token);
         // console.log(selectedDate)
-        const response = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
+        const response = await axios.get(`https://fitfeast.onrender.com/meals/preview?date=${selectedDate}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -249,7 +249,7 @@ const FitnessProfile = () => {
     const formData = new FormData(event.target);
     
     try {
-      const response = await fetch('http://localhost:3000/meals/add', {
+      const response = await fetch('https://fitfeast.onrender.com/meals/add', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -322,7 +322,7 @@ const FitnessProfile = () => {
     ]);
     // Fetch weights from the backend
     const fetchWeights = async () => {
-      const response = await axios.get("http://localhost:3000/weight/weights", {
+      const response = await axios.get("https://fitfeast.onrender.com/weight/weights", {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("token")}`,
         },
@@ -348,7 +348,7 @@ const FitnessProfile = () => {
         try {
           if (existingWeight) {
             // Update existing weight
-            const response = await fetch(`http://localhost:3000/weight/weights/${existingWeight._id}`, {
+            const response = await fetch(`https://fitfeast.onrender.com/weight/weights/${existingWeight._id}`, {
               method: 'PUT',
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -359,7 +359,7 @@ const FitnessProfile = () => {
               }) // Pass the JSON object as the request body
             }); 
           } else {
-            const response = await fetch('http://localhost:3000/weight/weights', {
+            const response = await fetch('https://fitfeast.onrender.com/weight/weights', {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -372,7 +372,7 @@ const FitnessProfile = () => {
             });
             // Add new weight entry for today
             // await fetch(
-            //   'http://localhost:3000/weight/weights',
+            //   'https://fitfeast.onrender.com/weight/weights',
             //   {method:'POST'},
             //   { day: today, weight: parseFloat(weight) },
             //   {

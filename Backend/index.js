@@ -21,7 +21,7 @@ app.use(cors({ origin: 'http://localhost:5173' }
     
 ));
 
-app.use(cors({origin:["https://fitfeast.vercel.app"],
+app.use(cors({origin:["https://your-frontend-url.onrender.com"],
     methods:["POST","GET"],
     credentials: true
 }
