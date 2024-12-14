@@ -39,14 +39,13 @@ const Home = () => {
   const fetchAllPosts = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.get("https://fitfeast.onrender.com/posts/get", {
+      const response = await axios.get("http://localhost:3000/posts/get", {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
       console.log(response)
       setPosts(response.data);
-      console.log(posts)
       // Set likedPosts based on the fetched posts
       const userId = getUserIdFromToken(token); // Assume you have a function to get the user ID from the token
       const initialLikedPosts = response.data.reduce((acc, post) => {
@@ -78,7 +77,7 @@ const handleSavePost = async () => {
   formData.append('description', newPost.description);
   formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
   try {
-  const response = await fetch('https://fitfeast.onrender.com/posts/add', {
+  const response = await fetch('http://localhost:3000/posts/add', {
     method: 'POST',
     headers: {
         'Authorization': `Bearer ${token}` // Do NOT set 'Content-Type' explicitly
@@ -114,7 +113,7 @@ const toggleLike = async (postId) => {
   const method = isLiked ? 'DELETE' : 'POST';
 
   try {
-    const response = await fetch(`https://fitfeast.onrender.com/posts/${postId}/${endpoint}`, {
+    const response = await fetch(`http://localhost:3000/posts/${postId}/${endpoint}`, {
       method: method,
       headers: { 'Authorization': `Bearer ${token}` },
     });
@@ -143,18 +142,6 @@ const toggleLike = async (postId) => {
   }
 };
 
-  // const handleSavePost = () => {
-  //   const newPostEntry = {
-  //     profilePic: "https://via.placeholder.com/100", // Default profile pic
-  //     name: "Garvit Kochar", // User's name
-  //     date: new Date().toLocaleDateString(), // Current date
-  //     description: newPost.description,
-  //     image: newPost.image,
-  //   };
-  //   setPosts([...posts, newPostEntry]); // Add new post to posts array
-  //   setNewPost({ image: null, description: "" }); // Reset input fields
-  //   setShowPostModal(false); // Close modal
-  // };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
 
@@ -247,152 +234,13 @@ const toggleLike = async (postId) => {
         </div>
       </nav>
 
-      {/* All Posts Section */}
-      {/* <div className="home-all-posts">
-        {posts.map((post) => (
-          <div key={post.id} className="home-post">
-            <div className="home-profile-date-container">
-              <img
-                className="home-prof-pic"
-                src="https://via.placeholder.com/100"
-                alt="Profile"
-              />
-              <strong className="home-profile-name">{post.username}</strong>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-dot"
-                viewBox="0 0 16 16"
-              >
-                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
-              </svg>
-              <p className="home-date">{post.date}</p>
-            </div>
-            <p className="home-post-para" dangerouslySetInnerHTML={{ __html: post.content }} />
-            <img className="home-post-img" src={post.image} alt="Post" /> */}
-
-            {/* Like and Share Icons */}
-            {/* <div className="home-icon-row">
-              <span onClick={toggleLike} style={{ cursor: "pointer" }}>
-                {liked ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-heart-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-heart"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
-                  </svg>
-                )}
-              </span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-share-fill"
-                viewBox="0 0 16 16"
-              >
-                <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
-              </svg>
-            </div>
-          </div>
-          
-        ))} */}
-
-        {/* {posts.map((post) => (
-          <div key={post.id} className="home-post">
-            <div className="home-profile-date-container">
-              <img
-                className="home-prof-pic"
-                src="https://via.placeholder.com/100"
-                alt="Profile"
-              />
-              <strong className="home-profile-name">{post.username}</strong>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-dot"
-                viewBox="0 0 16 16"
-              >
-                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
-              </svg>
-              <p className="home-date">{post.date}</p>
-            </div>
-            <p className="home-post-para" dangerouslySetInnerHTML={{ __html: post.content }} />
-            <img className="home-post-img" src={post.image} alt="Post" /> */}
-
-            {/* Like and Share Icons */}
-            {/* <div className="home-icon-row">
-              <span onClick={toggleLike} style={{ cursor: "pointer" }}>
-                {liked ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-heart-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-heart"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
-                  </svg>
-                )}
-              </span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-share-fill"
-                viewBox="0 0 16 16"
-              >
-                <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
-              </svg>
-            </div>
-          </div>
-          
-        ))}
-      </div> */}
+     
       {/* Display Posts */}
       <div className="home-all-posts">
           {posts.map((post, index) => (
               <div className="post" key={index}>
                 <div className="profile-date-container">
-                  <img className="prof-pic" src={'Thor.jpg'} alt="Profile" />
+                  <img className="prof-pic" src={post.user_profile_pic} alt="Profile" />
                   <strong className="profile-name">{post.user_id.firstname}</strong>
                   <svg
                       xmlns="http://www.w3.org/2000/svg"

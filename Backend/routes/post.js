@@ -34,19 +34,29 @@ const postRouter = (upload) => {
 
     // Get all posts
     router.get('/get', async (req, res) => {
-        Post.find()
-            .populate('user_id', 'firstname user_profile_pic') // Populate user details
-            .then(posts =>{
-                const postsWithImages = posts.map(post => ({
+        try {
+            const posts = await Post.find()
+                .populate('user_id', 'firstname profile_pic'); // Populate user details with profile_pic
+    
+            const postsWithImages = posts.map(post => {
+                const user = post.user_id;
+                const userProfilePic = user && user.profile_pic && user.profile_pic.data
+                    ? `data:${user.profile_pic.contentType};base64,${user.profile_pic.data.toString('base64')}`
+                    : 'https://picsum.photos/200';
+    
+                return {
                     ...post.toObject(),
-                    image: post.image.data 
+                    image: post.image && post.image.data
                         ? `data:${post.image.contentType};base64,${post.image.data.toString('base64')}`
                         : null,
-                }));
-        
-                res.status(200).json(postsWithImages);
-            })
-            .catch(err => res.status(500).json({ message: 'Error fetching posts', error: err }));
+                    user_profile_pic: userProfilePic,
+                };
+            });
+    
+            res.status(200).json(postsWithImages);
+        } catch (err) {
+            res.status(500).json({ message: 'Error fetching posts', error: err });
+        }
     });
 
     // Get posts by a specific user

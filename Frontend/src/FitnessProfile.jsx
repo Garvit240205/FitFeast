@@ -5,6 +5,7 @@ import { Bar, Line } from "react-chartjs-2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
+import { encode } from 'base64-arraybuffer';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -65,7 +66,7 @@ const FitnessProfile = () => {
       try {
         const token = localStorage.getItem('token');
         console.log('Token:', token);
-        const response = await axios.get('https://fitfeast.onrender.com/api/details', {
+        const response = await axios.get('http://localhost:3000/api/details', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -156,12 +157,12 @@ const FitnessProfile = () => {
       const selectedDate = date.toISOString().split("T")[0];
   
       try {
-        const response = await axios.get(`https://fitfeast.onrender.com/meals/preview?date=${selectedDate}`, {
+        const response = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
         });
-        console.log(response);
+  
         let dayCalories = 0, dayProtein = 0, dayFat = 0, dayCarbs = 0;
         response.data.meals.forEach(meal => {
           dayCalories += meal.nutrition.calories.value;
@@ -190,51 +191,106 @@ const FitnessProfile = () => {
   useEffect(() => {
     fetchLast7DaysCalories();
   }, []);
-  
-  const fetchMeals = async (selectedDate) => {
-    try {
-      const token = localStorage.getItem('token');
-        console.log('Token:', token);
-        // console.log(selectedDate)
-        const response = await axios.get(`https://fitfeast.onrender.com/meals/preview?date=${selectedDate}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
-        console.log(response)
-      setMeals(response.data.meals); 
-      if(meals.length()>=1)
-        console.log("Meals:" + meals[0])
-      let sum=0;
-      let proteinsum=0;
-      let fatsum=0;
-      let carbsum=0;
-      for(let i=0;i<response.data.meals.length;i++){
-        sum+=response.data.meals[i].nutrition.calories.value;
-        proteinsum+=response.data.meals[i].nutrition.protein.value;
-        fatsum+=response.data.meals[i].nutrition.fat.value;
-        carbsum+=response.data.meals[i].nutrition.carbs.value;
+
+
+const [profilePic, setProfilePic] = useState(null);
+
+const fetchMeals = async (selectedDate) => {
+  try {
+    const token = localStorage.getItem('token');
+    console.log('Token:', token);
+
+    // Fetch meals for the selected date
+    const mealsResponse = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const meals = mealsResponse.data.meals;
+
+    // Fetch profile picture
+    const profilePicResponse = await axios.get(`http://localhost:3000/api/get-profilepic`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: 'arraybuffer', // Important to handle binary data
+    });
+
+    // Convert binary data to Base64 string for profile picture
+    const base64ProfilePic = `data:${profilePicResponse.headers['content-type']};base64,${
+      btoa(
+        new Uint8Array(profilePicResponse.data)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      )
+    }`;
+
+    setProfilePic(base64ProfilePic);
+
+    // Include the profile picture and meal image in meals data
+    const mealsWithProfilePics = meals.map((meal) => {
+      let base64MealImage = '';
+
+      // Convert meal image data to Base64 if available
+      if (meal.image && meal.image.data) {
+        base64MealImage = `data:${meal.image.contentType};base64,${
+          btoa(
+            new Uint8Array(meal.image.data.data)
+              .reduce((data, byte) => data + String.fromCharCode(byte), '')
+          )
+        }`;
       }
-      // setProteinGoal(response.data.user.dailyCalorieRequirement.protein)
-      // setFatGoal(response.data.user.dailyCalorieRequirement.fat)
-      // setCarbGoal(response.data.user.dailyCalorieRequirement.carbs)
-      setCaloriesConsumed(sum);
-      setProteinConsumed(proteinsum)
-      setCarbConsumed(carbsum)
-      setFatConsumed(fatsum)
 
-      // Update last 7 days data structure with today's values
-      const today = new Date().toISOString().split("T")[0];
-      const updatedCaloriesData = caloriesData.map(data =>
-        data.day === today ? { day: today, caloriesConsumed: sum, protein: proteinsum, fat: fatsum, carbs: carbsum } : data
-      );
+      return {
+        ...meal,
+        user_profile_pic: base64ProfilePic || 'https://picsum.photos/200', // Use fetched profile pic or placeholder
+        meal_image: base64MealImage || 'https://via.placeholder.com/200', // Use meal image or placeholder
+      };
+    });
 
-      setCaloriesData(updatedCaloriesData);
-    } catch (error) {
-      console.error('Error fetching meals:', error);
-    }
-  };
+    setMeals(mealsWithProfilePics);
 
+    // Calculate daily totals
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalFat = 0;
+    let totalCarbs = 0;
+
+    mealsWithProfilePics.forEach((meal) => {
+      totalCalories += meal.nutrition.calories.value;
+      totalProtein += meal.nutrition.protein.value;
+      totalFat += meal.nutrition.fat.value;
+      totalCarbs += meal.nutrition.carbs.value;
+    });
+
+    setCaloriesConsumed(totalCalories);
+    setProteinConsumed(totalProtein);
+    setFatConsumed(totalFat);
+    setCarbConsumed(totalCarbs);
+
+    // Update calories data for the graph
+    const today = new Date().toISOString().split("T")[0];
+    const updatedCaloriesData = caloriesData.map((data) =>
+      data.day === today
+        ? {
+            ...data,
+            caloriesConsumed: totalCalories,
+            protein: totalProtein,
+            fat: totalFat,
+            carbs: totalCarbs,
+          }
+        : data
+    );
+
+    setCaloriesData(updatedCaloriesData);
+  } catch (error) {
+    console.error('Error fetching meals:', error);
+  }
+};
+
+
+
+  
   // Update meals whenever the selected date changes
   useEffect(() => {
     fetchMeals(selectedDate);
@@ -251,7 +307,7 @@ const FitnessProfile = () => {
     const formData = new FormData(event.target);
     
     try {
-      const response = await fetch('https://fitfeast.onrender.com/meals/add', {
+      const response = await fetch('http://localhost:3000/meals/add', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -324,7 +380,7 @@ const FitnessProfile = () => {
     ]);
     // Fetch weights from the backend
     const fetchWeights = async () => {
-      const response = await axios.get("https://fitfeast.onrender.com/weight/weights", {
+      const response = await axios.get("http://localhost:3000/weight/weights", {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("token")}`,
         },
@@ -350,7 +406,7 @@ const FitnessProfile = () => {
         try {
           if (existingWeight) {
             // Update existing weight
-            const response = await fetch(`https://fitfeast.onrender.com/weight/weights/${existingWeight._id}`, {
+            const response = await fetch(`http://localhost:3000/weight/weights/${existingWeight._id}`, {
               method: 'PUT',
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -361,7 +417,7 @@ const FitnessProfile = () => {
               }) // Pass the JSON object as the request body
             }); 
           } else {
-            const response = await fetch('https://fitfeast.onrender.com/weight/weights', {
+            const response = await fetch('http://localhost:3000/weight/weights', {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -374,7 +430,7 @@ const FitnessProfile = () => {
             });
             // Add new weight entry for today
             // await fetch(
-            //   'https://fitfeast.onrender.com/weight/weights',
+            //   'http://localhost:3000/weight/weights',
             //   {method:'POST'},
             //   { day: today, weight: parseFloat(weight) },
             //   {
@@ -715,7 +771,7 @@ const FitnessProfile = () => {
                   <div className="profile-date-container">
                     <img
                       className="prof-pic"
-                      src="https://via.placeholder.com/100"
+                      src={post.user_profile_pic}
                       alt="Profile"
                     />
                     <strong className="profile-name">{post.category.name}</strong>
@@ -731,7 +787,7 @@ const FitnessProfile = () => {
                     </svg>
                     <p className="date">{selectedDate}</p>
                   </div>
-                  <img className="posts-img" src={post.image} alt="post" onClick={() => openModal(post.image)}
+                  <img className="posts-img" src={post.meal_image} onClick={() => openModal(post.meal_image)}
                   style={{ cursor: 'pointer' }}></img>
                    {/* Modal for full-sized image */}
                   {isModalOpen && (
