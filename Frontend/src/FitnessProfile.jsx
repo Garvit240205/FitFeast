@@ -65,17 +65,17 @@ const FitnessProfile = () => {
     const fetchUserDetails = async () => {
       try {
         const token = localStorage.getItem('token');
-        console.log('Token:', token);
-        const response = await axios.get('http://localhost:3000/api/details', {
+        // //console.log('Token:', token);
+        const response = await axios.get('https://fitfeast.onrender.com/api/details', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
         });
-        console.log('Response:', response);
+        ////console.log('Response:', response);
         localStorage.setItem('username',response.data.user.firstname)
-        console.log(response.data.user.firstname)
+        ////console.log(response.data.user.firstname)
         const user = response.data.user;
-        console.log(user)
+        ////console.log(user)
         setProteinGoal(response.data.user.dailyCalorieRequirement.protein)
         setFatGoal(response.data.user.dailyCalorieRequirement.fat)
         setCarbGoal(response.data.user.dailyCalorieRequirement.carbs)
@@ -157,7 +157,7 @@ const FitnessProfile = () => {
       const selectedDate = date.toISOString().split("T")[0];
   
       try {
-        const response = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
+        const response = await axios.get(`https://fitfeast.onrender.com/meals/preview?date=${selectedDate}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -198,10 +198,10 @@ const [profilePic, setProfilePic] = useState(null);
 const fetchMeals = async (selectedDate) => {
   try {
     const token = localStorage.getItem('token');
-    console.log('Token:', token);
+    ////console.log('Token:', token);
 
     // Fetch meals for the selected date
-    const mealsResponse = await axios.get(`http://localhost:3000/meals/preview?date=${selectedDate}`, {
+    const mealsResponse = await axios.get(`https://fitfeast.onrender.com/meals/preview?date=${selectedDate}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -210,7 +210,7 @@ const fetchMeals = async (selectedDate) => {
     const meals = mealsResponse.data.meals;
 
     // Fetch profile picture
-    const profilePicResponse = await axios.get(`http://localhost:3000/api/get-profilepic`, {
+    const profilePicResponse = await axios.get(`https://fitfeast.onrender.com/api/get-profilepic`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -307,7 +307,7 @@ const fetchMeals = async (selectedDate) => {
     const formData = new FormData(event.target);
     
     try {
-      const response = await fetch('http://localhost:3000/meals/add', {
+      const response = await fetch('https://fitfeast.onrender.com/meals/add', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -316,7 +316,7 @@ const fetchMeals = async (selectedDate) => {
       });
   
       if (response.ok) {
-        console.log('Meal added successfully');
+        ////console.log('Meal added successfully');
         setShowModal(false); // Close the modal if needed
         // Fetch the updated list of meals
         await fetchMeals(selectedDate);
@@ -353,7 +353,7 @@ const fetchMeals = async (selectedDate) => {
   const [selectedImage, setSelectedImage] = useState('');
 
   const openModal = (image) => {
-    console.log(image)
+    ////console.log(image)
     setSelectedImage(image);
     setIsModalOpen(true);
   };
@@ -380,12 +380,12 @@ const fetchMeals = async (selectedDate) => {
     ]);
     // Fetch weights from the backend
     const fetchWeights = async () => {
-      const response = await axios.get("http://localhost:3000/weight/weights", {
+      const response = await axios.get("https://fitfeast.onrender.com/weight/weights", {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log('Weight Response: ',response);
+      ////console.log('Weight Response: ',response);
       setWeightData(response.data);
     };
 
@@ -406,7 +406,7 @@ const fetchMeals = async (selectedDate) => {
         try {
           if (existingWeight) {
             // Update existing weight
-            const response = await fetch(`http://localhost:3000/weight/weights/${existingWeight._id}`, {
+            const response = await fetch(`https://fitfeast.onrender.com/weight/weights/${existingWeight._id}`, {
               method: 'PUT',
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -417,7 +417,7 @@ const fetchMeals = async (selectedDate) => {
               }) // Pass the JSON object as the request body
             }); 
           } else {
-            const response = await fetch('http://localhost:3000/weight/weights', {
+            const response = await fetch('https://fitfeast.onrender.com/weight/weights', {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -430,7 +430,7 @@ const fetchMeals = async (selectedDate) => {
             });
             // Add new weight entry for today
             // await fetch(
-            //   'http://localhost:3000/weight/weights',
+            //   'https://fitfeast.onrender.com/weight/weights',
             //   {method:'POST'},
             //   { day: today, weight: parseFloat(weight) },
             //   {
