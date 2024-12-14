@@ -8,30 +8,50 @@ const foodRecognitionMiddleware = async (req, res, next) => {
       return res.status(400).json({ message: 'No file uploaded or invalid file format' });
     }
 
+    // List of API keys for failover
+    const apiKeys = [
+      'aad64994367040b09ac8baddaf5299d7',
+      '286e3b72e02b415a9e8cefed2e92be04',
+      'd68479f793444bb9a21da6177ec0c430'
+    ];
+
+    let foodInfo;
+    let success = false;
+
     // Step 1: Create a FormData instance
     const form = new FormData();
     form.append('file', req.file.buffer, { filename: 'image.jpg' }); // Add the image buffer
 
-    // Step 2: Call the Spoonacular API with the image buffer
-    const apiKey = 'd68479f793444bb9a21da6177ec0c430'; // Hardcoded API key
-    const response = await axios.post(
-      `https://api.spoonacular.com/food/images/analyze?apiKey=${apiKey}`,
-      form,
-      {
-        headers: {
-          ...form.getHeaders(), // Get the headers from the FormData instance
-        },
+    // Step 2: Iterate over API keys until one succeeds
+    for (const apiKey of apiKeys) {
+      try {
+        const response = await axios.post(
+          `https://api.spoonacular.com/food/images/analyze?apiKey=${apiKey}`,
+          form,
+          {
+            headers: {
+              ...form.getHeaders(), // Get the headers from the FormData instance
+            },
+          }
+        );
+
+        foodInfo = response.data;
+
+        // Check if the response is valid
+        if (foodInfo && foodInfo.status === 'success') {
+          success = true;
+          break; // Exit the loop on success
+        }
+      } catch (apiError) {
+        console.error(`API key ${apiKey} failed:`, apiError.message || apiError);
       }
-    );
-
-    const foodInfo = response.data;
-
-    // Step 3: Check if the response is valid
-    if (foodInfo.status !== 'success') {
-      return res.status(400).json({ message: 'Invalid response from food recognition API' });
     }
 
-    // Step 4: Extract relevant information from the response
+    if (!success) {
+      return res.status(500).json({ message: 'All API keys failed to fetch food recognition data' });
+    }
+
+    // Step 3: Extract relevant information from the response
     req.foodInfo = {
       nutrition: foodInfo.nutrition,
       category: foodInfo.category,
