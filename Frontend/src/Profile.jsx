@@ -41,14 +41,15 @@ const Profile = () => {
 
   const fetchUserPosts = async () => {
     try {
-      //console.log('eneterered')
+      console.log('eneterered')
       const userId = getUserIdFromToken(token);
       const response = await axios.get(`https://fitfeast.onrender.com/posts/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
       setPosts(response.data);
       setNoPosts(false); // Reset no posts message if posts are found
-
+      console.log("ALLPOSTS:",posts)
 
       const profilePicResponse = await axios.get(`https://fitfeast.onrender.com/api/get-profilepic`, {
         headers: {
@@ -89,7 +90,7 @@ const Profile = () => {
         dailyCalorieRequirement: user.dailyCalorieRequirement,
         createdAt: user.createdAt,
       });
-      //console.log(response);
+      console.log(response);
     } catch (error) {
       console.error("Error fetching user details:", error);
     }
@@ -101,7 +102,7 @@ const Profile = () => {
       const response = await axios.get(`https://fitfeast.onrender.com/posts/liked/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      //console.log(response);
+      console.log("RESPONSE:",response);
       const initialLikedPosts = response.data.reduce((acc, post) => {
         acc[post._id] = post.likedBy.includes(userId);
         return acc;
@@ -114,9 +115,9 @@ const Profile = () => {
       // }, {});
       // setLikedPosts(initialLikedPosts);
       setPosts(response.data);
-      //console.log(posts);
-      //console.log(likedPosts);
-      // //console.log(likedPosts.length);
+      console.log("POSTS:",posts);
+      console.log("LIKEDPOSTS:",likedPosts);
+      // console.log(likedPosts.length);
     } catch (error) {
       console.error("Error fetching liked posts:", error);
       setPosts([]);
@@ -173,7 +174,7 @@ const Profile = () => {
             
         } else {
             const result = await response.json();
-            //console.log('Post added successfully:', result);
+            console.log('Post added successfully:', result);
             await fetchUserPosts();
         }
         setShowPostModal(false);
@@ -187,13 +188,13 @@ const Profile = () => {
     const isLiked = likedPosts[postId];
     const endpoint = isLiked ? 'unlike' : 'like';
     const method = isLiked ? 'DELETE' : 'POST';
-    //console.log(postId);
+    console.log(postId);
     try {
       const response = await fetch(`https://fitfeast.onrender.com/posts/${postId}/${endpoint}`, {
         method: method,
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      //console.log(response);
+      console.log("RESPONSSE:",response);
       if (!response.ok) {
         throw new Error(`Failed to toggle like: ${response.statusText}`);
       }
@@ -315,11 +316,11 @@ const Profile = () => {
                     Home
                   </a>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <a className="nav-link" href="/Explore">
                     Explore
                   </a>
-                </li>
+                </li> */}
                 <li className="nav-item">
                   <a className="nav-link active" href="/Profile">
                     User Profile
@@ -525,7 +526,7 @@ const Profile = () => {
             <p className="date">{new Date(post.createdAt).toISOString().split("T")[0]}</p>
           </div>
           <p className="post-para">{post.description}</p>
-          {post.image && (
+          {/* {post.image && (
             <img
               className="post-img"
               src={post.image}
@@ -533,7 +534,7 @@ const Profile = () => {
               onClick={() => openModal(post.image)}
               style={{ cursor: 'pointer' }} // Make it clear it's clickable
             />
-          )}
+          )} */}
           {/* Modal for full-sized image */}
           {isModalOpen && (
             

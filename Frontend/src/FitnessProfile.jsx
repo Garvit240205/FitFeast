@@ -65,17 +65,17 @@ const FitnessProfile = () => {
     const fetchUserDetails = async () => {
       try {
         const token = localStorage.getItem('token');
-        // //console.log('Token:', token);
+        console.log('Token:', token);
         const response = await axios.get('https://fitfeast.onrender.com/api/details', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
         });
-        ////console.log('Response:', response);
+        console.log('Response:', response);
         localStorage.setItem('username',response.data.user.firstname)
-        ////console.log(response.data.user.firstname)
+        console.log(response.data.user.firstname)
         const user = response.data.user;
-        ////console.log(user)
+        console.log(user)
         setProteinGoal(response.data.user.dailyCalorieRequirement.protein)
         setFatGoal(response.data.user.dailyCalorieRequirement.fat)
         setCarbGoal(response.data.user.dailyCalorieRequirement.carbs)
@@ -198,7 +198,7 @@ const [profilePic, setProfilePic] = useState(null);
 const fetchMeals = async (selectedDate) => {
   try {
     const token = localStorage.getItem('token');
-    ////console.log('Token:', token);
+    console.log('Token:', token);
 
     // Fetch meals for the selected date
     const mealsResponse = await axios.get(`https://fitfeast.onrender.com/meals/preview?date=${selectedDate}`, {
@@ -316,7 +316,7 @@ const fetchMeals = async (selectedDate) => {
       });
   
       if (response.ok) {
-        ////console.log('Meal added successfully');
+        console.log('Meal added successfully');
         setShowModal(false); // Close the modal if needed
         // Fetch the updated list of meals
         await fetchMeals(selectedDate);
@@ -353,7 +353,7 @@ const fetchMeals = async (selectedDate) => {
   const [selectedImage, setSelectedImage] = useState('');
 
   const openModal = (image) => {
-    ////console.log(image)
+    console.log(image)
     setSelectedImage(image);
     setIsModalOpen(true);
   };
@@ -385,7 +385,7 @@ const fetchMeals = async (selectedDate) => {
           'Authorization': `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      ////console.log('Weight Response: ',response);
+      console.log('Weight Response: ',response);
       setWeightData(response.data);
     };
 
@@ -500,11 +500,11 @@ const fetchMeals = async (selectedDate) => {
                     Home
                   </a>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <a className="nav-link" href="/Explore">
                     Explore
                   </a>
-                </li>
+                </li> */}
                 <li className="nav-item">
                   <a className="nav-link" href="/Profile">
                     User Profile

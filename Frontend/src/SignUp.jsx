@@ -45,7 +45,7 @@ export function SignUpPage() {
         username,
         password,
       });
-      //console.log(response.data);
+      console.log(response.data);
       setSuccess('User registered successfully!');
       setError('');
       setTimeout(() => {
@@ -77,7 +77,7 @@ export function SignUpPage() {
       });
 
       const data = await response.json();
-      //console.log(data)
+      console.log(data)
       if (data.redirect === 'FitnessProfile') {
         navigate('/FitnessProfile');
       } else {
@@ -96,7 +96,7 @@ export function SignUpPage() {
         return;
     }
     const user = jwtDecode(token);
-    //console.log("Decoded user:", user);
+    console.log("Decoded user:", user);
 
     try {
         // Dynamically import jwt-decode
@@ -104,7 +104,7 @@ export function SignUpPage() {
         const user = jwtDecode(token);
 
         const response = await axios.post('https://fitfeast.onrender.com/api/google-login', { token });
-        //console.log("Google Sign-In successful:", response.data);
+        console.log("Google Sign-In successful:", response.data);
         setSuccess('Logged in with Google!');
         setError('')
         // Fetch user details and handle redirection

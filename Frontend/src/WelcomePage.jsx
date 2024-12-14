@@ -63,13 +63,13 @@ const WelcomePage = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Authentication token not found');
-      const formData = new FormData();
-      if(profilePic){
-        formData.append('profilePic',profilePic)
-      }
-      else{
-        formData.append('profilePic','https://picsum.photos/200')
-      }
+      // const formData = new FormData();
+      // if(profilePic){
+      //   formData.append('profilePic',profilePic)
+      // }
+      // else{
+      //   formData.append('profilePic','https://picsum.photos/200')
+      // }
       const response = await axios.put(
         'https://fitfeast.onrender.com/api/update-details',
         userDetails,
@@ -80,24 +80,49 @@ const WelcomePage = () => {
           },
         }
       );
-      //console.log('User details updated:', response.data);
+      console.log('User details updated:', response.data);
       setCalorieCount(response.data.dailyCalorieRequirement.calories);
-      //console.log(calorieCount)
+      console.log(calorieCount)
 
+      return response.data;
+    } catch (error) {
+      console.error('Error updating user details:', error);
+      if (error.response) console.error('Response error:', error.response.data.message);
+      throw error;
+    }
+  };
+
+  const updateUserPhoto = async (profilePic) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Authentication token not found');
+      const formData = new FormData();
+      if(profilePic){
+        console.log("asdgysgdyasgduas d",profilePic)
+        formData.append('profile_pic',profilePic)
+      }
+      else{
+        formData.append('profile_pic','https://picsum.photos/200')
+      }
+
+      // Log FormData contents for debugging
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+      console.log("PHOTOO: ",JSON.stringify(formData))
       const response2 = await axios.put(
         'https://fitfeast.onrender.com/api/update-profilepic',
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
           },
         }
       );
 
-      return response.data;
+      return response2.data;
     } catch (error) {
-      console.error('Error updating user details:', error);
+      console.error('Error updating user photo:', error);
       if (error.response) console.error('Response error:', error.response.data.message);
       throw error;
     }
@@ -141,7 +166,7 @@ const WelcomePage = () => {
 
     setError(''); // Clear any existing error
 
-    if (step === 7) {
+    if (step === 5) {
       try {
         await updateUserDetails(userDetails);
       } catch (error) {
@@ -149,8 +174,11 @@ const WelcomePage = () => {
         console.error(error);
       }
     }
-
-    if (step < 7) {
+    if (step === 7) {
+      console.log('Calling updateUserPhoto with:', profilePic);
+      await updateUserPhoto(profilePic);
+    }
+    if (step <= 8) {
       setStep(step + 1);
     }
   };
@@ -171,6 +199,7 @@ const WelcomePage = () => {
       setCoverImage(file);
     } else if (type === 'profile') {
       setProfilePic(file);
+      console.log("PROFILELELE:",profilePic)
     }
   };
   const toggleFormula = () => {
@@ -476,6 +505,20 @@ const WelcomePage = () => {
                   {profilePic && <p>Profile picture selected: {profilePic.name}</p>}
                 </div>
               );
+        case 8:
+          return (
+            <div>
+              <h1 className="header" style={{ fontSize: '50px', fontFamily: 'Nunito', color: 'green' }}>
+                All Credentials Successfully Uploaded!
+              </h1>
+              <p className="normal-text" style={{ fontSize: '20px', marginTop: '20px' }}>
+                Congratulations, {name}! Your details and profile picture have been successfully saved.
+              </p>
+              <p className="normal-text" style={{ fontSize: '20px', marginTop: '10px' }}>
+                You’re all set to start your journey with us. Let’s make it amazing!
+              </p>
+            </div>
+          );  
       default:
         return null;
     }
@@ -496,21 +539,21 @@ const WelcomePage = () => {
   }, [step]);
   useEffect(() => {
     // Log the user details whenever step changes (i.e., when the user advances in the form)
-    if (step >= 7) {
-      //console.log('Updated user details:', userDetails);
+    if (step >= 8) {
+      console.log('Updated user details:', userDetails);
     }
   }, [step, name, age, weight, heightFeet, heightInches, gender, country, zipCode, selectedActivityLevel]);
 
   return (
     <div className="container">
       <div className="progress-container">
-        {Array.from({ length: 8 }).map((_, index) => (
+        {Array.from({ length: 9 }).map((_, index) => (
           <div key={index} className={`step-bar ${index <= step ? 'filled' : ''}`} />
         ))}
       </div>
       {renderStepContent()}
       {error && <p className="error-message" style={{color:'red'}}>{error}</p>} {/* Display error */}
-      {step < 7 ? (
+      {step < 8 ? (
         <button onClick={handleContinue} className="button">
           Continue
         </button>
