@@ -45,6 +45,7 @@ const cors = require('cors');
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173', // Add your client origin here
+  'https://fitfeast.onrender.com'
 ];
 
 userRouter.use(cors({
