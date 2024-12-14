@@ -44,7 +44,7 @@ const Home = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-      //console.log(response)
+      console.log(response)
       setPosts(response.data);
       // Set likedPosts based on the fetched posts
       const userId = getUserIdFromToken(token); // Assume you have a function to get the user ID from the token
@@ -86,10 +86,10 @@ const handleSavePost = async () => {
 });
 
 
-    //console.log(response);
+    console.log(response);
 
     if (response.ok) {
-      //console.log('Post added successfully');
+      console.log('Post added successfully');
       setNewPost({ image: null, description: "" }); // Reset input fields
       await fetchAllPosts(); // Refresh posts after saving
     } else {
@@ -117,7 +117,7 @@ const toggleLike = async (postId) => {
       method: method,
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    //console.log(response);
+    console.log(response);
     if (!response.ok) {
       throw new Error(`Failed to toggle like: ${response.statusText}`);
     }
@@ -209,11 +209,11 @@ const toggleLike = async (postId) => {
                   Home
                 </a>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <a className="nav-link" href="/Explore">
                   Explore
                 </a>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <a className="nav-link" href="/Profile">
                    User Profile
