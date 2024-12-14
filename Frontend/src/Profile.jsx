@@ -41,16 +41,16 @@ const Profile = () => {
 
   const fetchUserPosts = async () => {
     try {
-      console.log('eneterered')
+      //console.log('eneterered')
       const userId = getUserIdFromToken(token);
-      const response = await axios.get(`http://localhost:3000/posts/user/${userId}`, {
+      const response = await axios.get(`https://fitfeast.onrender.com/posts/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setPosts(response.data);
       setNoPosts(false); // Reset no posts message if posts are found
 
 
-      const profilePicResponse = await axios.get(`http://localhost:3000/api/get-profilepic`, {
+      const profilePicResponse = await axios.get(`https://fitfeast.onrender.com/api/get-profilepic`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -80,7 +80,7 @@ const Profile = () => {
 
   const fetchUserDetails = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/details", {
+      const response = await axios.get("https://fitfeast.onrender.com/api/details", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const { user, redirect } = response.data;
@@ -89,7 +89,7 @@ const Profile = () => {
         dailyCalorieRequirement: user.dailyCalorieRequirement,
         createdAt: user.createdAt,
       });
-      console.log(response);
+      //console.log(response);
     } catch (error) {
       console.error("Error fetching user details:", error);
     }
@@ -98,10 +98,10 @@ const Profile = () => {
   const fetchLikedPosts = async () => {
     try {
       const userId = getUserIdFromToken(token);
-      const response = await axios.get(`http://localhost:3000/posts/liked/${userId}`, {
+      const response = await axios.get(`https://fitfeast.onrender.com/posts/liked/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      console.log(response);
+      //console.log(response);
       const initialLikedPosts = response.data.reduce((acc, post) => {
         acc[post._id] = post.likedBy.includes(userId);
         return acc;
@@ -114,9 +114,9 @@ const Profile = () => {
       // }, {});
       // setLikedPosts(initialLikedPosts);
       setPosts(response.data);
-      console.log(posts);
-      console.log(likedPosts);
-      // console.log(likedPosts.length);
+      //console.log(posts);
+      //console.log(likedPosts);
+      // //console.log(likedPosts.length);
     } catch (error) {
       console.error("Error fetching liked posts:", error);
       setPosts([]);
@@ -159,7 +159,7 @@ const Profile = () => {
     formData.append('description', newPost.description);
     formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
     try {
-        const response = await fetch('http://localhost:3000/posts/add', {
+        const response = await fetch('https://fitfeast.onrender.com/posts/add', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}` // Do NOT set 'Content-Type' explicitly
@@ -173,7 +173,7 @@ const Profile = () => {
             
         } else {
             const result = await response.json();
-            console.log('Post added successfully:', result);
+            //console.log('Post added successfully:', result);
             await fetchUserPosts();
         }
         setShowPostModal(false);
@@ -187,13 +187,13 @@ const Profile = () => {
     const isLiked = likedPosts[postId];
     const endpoint = isLiked ? 'unlike' : 'like';
     const method = isLiked ? 'DELETE' : 'POST';
-    console.log(postId);
+    //console.log(postId);
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}/${endpoint}`, {
+      const response = await fetch(`https://fitfeast.onrender.com/posts/${postId}/${endpoint}`, {
         method: method,
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      console.log(response);
+      //console.log(response);
       if (!response.ok) {
         throw new Error(`Failed to toggle like: ${response.statusText}`);
       }

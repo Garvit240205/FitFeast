@@ -26,7 +26,7 @@ export function SignInPage() {
   const fetchUserDetails = async (token) => {
     try {
       await delay(1000);
-      const response = await fetch('http://localhost:3000/api/details', {
+      const response = await fetch('https://fitfeast.onrender.com/api/details', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`, // Include JWT token
@@ -54,7 +54,7 @@ export function SignInPage() {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/api/signin', {
+      const response = await axios.post('https://fitfeast.onrender.com/api/signin', {
         username,
         password,
       });

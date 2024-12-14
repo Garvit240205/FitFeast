@@ -71,7 +71,7 @@ const WelcomePage = () => {
         formData.append('profilePic','https://picsum.photos/200')
       }
       const response = await axios.put(
-        'http://localhost:3000/api/update-details',
+        'https://fitfeast.onrender.com/api/update-details',
         userDetails,
         {
           headers: {
@@ -80,12 +80,12 @@ const WelcomePage = () => {
           },
         }
       );
-      console.log('User details updated:', response.data);
+      //console.log('User details updated:', response.data);
       setCalorieCount(response.data.dailyCalorieRequirement.calories);
-      console.log(calorieCount)
+      //console.log(calorieCount)
 
       const response2 = await axios.put(
-        'http://localhost:3000/api/update-profilepic',
+        'https://fitfeast.onrender.com/api/update-profilepic',
         formData,
         {
           headers: {
@@ -497,7 +497,7 @@ const WelcomePage = () => {
   useEffect(() => {
     // Log the user details whenever step changes (i.e., when the user advances in the form)
     if (step >= 7) {
-      console.log('Updated user details:', userDetails);
+      //console.log('Updated user details:', userDetails);
     }
   }, [step, name, age, weight, heightFeet, heightInches, gender, country, zipCode, selectedActivityLevel]);
 

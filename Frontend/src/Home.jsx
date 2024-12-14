@@ -39,12 +39,12 @@ const Home = () => {
   const fetchAllPosts = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.get("http://localhost:3000/posts/get", {
+      const response = await axios.get("https://fitfeast.onrender.com/posts/get", {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
-      console.log(response)
+      //console.log(response)
       setPosts(response.data);
       // Set likedPosts based on the fetched posts
       const userId = getUserIdFromToken(token); // Assume you have a function to get the user ID from the token
@@ -77,7 +77,7 @@ const handleSavePost = async () => {
   formData.append('description', newPost.description);
   formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
   try {
-  const response = await fetch('http://localhost:3000/posts/add', {
+  const response = await fetch('https://fitfeast.onrender.com/posts/add', {
     method: 'POST',
     headers: {
         'Authorization': `Bearer ${token}` // Do NOT set 'Content-Type' explicitly
@@ -86,10 +86,10 @@ const handleSavePost = async () => {
 });
 
 
-    console.log(response);
+    //console.log(response);
 
     if (response.ok) {
-      console.log('Post added successfully');
+      //console.log('Post added successfully');
       setNewPost({ image: null, description: "" }); // Reset input fields
       await fetchAllPosts(); // Refresh posts after saving
     } else {
@@ -113,11 +113,11 @@ const toggleLike = async (postId) => {
   const method = isLiked ? 'DELETE' : 'POST';
 
   try {
-    const response = await fetch(`http://localhost:3000/posts/${postId}/${endpoint}`, {
+    const response = await fetch(`https://fitfeast.onrender.com/posts/${postId}/${endpoint}`, {
       method: method,
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    console.log(response);
+    //console.log(response);
     if (!response.ok) {
       throw new Error(`Failed to toggle like: ${response.statusText}`);
     }

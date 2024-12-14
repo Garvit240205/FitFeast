@@ -145,7 +145,7 @@ const Explore = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        console.log(response);
+        //console.log(response);
         setProfiles(response.data); // Set profiles to the response data
       } catch (error) {
         console.error('Error fetching profiles:', error);
