@@ -63,11 +63,16 @@ const WelcomePage = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Authentication token not found');
-
+      const formData = new FormData();
+      if(profilePic){
+        formData.append('profilePic',profilePic)
+      }
+      else{
+        formData.append('profilePic','https://picsum.photos/200')
+      }
       const response = await axios.put(
         'http://localhost:3000/api/update-details',
         userDetails,
-        imageDetails,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -78,6 +83,18 @@ const WelcomePage = () => {
       console.log('User details updated:', response.data);
       setCalorieCount(response.data.dailyCalorieRequirement.calories);
       console.log(calorieCount)
+
+      const response2 = await axios.put(
+        'http://localhost:3000/api/update-profilepic',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
       return response.data;
     } catch (error) {
       console.error('Error updating user details:', error);
@@ -124,7 +141,7 @@ const WelcomePage = () => {
 
     setError(''); // Clear any existing error
 
-    if (step === 5) {
+    if (step === 7) {
       try {
         await updateUserDetails(userDetails);
       } catch (error) {

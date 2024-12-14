@@ -41,7 +41,7 @@ export function SignUpPage() {
     }
 
     try {
-      const response = await axios.post('https://fitfeast.onrender.com/api/signup', {
+      const response = await axios.post('http://localhost:3000/api/signup', {
         username,
         password,
       });
@@ -69,7 +69,7 @@ export function SignUpPage() {
   const fetchUserDetails = async (token) => {
     try {
       await delay(1000);
-      const response = await fetch('https://fitfeast.onrender.com/api/details', {
+      const response = await fetch('http://localhost:3000/api/details', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`, // Include JWT token
@@ -103,7 +103,7 @@ export function SignUpPage() {
         const jwt_decode = (await import("jwt-decode")).default;
         const user = jwtDecode(token);
 
-        const response = await axios.post('https://fitfeast.onrender.com/api/google-login', { token });
+        const response = await axios.post('http://localhost:3000/api/google-login', { token });
         console.log("Google Sign-In successful:", response.data);
         setSuccess('Logged in with Google!');
         setError('')

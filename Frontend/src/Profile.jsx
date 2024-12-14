@@ -4,7 +4,7 @@ import "./Profile.css";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Link, useNavigate } from 'react-router-dom';
-
+import { encode } from 'base64-arraybuffer';
 const Profile = () => {
   const [liked, setLiked] = useState(false); 
   const [activeTab, setActiveTab] = useState("posts");
@@ -25,16 +25,45 @@ const Profile = () => {
       return null;
     }
   };
+
+  // Utility function for generating random colors
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   const navigate = useNavigate();
+  const [profilePic, setProfilePic] = useState('https://picsum.photos/200');
+
   const fetchUserPosts = async () => {
     try {
       console.log('eneterered')
       const userId = getUserIdFromToken(token);
-      const response = await axios.get(`https://fitfeast.onrender.com/posts/user/${userId}`, {
+      const response = await axios.get(`http://localhost:3000/posts/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setPosts(response.data);
       setNoPosts(false); // Reset no posts message if posts are found
+
+
+      const profilePicResponse = await axios.get(`http://localhost:3000/api/get-profilepic`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'arraybuffer', // Important to handle binary data
+      });
+  
+      // Convert binary data to Base64 string
+      const base64Image = `data:${profilePicResponse.headers['content-type']};base64,${encode(
+        profilePicResponse.data
+      )}`;
+
+      setProfilePic(base64Image);
+
       const initialLikedPosts = response.data.reduce((acc, post) => {
         acc[post._id] = post.likedBy.includes(userId);
         return acc;
@@ -51,7 +80,7 @@ const Profile = () => {
 
   const fetchUserDetails = async () => {
     try {
-      const response = await axios.get("https://fitfeast.onrender.com/api/details", {
+      const response = await axios.get("http://localhost:3000/api/details", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const { user, redirect } = response.data;
@@ -69,7 +98,7 @@ const Profile = () => {
   const fetchLikedPosts = async () => {
     try {
       const userId = getUserIdFromToken(token);
-      const response = await axios.get(`https://fitfeast.onrender.com/posts/liked/${userId}`, {
+      const response = await axios.get(`http://localhost:3000/posts/liked/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       console.log(response);
@@ -130,7 +159,7 @@ const Profile = () => {
     formData.append('description', newPost.description);
     formData.append('image', newPost.image); // Ensure this matches the field name expected by multer
     try {
-        const response = await fetch('https://fitfeast.onrender.com/posts/add', {
+        const response = await fetch('http://localhost:3000/posts/add', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}` // Do NOT set 'Content-Type' explicitly
@@ -160,7 +189,7 @@ const Profile = () => {
     const method = isLiked ? 'DELETE' : 'POST';
     console.log(postId);
     try {
-      const response = await fetch(`https://fitfeast.onrender.com/posts/${postId}/${endpoint}`, {
+      const response = await fetch(`http://localhost:3000/posts/${postId}/${endpoint}`, {
         method: method,
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -315,9 +344,12 @@ const Profile = () => {
       {/* Main Profile Section */}
       <div className="profile-section">
         <div className="header">
-          <img
+          <div
             className="cover-image"
-            src="https://via.placeholder.com/1200x300?text=Cover+Image"
+            style={{
+              height: "300px",
+              background: `linear-gradient(135deg, ${getRandomColor()}, ${getRandomColor()})`,
+            }}
             alt="Cover"
           />
         </div>
@@ -325,7 +357,7 @@ const Profile = () => {
         <div className="profile-info">
           <img
             className="profile-pic"
-            src="https://via.placeholder.com/100"
+            src={profilePic}
             alt="Profile"
           />
           <div className="name-edit">
@@ -390,7 +422,7 @@ const Profile = () => {
       posts.map((post,index) => (
         <div className="post" key={index}>
           <div className="profile-date-container">
-            <img className="prof-pic" src={'Thor.jpg'} alt="Profile" />
+            <img className="prof-pic" src={profilePic} alt="Profile" />
             <strong className="profile-name">{post.user_id.firstname}</strong>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -478,7 +510,7 @@ const Profile = () => {
               posts.map((post, index) => (
                 <div className="post" key={index}>
           <div className="profile-date-container">
-            <img className="prof-pic" src={'Thor.jpg'} alt="Profile" />
+            <img className="prof-pic" src={profilePic} alt="Profile" />
             <strong className="profile-name">{post.user_id.firstname}</strong>
             <svg
               xmlns="http://www.w3.org/2000/svg"
